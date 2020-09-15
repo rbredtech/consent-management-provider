@@ -1,0 +1,65 @@
+window.__tcfapi = function(command, version, callback, parameter) {
+  let _listenerCnt = 1;
+  const _listeners = {};
+  switch (command) {
+    case 'ping':
+      callback({
+        gdprApplies: true,
+        cmpLoaded: true,
+        cmpStatus: 'loaded',
+        displayStatus: 'hidden',
+        apiVersion: '2.0',
+        cmpVersion: 1,
+        cmpId: 4040,
+        gvlVersion: 1,
+        tcfPolicyVersion: 2,
+      });
+      break;
+    case 'getTCData':
+      callback({
+        tcString: {{TC_STRING}},
+        tcfPolicyVersion: 2,
+        cmpId: 4040,
+        cmpVersion: 1,
+        gdprApplies: true,
+        eventStatus: 'tcloaded',
+        cmpStatus: 'loaded',
+        listenerId: undefined,
+        isServiceSpecific: true,
+        useNonStandardStacks: false,
+        publisherCC: 'AT',
+        purposeOneTreatment: {{TC_PURPOSE_ONE}},
+        purpose: {
+          consents: {
+            1: {{TC_CONSENT}}, // purposeOne
+          }
+        },
+        legitimateInterests: {
+          consents: [],
+        },
+        vendor: {
+          consents: {
+            4040: {{TC_CONSENT}}, // TODO
+          },
+        }
+        // TODO more?
+      }, true);
+      break;
+    case 'addEventListener':
+      _listeners[_listenerCnt] = callback;
+      return _listenerCnt++;
+      break;
+    case 'removeEventListener':
+      const listener = _listeners[parameter];
+      if (!listener) {
+        setTimeout(function() {
+          callback(false);
+        }, 1);
+        return;
+      }
+      setTimeout(() => {
+        callback(true);
+      }, 1);
+      break;
+    }
+};

@@ -1,0 +1,9 @@
+# specific
+dist/**
+
+# general
+node_modules/**
+.env
+.DS_store
+.idea/**
+.vscode/**
