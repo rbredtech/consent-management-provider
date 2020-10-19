@@ -1,6 +1,6 @@
 window.__tcfapi = function(command, version, callback, parameter) {
-  let _listenerCnt = 1;
-  const _listeners = {};
+  var _listenerCnt = 1;
+  var _listeners = {};
   switch (command) {
     case 'ping':
       callback({
@@ -12,7 +12,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
         cmpVersion: 1,
         cmpId: 4040,
         gvlVersion: 1,
-        tcfPolicyVersion: 2,
+        tcfPolicyVersion: 2
       });
       break;
     case 'getTCData':
@@ -31,18 +31,17 @@ window.__tcfapi = function(command, version, callback, parameter) {
         purposeOneTreatment: {{TC_PURPOSE_ONE}},
         purpose: {
           consents: {
-            1: {{TC_CONSENT}}, // purposeOne
+            1: {{TC_CONSENT}}
           }
         },
         legitimateInterests: {
-          consents: [],
+          consents: []
         },
         vendor: {
           consents: {
-            4040: {{TC_CONSENT}}, // TODO
-          },
+            4040: {{TC_CONSENT}}
+          }
         }
-        // TODO more?
       }, true);
       break;
     case 'addEventListener':
@@ -50,14 +49,14 @@ window.__tcfapi = function(command, version, callback, parameter) {
       return _listenerCnt++;
       break;
     case 'removeEventListener':
-      const listener = _listeners[parameter];
+      var listener = _listeners[parameter];
       if (!listener) {
         setTimeout(function() {
           callback(false);
         }, 1);
         return;
       }
-      setTimeout(() => {
+      setTimeout(function () {
         callback(true);
       }, 1);
       break;
