@@ -28,14 +28,20 @@ window.__tcfapi = function(command, version, callback, parameter) {
         isServiceSpecific: true,
         useNonStandardStacks: false,
         publisherCC: 'AT',
-        purposeOneTreatment: {{TC_PURPOSE_ONE}},
+        purposeOneTreatment: true,
         purpose: {
           consents: {
-            1: {{TC_CONSENT}}
+            1: true,
+            7: true,
+            8: true
           }
         },
         legitimateInterests: {
-          consents: []
+          consents: {
+            1: true,
+            7: true,
+            8: true
+          }
         },
         vendor: {
           consents: {
