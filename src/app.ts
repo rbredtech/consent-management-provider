@@ -44,14 +44,19 @@ app.get('/mini-cmp.js', (req, res) => {
     try {
       cookie = JSON.parse(Buffer.from(req.cookies[COOKIE_NAME], 'base64').toString());
     } catch(e) {
-      logger.info(`Error parsing cookie ${COOKIE_NAME}`, e)
+      logger.info(`Error parsing cookie ${COOKIE_NAME}`, e);
     }
   }
   logger.debug(`hasCookie=${cookie !== undefined}; hasConsent=${cookie?.consent}`);
-  
+
+  let tcConsent; // valid values are: undefined, true, false
+  if (cookie) {
+    tcConsent = cookie?.consent ?? false;
+  }
+
   const tcfApi = tcfApiJsTemplate
     .replace('{{TC_STRING}}', JSON.stringify('tcstr'))
-    .replace('{{TC_CONSENT}}', JSON.stringify(cookie?.consent ?? false));
+    .replace('{{TC_CONSENT}}', JSON.stringify(tcConsent));
 
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
