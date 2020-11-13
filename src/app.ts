@@ -13,7 +13,8 @@ const tcfApiJsTemplate = readFileSync(join(__dirname, '..', '/templates/mini-cmp
 dotenv.config();
 const HTTP_PORT = process.env.HTTP_PORT;
 const COOKIE_DOMAIN = process.env.HTTP_HOST;
-const COOKIE_NAME = process.env.COOKIE_NAME  || 'xconsent';
+const COOKIE_NAME = process.env.COOKIE_NAME || 'xconsent';
+const COOKIE_MAXAGE = parseInt(process.env.COOKIE_MAXAGE || `${1000 * 60 * 60 * 24 * 365 * 2}`, 10); // default 2 years
 
 interface ConsentCookie {
   consent: boolean,
@@ -68,7 +69,7 @@ app.get('/setcookie', (req, res) => {
     consent: req.query?.consent === '1',
   };
   res.cookie(COOKIE_NAME, Buffer.from(JSON.stringify(cookie)).toString('base64'), {
-    maxAge: 31536000,
+    maxAge: COOKIE_MAXAGE,
     domain: COOKIE_DOMAIN,
   });
   res.setHeader('Cache-Control', 'no-store');
