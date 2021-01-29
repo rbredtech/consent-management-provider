@@ -8,17 +8,20 @@ import * as dotenv from 'dotenv';
 import { createLogger, format, transports } from 'winston';
 
 const { combine, timestamp, printf } = format;
-const tcfApiJsTemplate = readFileSync(join(__dirname, '..', '/templates/mini-cmp.js.template')).toString()
+const tcfApiJsTemplate = readFileSync(join(__dirname, '..', '/templates/mini-cmp.js.template')).toString();
 
 dotenv.config();
-const HTTP_PORT = process.env.HTTP_PORT;
+const { HTTP_PORT } = process.env;
 const COOKIE_DOMAIN = process.env.HTTP_HOST;
 const COOKIE_NAME = process.env.COOKIE_NAME || 'xconsent';
 const COOKIE_MAXAGE = parseInt(process.env.COOKIE_MAXAGE || `${1000 * 60 * 60 * 24 * 365 * 2}`, 10); // default 2 years
+const TECH_COOKIE_NAME = 'xt';
+const TECH_COOKIE_MIN = process.env.TECH_COOKIE_MIN || 1000 * 60 * 60 * 24 * 2; // default 2 days
 
 interface ConsentCookie {
   consent: boolean,
 }
+type TechCookie = number | undefined;
 
 const logger = createLogger({
   level: process.env.LOG_LEVEL || 'info',
@@ -39,24 +42,49 @@ app.use((req, _, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
+
+  if (techCookie && techCookie < Date.now()) {
+    logger.debug(`got valid tech cookie: ${techCookie < Date.now()}, ${techCookie}`);
+    return next();
+  }
+
+  logger.debug('setting tech cookie');
+  res.cookie(TECH_COOKIE_NAME, Date.now(), {
+    maxAge: COOKIE_MAXAGE,
+    domain: COOKIE_DOMAIN,
+  });
+  return next();
+});
+
 app.get('/mini-cmp.js', (req, res) => {
   let cookie: ConsentCookie | undefined;
   if (req.cookies[COOKIE_NAME]) {
     try {
       cookie = JSON.parse(Buffer.from(req.cookies[COOKIE_NAME], 'base64').toString());
-    } catch(e) {
+    } catch (e) {
       logger.info(`Error parsing cookie ${COOKIE_NAME}`, e);
     }
   }
   logger.debug(`hasCookie=${cookie !== undefined}; hasConsent=${cookie?.consent}`);
 
-  let tcConsent; // valid values are: undefined, true, false
+  let tcConsent: boolean | undefined;
   if (cookie) {
     tcConsent = cookie?.consent ?? false;
   }
 
+  let cmpStatus: 'loaded' | 'disabled' = 'loaded';
+  const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
+  if (!techCookie || Date.now() - techCookie < TECH_COOKIE_MIN) {
+    // if tech cookie doesn't exist or is not old enough, the cmp is
+    // disabled. that means no ads or tracking should be used
+    cmpStatus = 'disabled';
+  }
+
   const tcfApi = tcfApiJsTemplate
     .replace('{{TC_STRING}}', JSON.stringify('tcstr'))
+    .replace('{{CMP_STATUS}}', JSON.stringify(cmpStatus))
     .replace('{{TC_CONSENT}}', JSON.stringify(tcConsent));
 
   res.setHeader('Content-Type', 'application/javascript');

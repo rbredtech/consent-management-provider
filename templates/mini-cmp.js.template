@@ -23,7 +23,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
         cmpVersion: 1,
         gdprApplies: true,
         eventStatus: 'tcloaded',
-        cmpStatus: 'loaded',
+        cmpStatus: {{CMP_STATUS}},
         listenerId: undefined,
         isServiceSpecific: true,
         useNonStandardStacks: false,
