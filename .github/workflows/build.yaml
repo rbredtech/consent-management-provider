@@ -33,7 +33,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ghcr.io/${{ env.IMAGE_NAME }}
-
+          tags: |
+            type=raw,value=${{ github.ref_name }}-${{ github.run_id }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
