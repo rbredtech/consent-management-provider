@@ -1,0 +1,20 @@
+(function () {
+    function _message(msg) {
+        if (window['parent'] && window.parent['postMessage']) {
+            window.parent.postMessage(msg, '*');
+        }
+    };
+    if (window['addEventListener']) {
+        window.addEventListener('message', function(ev) {
+            var m = ev.data.split(';');
+            var id = m[0];
+            switch (m[1]) {
+                case 'cmd':
+                    __tcfapi(m[2], m[3], function (r, s) {_message(id + ';' + btoa(JSON.stringify(r)) + (s ? ';1' : ''))}, m[4]);
+                    break;
+                default:
+                    break;
+            }
+        }, false);
+    }
+})();

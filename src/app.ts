@@ -3,16 +3,26 @@ import { join } from 'path';
 
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import express from 'express';
+import express, { Request } from 'express';
 import * as dotenv from 'dotenv';
 import { createLogger, format, transports } from 'winston';
 
+interface ProcessEnv { // from NodeJS.ProcessEnv
+  HTTP_PORT: string,
+  HTTP_HOST: string,
+  [key: string]: string | undefined,
+}
+
 const { combine, timestamp, printf } = format;
 const tcfApiJsTemplate = readFileSync(join(__dirname, '..', '/templates/mini-cmp.js.template')).toString();
+const loaderJsTemplate = readFileSync(join(__dirname, '..', '/templates/loader.js.template')).toString();
+const iframeMsgJsTemplate = readFileSync(join(__dirname, '..', '/templates/iframe-msg.js.template')).toString();
+const iframeHtmlTemplate = readFileSync(join(__dirname, '..', '/templates/iframe.html.template')).toString();
 
 dotenv.config();
-const { HTTP_PORT } = process.env;
-const COOKIE_DOMAIN = process.env.HTTP_HOST;
+const { HTTP_PORT } = process.env as ProcessEnv;
+const { HTTP_HOST } = process.env as ProcessEnv;
+const { COOKIE_DOMAIN } = process.env as ProcessEnv;
 const COOKIE_NAME = process.env.COOKIE_NAME || 'xconsent';
 const COOKIE_MAXAGE = parseInt(process.env.COOKIE_MAXAGE || `${1000 * 60 * 60 * 24 * 365 * 2}`, 10); // default 2 years
 const TECH_COOKIE_NAME = 'xt';
@@ -59,6 +69,27 @@ app.use((req, res, next) => {
 });
 
 app.get('/mini-cmp.js', (req, res) => {
+  const tcfApi = loaderJsTemplate
+    .replace(/{{CONSENT_SERVER_HOST}}/g, HTTP_HOST)
+    .replace('{{CONSENT}}', JSON.stringify(true))
+    .replace(/{{URL_SCHEME}}/g, req.protocol);
+
+  res.setHeader('Content-Type', 'application/javascript');
+  res.setHeader('Cache-Control', 'no-store');
+  res.send(tcfApi);
+});
+
+app.get('/iframe.html', (req, res) => {
+  const body = iframeHtmlTemplate
+    .replace(/{{CONSENT_SERVER_HOST}}/g, HTTP_HOST)
+    .replace(/{{URL_SCHEME}}/g, req.protocol);
+
+  res.setHeader('Content-Type', 'application/vnd.hbbtv.xhtml+xml');
+  res.setHeader('Cache-Control', 'no-store');
+  res.send(body);
+});
+
+const fillCmpJsTemplate = (req: Request) => {
   let cookie: ConsentCookie | undefined;
   if (req.cookies[COOKIE_NAME]) {
     try {
@@ -87,9 +118,23 @@ app.get('/mini-cmp.js', (req, res) => {
     .replace('{{CMP_STATUS}}', JSON.stringify(cmpStatus))
     .replace('{{TC_CONSENT}}', JSON.stringify(tcConsent));
 
+  return tcfApi;
+};
+
+app.get('/mc-iframe.js', (req, res) => {
+  const cmpJs = fillCmpJsTemplate(req);
+  const iframeMsgJs = iframeMsgJsTemplate;
+
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
-  res.send(tcfApi);
+  res.send(cmpJs + iframeMsgJs);
+});
+
+app.get('/mc-noiframe.js', (req, res) => {
+  const cmpJs = fillCmpJsTemplate(req);
+  res.setHeader('Content-Type', 'application/javascript');
+  res.setHeader('Cache-Control', 'no-store');
+  res.send(cmpJs);
 });
 
 app.get('/setcookie', (req, res) => {
