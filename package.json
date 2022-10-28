@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "dev": "ts-node -r dotenv/config ./src/app.ts",
-    "watch": "nodemon -e ts,js -w ./src -x npm run dev",
+    "watch": "nodemon -e ts,js,template -w ./src -w ./templates -x npm run dev",
     "build": "rm -rf ./dist/* && tsc",
     "prod": "nodemon ./dist/app.js",
     "start": "npm run build && npm run prod"
@@ -15,10 +15,10 @@
   "dependencies": {
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "nodemon": "^2.0.4",
-    "winston": "^3.3.3",
-    "dotenv": "^8.2.0"
+    "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
@@ -31,7 +31,7 @@
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-airbnb-typescript": "^10.0.0",
     "eslint-plugin-import": "^2.22.0",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.2"
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
   }
 }

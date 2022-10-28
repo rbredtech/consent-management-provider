@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC '-//HbbTV//1.1.1//EN' 'http://www.hbbtv.org/dtd/HbbTV-1.1.1.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+    <meta http-equiv="content-type" content="application/vnd.hbbtv.xhtml+xml; charset=utf-8"></meta>
+    <title></title>
+    <script type='text/javascript'>
+        //<![CDATA[
+        try{
+          var s = document.createElement('script');
+          s.setAttribute('src', '{{URL_SCHEME}}://{{CONSENT_SERVER_HOST}}/mc-iframe.js');
+          s.setAttribute('type', 'text/javascript');
+          document.getElementsByTagName('head')[0].appendChild(s);
+        }catch(e) {}
+        //]]>
+    </script>
+</head>
+<body style="font-family:Arial;font-size: 16px;font-weight: 400;line-height: 24px;">
+  <div id="consentBanner" style="position:absolute;width:100%;bottom:0;left:0;color:#505050;background-color: #ffffff;">
+    <div class="consText" style="margin: 30px 70px 0px;"><span class="consTitle" style="font-size: 20px;line-height: 24px;font-weight: 500;color:#76b642">Datenschutzeinwilligung zu Reichweitenmessung</span><br></br><span>Dieser Sender ist Teil der Arbeitsgemeinschaft Teletest (kurz AGTT), ein Verbund der österreichischen Fernsehsender und TV-Vermarkter zur Reichweitenmessung. Eine Liste der Sender, die sich an einem einheitlichen Messverfahren beteiligen, finden Sie unter agtt.at/hbb-Messung. Um die Programmreichweiten der Sender der AGTT zu erfassen und somit das TV Angebot stetig verbessern zu können, würden wir gerne das Nutzungsverhalten Ihres Geräts verstehen. Ihre Einwilligung vorausgesetzt, wird hierzu ein Cookie auf Ihrem Gerät platziert und folgende Informationen aus Ihrem Gerät ausgelesen: Geräte ID, IP Adresse, Systeminformationen (Browserinformationen), Geräteinformationen (HbbTV Version, TV Hersteller, satelliten- oder kabelbezogener Übertragungsweg, Geräteauflösung). Die Informationen werden von uns und von uns beauftragten Dritten in der EU verarbeitet. Dennoch kann ein Zugriff aus den USA, welche über kein ausreichendes Datenschutzniveau verfügen, nicht gänzlich ausgeschlossen werden. Weitere Informationen finden Sie in unserer Datenschutzerklärung. Diese können Sie jederzeit durch Drücken der blauen Taste aufrufen und in diesem Zuge den Status Ihrer Einwilligung verwalten.</span></div>
+    <div class="consBtns" style="color: #76b642;margin: 20px 70px 30px;">
+      <span id="consBtnAgree" class="consBtn" style="margin-right: 10px;padding: 10px;border: 1px solid #76b642;border-radius: 12px">Zustimmen</span>
+      <span id="consBtnPriv" class="consBtn" style="margin-right: 10px;padding: 10px;border: 1px solid #76b642;border-radius: 12px">Datenschutz</span>
+    </div>
+  </div>
+</body>
+</html>
