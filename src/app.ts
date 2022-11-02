@@ -133,7 +133,7 @@ app.get('/mini-cmp.js', async (req, res) => {
 });
 
 app.get('/iframe.html', (req, res) => {
-  res.setHeader('Content-Type', 'application/vnd.hbbtv.xhtml+xml');
+  res.setHeader('Content-Type', 'text/html');
   res.setHeader('Cache-Control', 'no-store');
   res.render('iframe', {
     CONSENT_SERVER_HOST: HTTP_HOST,
