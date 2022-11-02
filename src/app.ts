@@ -74,7 +74,7 @@ const getCmpJsTemplateValues = (req: Request) => {
   return {
     TC_STRING: 'tcstr',
     CMP_STATUS: cmpStatus,
-    TC_CONSENT: tcConsent,
+    TC_CONSENT: tcConsent ?? 'undefined',
   };
 };
 
