@@ -17,13 +17,13 @@ window.__tcfapi = function(command, version, callback, parameter) {
       break;
     case 'getTCData':
       callback({
-        tcString: {{TC_STRING}},
+        tcString: <%-TC_STRING%>,
         tcfPolicyVersion: 2,
         cmpId: 4040,
         cmpVersion: 1,
         gdprApplies: true,
         eventStatus: 'tcloaded',
-        cmpStatus: {{CMP_STATUS}},
+        cmpStatus: <%-CMP_STATUS%>,
         listenerId: undefined,
         isServiceSpecific: true,
         useNonStandardStacks: false,
@@ -45,7 +45,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
         },
         vendor: {
           consents: {
-            4040: {{TC_CONSENT}}
+            4040: <%-TC_CONSENT%>
           }
         }
       }, true);

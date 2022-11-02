@@ -1,7 +1,7 @@
 {
   "name": "consent-management-provider",
   "version": "1.0.0",
-  "description": "A minimal consent manager aiming for compliance to IAB's Transperancy and Consent Framework (TCF v2) ",
+  "description": "A minimal consent manager aiming for compliance to IAB's Transperancy and Consent Framework (TCF v2)",
   "main": "dist/app.js",
   "scripts": {
     "dev": "ts-node -r dotenv/config ./src/app.ts",
@@ -16,6 +16,7 @@
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "ejs": "^3.1.8",
     "express": "^4.17.1",
     "nodemon": "^2.0.4",
     "winston": "^3.3.3"
@@ -23,6 +24,7 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.7",
+    "@types/ejs": "^3.1.1",
     "@types/express": "^4.17.8",
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
