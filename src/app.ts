@@ -133,8 +133,8 @@ app.get('/mc-iframe.js', async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
 
   const values = getCmpJsTemplateValues(req);
-  const cmpJs = await ejs.renderFile('mini-cmp', values);
-  const iframeMsgJs = await ejs.renderFile('iframe-msg');
+  const cmpJs = await ejs.renderFile(path.join(__dirname, '../templates/mini-cmp.ejs'), values);
+  const iframeMsgJs = await ejs.renderFile(path.join(__dirname, '../templates/iframe-msg.ejs'));
   res.send(cmpJs + iframeMsgJs);
 });
 
