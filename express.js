@@ -1,27 +1,20 @@
 var argv = require("yargs").argv;
 var express = require("express");
 var dotenv = require("dotenv");
-var ejs = require("ejs");
 
 var port = argv.port || 8080;
-
-function setHeaders(res){
-  res.append('Access-Control-Allow-Origin', '*');
-  res.append('Access-Control-Allow-Headers', 'Content-Type');
-  res.append('Content-Type', 'application/vnd.hbbtv.xhtml+xml');
-}
 
 dotenv.config();
 const { BROWSER_REFRESH_URL, HTTP_HOST } = process.env;
 
 var app = express();
-app.use(express.static(".", { setHeaders: setHeaders }));
+app.use(express.static("."));
 app.set("views", ".");
 app.set("view engine", "ejs");
 
 app.get("/*", (_req, res) => {
-  res.render("index", { CONSENT_SERVER_HOST: HTTP_HOST, BROWSER_REFRESH_URL })
-  res.sendFile("index.html", { root: "." });
+  res.setHeader("Content-Type", 'application/vnd.hbbtv.xhtml+xml');
+  res.render("index", { CONSENT_SERVER_HOST: HTTP_HOST, BROWSER_REFRESH_URL });
 });
 
 var server = app.listen(port, function () {
