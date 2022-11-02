@@ -12,7 +12,7 @@ function setHeaders(res){
 }
 
 dotenv.config();
-const { HTTP_HOST } = process.env;
+const { BROWSER_REFRESH_URL, HTTP_HOST } = process.env;
 
 var app = express();
 app.use(express.static(".", { setHeaders: setHeaders }));
@@ -20,12 +20,16 @@ app.set("views", ".");
 app.set("view engine", "ejs");
 
 app.get("/*", (_req, res) => {
-  res.render("index", { CONSENT_SERVER_HOST: HTTP_HOST})
+  res.render("index", { CONSENT_SERVER_HOST: HTTP_HOST, BROWSER_REFRESH_URL })
   res.sendFile("index.html", { root: "." });
 });
 
 var server = app.listen(port, function () {
   if (!argv.silent) {
     console.log(`Consent Management Demo is available on http://localhost:${server.address().port}`);
+  }
+
+  if (process.send) {
+    process.send("online")
   }
 });

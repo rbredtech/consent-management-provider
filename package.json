@@ -9,7 +9,7 @@
     "build": "rm -rf ./dist/* && tsc",
     "prod": "nodemon ./dist/app.js",
     "start": "npm run build && npm run prod",
-    "open": "concurrently \"node express --port 8080\" \"sleepms 2000 && open http://localhost:8080/\""
+    "open": "concurrently \"browser-refresh express --port 8080\" \"sleepms 2000 && open http://localhost:8080/\""
   },
   "author": "Alexander Futász <alexander.futasz@fokus.fraunhofer.de>",
   "license": "UNLICENSED",
@@ -33,6 +33,7 @@
     "@types/winston": "^2.4.4",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
     "@typescript-eslint/parser": "^4.1.0",
+    "browser-refresh": "^1.7.3",
     "concurrently": "^7.5.0",
     "eslint": "^7.8.1",
     "eslint-config-airbnb-base": "^14.2.0",
