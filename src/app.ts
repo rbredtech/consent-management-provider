@@ -38,8 +38,7 @@ const logger = createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: combine(
     timestamp(),
-    // eslint-disable-next-line @typescript-eslint/no-shadow
-    printf(({ level, message, timestamp }) => `${timestamp} ${level}: ${message}`),
+    printf(({ level, message, timestamp: ts }) => `${ts} ${level}: ${message}`),
   ),
   transports: [new transports.Console()],
 });
