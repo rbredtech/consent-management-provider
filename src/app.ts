@@ -20,12 +20,14 @@ const { HTTP_PORT } = process.env as ProcessEnv;
 const { HTTP_HOST } = process.env as ProcessEnv;
 const { COOKIE_DOMAIN } = process.env as ProcessEnv;
 const COOKIE_NAME = process.env.COOKIE_NAME || 'xconsent';
-const COOKIE_MAXAGE = parseInt(
-  process.env.COOKIE_MAXAGE || `${1000 * 60 * 60 * 24 * 365 * 2}`,
-  10,
-); // default 2 years
+const COOKIE_MAXAGE = Number(
+  process.env.COOKIE_MAXAGE,
+) || 1000 * 60 * 60 * 24 * 365 * 2; // default 2 years
+
 const TECH_COOKIE_NAME = 'xt';
-const TECH_COOKIE_MIN = process.env.TECH_COOKIE_MIN || 1000 * 60 * 60 * 24 * 2; // default 2 days
+const TECH_COOKIE_MIN = Number(
+  process.env.TECH_COOKIE_MIN,
+) || 1000 * 60 * 60 * 24 * 2; // default 2 days
 
 interface ConsentCookie {
   consent: boolean;
