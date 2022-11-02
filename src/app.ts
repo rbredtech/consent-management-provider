@@ -5,6 +5,7 @@ import express, { Request } from 'express';
 import ejs from 'ejs';
 import * as dotenv from 'dotenv';
 import { createLogger, format, transports } from 'winston';
+import { minify } from 'uglify-js';
 
 interface ProcessEnv {
   // from NodeJS.ProcessEnv
@@ -108,14 +109,27 @@ app.use((req, res, next) => {
   return next();
 });
 
-app.get('/mini-cmp.js', (req, res) => {
+app.get('/mini-cmp.js', async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
-  res.render('loader', {
-    CONSENT: true,
-    CONSENT_SERVER_HOST: HTTP_HOST,
-    URL_SCHEME: req.protocol,
-  });
+
+  try {
+    const loaderJs = await ejs.renderFile(path.join(__dirname, '../templates/loader.ejs'), {
+      CONSENT: true,
+      CONSENT_SERVER_HOST: HTTP_HOST,
+      URL_SCHEME: req.protocol,
+    });
+
+    const loaderJsMinified = minify(loaderJs);
+    if (loaderJsMinified.error) {
+      res.status(500).send(loaderJsMinified.error);
+      return;
+    }
+
+    res.send(loaderJsMinified.code);
+  } catch (e) {
+    res.status(500).send(e);
+  }
 });
 
 app.get('/iframe.html', (req, res) => {
@@ -131,18 +145,41 @@ app.get('/mc-iframe.js', async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
 
-  const values = getCmpJsTemplateValues(req);
-  const cmpJs = await ejs.renderFile(path.join(__dirname, '../templates/mini-cmp.ejs'), values);
-  const iframeMsgJs = await ejs.renderFile(path.join(__dirname, '../templates/iframe-msg.ejs'));
-  res.send(cmpJs + iframeMsgJs);
+  try {
+    const values = getCmpJsTemplateValues(req);
+    const cmpJs = await ejs.renderFile(path.join(__dirname, '../templates/mini-cmp.ejs'), values);
+    const iframeMsgJs = await ejs.renderFile(path.join(__dirname, '../templates/iframe-msg.ejs'));
+
+    const combined = `${cmpJs}${iframeMsgJs}`;
+    const combinedMinified = minify(combined);
+    if (combinedMinified.error) {
+      res.status(500).send(combinedMinified.error);
+      return;
+    }
+
+    res.send(combinedMinified.code);
+  } catch (e) {
+    res.status(500).send(e);
+  }
 });
 
-app.get('/mc-noiframe.js', (req, res) => {
+app.get('/mc-noiframe.js', async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
 
-  const values = getCmpJsTemplateValues(req);
-  res.render('mini-cmp', values);
+  try {
+    const values = getCmpJsTemplateValues(req);
+    const cmpJs = await ejs.renderFile(path.join(__dirname, '../templates/mini-cmp.ejs'), values);
+
+    const cmpJsMinified = minify(cmpJs);
+    if (cmpJsMinified.error) {
+      res.status(500).send(cmpJsMinified.error);
+      return;
+    }
+    res.send(cmpJsMinified.code);
+  } catch (e) {
+    res.status(500).send(e);
+  }
 });
 
 app.get('/setcookie', (req, res) => {
