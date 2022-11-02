@@ -5,7 +5,7 @@ import express, { Request } from 'express';
 import ejs from 'ejs';
 import * as dotenv from 'dotenv';
 import { createLogger, format, transports } from 'winston';
-import { minify } from 'uglify-js';
+import { minify, MinifyOptions } from 'uglify-js';
 
 interface ProcessEnv {
   // from NodeJS.ProcessEnv
@@ -79,6 +79,12 @@ const getCmpJsTemplateValues = (req: Request) => {
   };
 };
 
+const minifyOptions: MinifyOptions = {
+  compress: {
+    negate_iife: false,
+  },
+};
+
 const app = express();
 
 app.use(cors());
@@ -120,7 +126,7 @@ app.get('/mini-cmp.js', async (req, res) => {
       URL_SCHEME: req.protocol,
     });
 
-    const loaderJsMinified = minify(loaderJs);
+    const loaderJsMinified = minify(loaderJs, minifyOptions);
     if (loaderJsMinified.error) {
       res.status(500).send(loaderJsMinified.error);
       return;
@@ -151,7 +157,7 @@ app.get('/mc-iframe.js', async (req, res) => {
     const iframeMsgJs = await ejs.renderFile(path.join(__dirname, '../templates/iframe-msg.ejs'));
 
     const combined = `${cmpJs}${iframeMsgJs}`;
-    const combinedMinified = minify(combined);
+    const combinedMinified = minify(combined, minifyOptions);
     if (combinedMinified.error) {
       res.status(500).send(combinedMinified.error);
       return;
@@ -171,7 +177,7 @@ app.get('/mc-noiframe.js', async (req, res) => {
     const values = getCmpJsTemplateValues(req);
     const cmpJs = await ejs.renderFile(path.join(__dirname, '../templates/mini-cmp.ejs'), values);
 
-    const cmpJsMinified = minify(cmpJs);
+    const cmpJsMinified = minify(cmpJs, minifyOptions);
     if (cmpJsMinified.error) {
       res.status(500).send(cmpJsMinified.error);
       return;
