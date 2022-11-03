@@ -6,6 +6,12 @@ import ejs from 'ejs';
 import * as dotenv from 'dotenv';
 import { createLogger, format, transports } from 'winston';
 import { minify, MinifyOptions } from 'uglify-js';
+import {
+  configuredCounterMetric,
+  consentCounterMetric,
+  loadedCounterMetric,
+  registry
+} from "./metrics";
 
 interface ProcessEnv {
   // from NodeJS.ProcessEnv
@@ -123,6 +129,8 @@ app.get('/mc.js', async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
 
+  loadedCounterMetric.inc();
+
   try {
     const loaderJs = await ejs.renderFile(path.join(__dirname, '../templates/loader.ejs'), {
       CONSENT: true,
@@ -155,6 +163,8 @@ app.get('/mc-iframe.js', async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
 
+  configuredCounterMetric.labels({"type": "iframe"}).inc();
+
   try {
     const values = getCmpJsTemplateValues(req);
     const cmpJs = await ejs.renderFile(path.join(__dirname, '../templates/mini-cmp.ejs'), values);
@@ -177,6 +187,8 @@ app.get('/mini-cmp.js', async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
 
+  configuredCounterMetric.labels({"type": "3rd-party"}).inc();
+
   try {
     const values = getCmpJsTemplateValues(req);
     const cmpJs = await ejs.renderFile(path.join(__dirname, '../templates/mini-cmp.ejs'), values);
@@ -196,6 +208,9 @@ app.get('/setcookie', (req, res) => {
   const cookie: ConsentCookie = {
     consent: req.query?.consent === '1',
   };
+
+  consentCounterMetric.labels({ "consent": cookie.consent.toString()}).inc()
+
   res.cookie(
     COOKIE_NAME,
     Buffer.from(JSON.stringify(cookie)).toString('base64'),
@@ -209,12 +224,21 @@ app.get('/setcookie', (req, res) => {
 });
 
 app.get('/removecookie', (req, res) => {
+  consentCounterMetric.labels({ "consent": "remove"}).inc()
+
   res.cookie(COOKIE_NAME, '{}', {
     maxAge: 0,
     domain: COOKIE_DOMAIN,
   });
   res.setHeader('Cache-Control', 'no-store');
   res.sendStatus(200);
+});
+
+app.get("/metrics", async (req, res) => {
+  res
+      .status(200)
+      .contentType(registry.contentType)
+      .send(await registry.metrics());
 });
 
 app.listen(HTTP_PORT);
