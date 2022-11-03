@@ -241,5 +241,17 @@ app.get("/metrics", async (req, res) => {
       .send(await registry.metrics());
 });
 
+app.get("/health", async (req, res) => {
+  const healthcheck = {
+    uptime: process.uptime(),
+    message: 'OK',
+    timestamp: Date.now()
+  };
+
+  res
+      .status(200)
+      .send(healthcheck);
+});
+
 app.listen(HTTP_PORT);
 logger.info(`listening on port ${HTTP_PORT}`);
