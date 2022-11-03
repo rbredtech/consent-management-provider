@@ -86,9 +86,6 @@ const minifyOptions: MinifyOptions = {
   },
   mangle: {
     keep_fnames: true,
-    properties: {
-      keep_quoted: true,
-    },
   }
 };
 
@@ -122,7 +119,7 @@ app.use((req, res, next) => {
   return next();
 });
 
-app.get('/mini-cmp.js', async (req, res) => {
+app.get('/mc.js', async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
 
@@ -176,7 +173,7 @@ app.get('/mc-iframe.js', async (req, res) => {
   }
 });
 
-app.get('/mc-noiframe.js', async (req, res) => {
+app.get('/mini-cmp.js', async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
 
