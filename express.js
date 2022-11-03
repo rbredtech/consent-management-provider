@@ -14,23 +14,29 @@ app.set("views", ".");
 app.set("view engine", "ejs");
 
 app.get("/*", (_req, res) => {
-  res.setHeader("Content-Type", 'application/vnd.hbbtv.xhtml+xml');
+  res.setHeader("Content-Type", "application/vnd.hbbtv.xhtml+xml");
   res.render("index", { CONSENT_SERVER_HOST: HTTP_HOST, BROWSER_REFRESH_URL });
 });
 
 var server = app.listen(port, function () {
   if (!argv.silent) {
-    console.log(`Consent Management Demo is available on http://localhost:${server.address().port}`);
+    console.log(
+      `Consent Management Demo is available on http://localhost:${
+        server.address().port
+      }`
+    );
   }
 
   setTimeout(function () {
     if (process.send) {
-      process.send({ event: "online", url: `http://localhost:${server.address().port}` })
+      process.send({
+        event: "online",
+        url: `http://localhost:${server.address().port}`,
+      });
     }
-  }, 2000);
+  }, 1000);
 });
 
-browserRefreshClient.enableSpecialReload('*.ejs')
-  .onFileModified(function() {
-    browserRefreshClient.refreshPage();
-  });
+browserRefreshClient.enableSpecialReload("*.ejs").onFileModified(function () {
+  browserRefreshClient.refreshPage();
+});

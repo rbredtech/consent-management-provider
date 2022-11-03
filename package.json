@@ -5,7 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "dev": "concurrently \"ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
-    "watch": "nodemon -e ts,js,template -w ./src -w ./templates -x npm run dev",
+    "watch": "nodemon -e ts -w ./src -x npm run dev",
     "build": "rm -rf ./dist/* && tsc",
     "prod": "nodemon ./dist/app.js",
     "start": "npm run build && npm run prod",
