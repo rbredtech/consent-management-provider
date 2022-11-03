@@ -1,6 +1,7 @@
 var argv = require("yargs").argv;
 var express = require("express");
 var dotenv = require("dotenv");
+var browserRefreshClient = require("browser-refresh-client");
 
 var port = argv.port || 8080;
 
@@ -28,3 +29,8 @@ var server = app.listen(port, function () {
     }
   }, 2000);
 });
+
+browserRefreshClient.enableSpecialReload('*.ejs')
+  .onFileModified(function() {
+    browserRefreshClient.refreshPage();
+  });
