@@ -35,6 +35,11 @@ jobs:
           images: ghcr.io/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ github.ref_name }}-${{ github.run_id }}
+
+      - name: Build app
+        id: build
+        run: npm build
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
