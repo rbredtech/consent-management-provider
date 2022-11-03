@@ -82,7 +82,14 @@ const getCmpJsTemplateValues = (req: Request) => {
 const minifyOptions: MinifyOptions = {
   compress: {
     negate_iife: false,
+    keep_fargs: true,
   },
+  mangle: {
+    keep_fnames: true,
+    properties: {
+      keep_quoted: true,
+    },
+  }
 };
 
 const app = express();
