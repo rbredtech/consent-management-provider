@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 
 COPY --chown=node:node ./dist/ ./dist
 COPY --chown=node:node ./package.json .
-COPY --chown=node:node ./package-lock .json
+COPY --chown=node:node ./package-lock.json .
 
 ENV NODE_ENV=production
 RUN npm install
