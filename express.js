@@ -22,7 +22,9 @@ var server = app.listen(port, function () {
     console.log(`Consent Management Demo is available on http://localhost:${server.address().port}`);
   }
 
-  if (process.send) {
-    process.send("online")
-  }
+  setTimeout(function () {
+    if (process.send) {
+      process.send({ event: "online", url: `http://localhost:${server.address().port}` })
+    }
+  }, 2000);
 });
