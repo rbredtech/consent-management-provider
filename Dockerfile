@@ -5,6 +5,7 @@ RUN apk add dumb-init
 WORKDIR /usr/src/app
 
 COPY --chown=node:node ./dist/ ./dist
+COPY --chown=node:node ./templates/ ./templates
 COPY --chown=node:node ./package.json .
 COPY --chown=node:node ./package-lock.json .
 
