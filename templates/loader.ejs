@@ -74,7 +74,7 @@
     }
     var a = document.createElement('script');
     a.setAttribute('type', 'text/javascript');
-    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/mini-cmp.js?' + getQuery(did));
+    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager.js?' + getQuery(did));
     a.addEventListener('load', callQueue);
     document.getElementsByTagName('head')[0].appendChild(a);
     if (!has_consent && window.localStorage && localStorage.removeItem) localStorage.removeItem('did');

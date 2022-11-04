@@ -68,7 +68,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
       break;
     case 'setConsent':
       var i = document.createElement('img');
-      i.src = 'setcookie?consent=' + (parameter == "true" ? 1 : 0);
+      i.src = 'set-consent?consent=' + (parameter == "true" ? 1 : 0);
       callback();
       break;
     }

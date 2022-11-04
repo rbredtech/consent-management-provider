@@ -32,19 +32,19 @@ IAB unregistered vendor ID of `4040`.
 ## Usage
 
 ### API Endpoints
-* GET `/mini-cmp.js` - Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
+* GET `/manager.js` - Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
 * GET `/setcookie?consent=1` - Issue a request to this URL if a user has given consent
 * GET `/setcookie?consent=0` - A request to this URL revokes consent.
 
 ### Checking of consent status
-The `{HOST_URL}/mini-cmp.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
+The `{HOST_URL}/manager.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
 
-Add the `mini-cmp.js` bundle to your applicaiton:
+Add the `manager.js` bundle to your applicaiton:
 ```html
-<script src="{HOST_URL}/mini-cmp.js"></script>
+<script src="{HOST_URL}/manager.js"></script>
 ```
 
-Having added the `mini-cmp.js` javascript file to the applicaiton, you can check for the user's consent status through the API endpoints provided by the `__tcfapi` object:
+Having added the `manager.js` javascript file to the applicaiton, you can check for the user's consent status through the API endpoints provided by the `__tcfapi` object:
 ```js
 const CMP_VENDOR_ID = 4040; // custom Red Tech vendor ID
 __tcfapi('ping', 2, (pingReturn) => {

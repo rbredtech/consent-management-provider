@@ -125,7 +125,7 @@ app.use((req, res, next) => {
   return next();
 });
 
-app.get('/mc.js', async (req, res) => {
+app.get('/loader.js', async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
 
@@ -159,7 +159,7 @@ app.get('/iframe.html', (req, res) => {
   });
 });
 
-app.get('/mc-iframe.js', async (req, res) => {
+app.get('/manager-iframe.js', async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
 
@@ -183,7 +183,7 @@ app.get('/mc-iframe.js', async (req, res) => {
   }
 });
 
-app.get('/mini-cmp.js', async (req, res) => {
+app.get(['/manager.js', '/mini-cmp.js'], async (req, res) => {
   res.setHeader('Content-Type', 'application/javascript');
   res.setHeader('Cache-Control', 'no-store');
 
@@ -204,7 +204,7 @@ app.get('/mini-cmp.js', async (req, res) => {
   }
 });
 
-app.get('/setcookie', (req, res) => {
+app.get('/set-consent', (req, res) => {
   const cookie: ConsentCookie = {
     consent: req.query?.consent === '1',
   };
@@ -223,7 +223,7 @@ app.get('/setcookie', (req, res) => {
   res.sendStatus(200);
 });
 
-app.get('/removecookie', (req, res) => {
+app.get('/remove-consent', (req, res) => {
   consentCounterMetric.labels({ "consent": "remove"}).inc()
 
   res.cookie(COOKIE_NAME, '{}', {

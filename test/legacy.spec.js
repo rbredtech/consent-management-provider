@@ -3,7 +3,7 @@ let puppeteer = require("puppeteer");
 
 let browser, page;
 
-const scriptUrl = `http://127.0.0.1:3000/loader.js`;
+const scriptUrl = `http://127.0.0.1:3000/mini-cmp.js`;
 
 beforeAll(async () => {
     browser = await puppeteer.launch({dumpio: true, args: ['--disable-gpu']});
@@ -21,7 +21,7 @@ describe("Consent Management", () => {
     let isLoaded;
 
     beforeAll( async () => {
-        isLoaded = page.waitForResponse(response => response.url().includes('manager-iframe.js'));
+        isLoaded = page.waitForResponse(response => response.url().includes('mini-cmp.js'));
         await page.setContent(`<script type='text/javascript' src="${scriptUrl}"></script>`);
     });
 
