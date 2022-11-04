@@ -56,11 +56,7 @@ jobs:
         id: install
         run: npm install
 
-      - name: Read version information
-        id: version
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./version.txt
+      ##TODO add test step here
 
       - name: Build app
         id: build
