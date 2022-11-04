@@ -9,6 +9,7 @@ on:
 
 jobs:
   check-version:
+    name: Check version
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -18,6 +19,12 @@ jobs:
       version: ${{ steps.version.outputs.content }}
 
     steps:
+      - name: Checkout repository
+        id: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Read version information
         id: version
         uses: juliangruber/read-file-action@v1
@@ -25,6 +32,7 @@ jobs:
           path: ./version.txt
 
       - name: Check if version does not yet exist
+        id: compare
         uses: GuillaumeFalourd/assert-command-line-output@v2
         with:
           command_line: git tag -l ${{ steps.version.outputs.content }}
@@ -32,6 +40,7 @@ jobs:
           expected_result: FAILED
 
   build-and-push-image:
+    name: Build and push image
     needs: check-version
     runs-on: ubuntu-latest
     permissions:
