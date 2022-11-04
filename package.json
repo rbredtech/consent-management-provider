@@ -4,12 +4,12 @@
   "description": "A minimal consent manager aiming for compliance to IAB's Transperancy and Consent Framework (TCF v2) ",
   "main": "dist/app.js",
   "scripts": {
+    "open": "browser-refresh express --port 8080",
     "dev": "concurrently \"ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
     "watch": "nodemon -e ts -w ./src -x npm run dev",
+    "start": "npm run prod",
     "build": "rm -rf ./dist/* && tsc",
-    "prod": "nodemon ./dist/app.js",
-    "start": "npm run build && npm run prod",
-    "open": "browser-refresh express --port 8080",
+    "prod": "node ./dist/app.js",
     "test": "jest"
   },
   "author": "Alexander Futász <alexander.futasz@fokus.fraunhofer.de>",
