@@ -4,8 +4,8 @@ import cors from "cors";
 import express, { Request } from "express";
 import ejs from "ejs";
 import * as dotenv from "dotenv";
-import { minify, MinifyOptions } from "uglify-js";
 
+import { minify } from "./util/minify";
 import { logger } from "./util/logger";
 import {
   configuredCounterMetric,
@@ -73,16 +73,6 @@ const getCmpJsTemplateValues = (req: Request) => {
   };
 };
 
-const minifyOptions: MinifyOptions = {
-  compress: {
-    negate_iife: false,
-    keep_fargs: true,
-  },
-  mangle: {
-    keep_fnames: true,
-  },
-};
-
 const app = express();
 
 app.use(cors());
@@ -129,7 +119,7 @@ app.get("/loader.js", async (req, res) => {
       }
     );
 
-    const loaderJsMinified = minify(loaderJs, minifyOptions);
+    const loaderJsMinified = minify(loaderJs);
     if (loaderJsMinified.error) {
       res.status(500).send(loaderJsMinified.error);
       return;
@@ -166,8 +156,7 @@ app.get("/manager-iframe.js", async (req, res) => {
       path.join(__dirname, "../templates/iframe-msg.ejs")
     );
 
-    const combined = `${cmpJs}${iframeMsgJs}`;
-    const combinedMinified = minify(combined, minifyOptions);
+    const combinedMinified = minify([cmpJs, iframeMsgJs]);
     if (combinedMinified.error) {
       res.status(500).send(combinedMinified.error);
       return;
@@ -192,7 +181,7 @@ app.get(["/manager.js", "/mini-cmp.js"], async (req, res) => {
       values
     );
 
-    const cmpJsMinified = minify(cmpJs, minifyOptions);
+    const cmpJsMinified = minify(cmpJs);
     if (cmpJsMinified.error) {
       res.status(500).send(cmpJsMinified.error);
       return;
