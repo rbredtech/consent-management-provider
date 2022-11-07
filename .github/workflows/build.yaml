@@ -14,6 +14,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+    timeout-minutes: 30
 
     outputs:
       version: ${{ steps.version.outputs.content }}
@@ -46,6 +47,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
