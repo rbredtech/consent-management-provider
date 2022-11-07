@@ -66,6 +66,7 @@ jobs:
         env:
           HTTP_PORT: 3000
           HTTP_HOST: localhost:3000
+          COOKIE_DOMAIN: localhost
 
       - name: Log in to the Container registry
         id: login
