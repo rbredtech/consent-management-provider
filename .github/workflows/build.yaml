@@ -82,7 +82,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=${{ github.ref == 'refs/heads/master' ?? needs.check-version.outputs.version || github.run_number }}
+            type=raw,value=${{ github.ref == 'refs/heads/master' && needs.check-version.outputs.version || github.run_number }}
 
       - name: Build and push Docker image
         id: build_push
