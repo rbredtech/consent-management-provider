@@ -3,8 +3,16 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Request } from "express";
 import ejs from "ejs";
-import * as dotenv from "dotenv";
 
+import {
+  HTTP_HOST,
+  HTTP_PORT,
+  COOKIE_DOMAIN,
+  COOKIE_NAME,
+  COOKIE_MAXAGE,
+  TECH_COOKIE_MIN,
+  TECH_COOKIE_NAME,
+} from "./config";
 import { minify } from "./util/minify";
 import { logger } from "./util/logger";
 import {
@@ -13,25 +21,6 @@ import {
   loadedCounterMetric,
   registry,
 } from "./util/metrics";
-
-interface ProcessEnv {
-  // from NodeJS.ProcessEnv
-  HTTP_PORT: string;
-  HTTP_HOST: string;
-  [key: string]: string | undefined;
-}
-
-dotenv.config();
-const { HTTP_PORT } = process.env as ProcessEnv;
-const { HTTP_HOST } = process.env as ProcessEnv;
-const { COOKIE_DOMAIN } = process.env as ProcessEnv;
-const COOKIE_NAME = process.env.COOKIE_NAME || "xconsent";
-const COOKIE_MAXAGE =
-  Number(process.env.COOKIE_MAXAGE) || 1000 * 60 * 60 * 24 * 365 * 2; // default 2 years
-
-const TECH_COOKIE_NAME = "xt";
-const TECH_COOKIE_MIN =
-  Number(process.env.TECH_COOKIE_MIN) || 1000 * 60 * 60 * 24 * 2; // default 2 days
 
 interface ConsentCookie {
   consent: boolean;
