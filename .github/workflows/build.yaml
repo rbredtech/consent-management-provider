@@ -63,6 +63,9 @@ jobs:
       - name: Test app
         id: test
         run: npm run ci
+        env:
+          HTTP_PORT: 3000
+          HTTP_HOST: localhost:3000
 
       - name: Log in to the Container registry
         id: login
