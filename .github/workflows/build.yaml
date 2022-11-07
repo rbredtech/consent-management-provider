@@ -56,12 +56,15 @@ jobs:
         id: install
         run: npm install
 
-      ##TODO add test step here
-
       - name: Build app
         id: build
-        if: github.ref == 'refs/heads/master'
         run: npm run build
+
+      - name: Test
+        id: test
+        run: |
+          npm run prod
+          npm test
 
       - name: Log in to the Container registry
         id: login
