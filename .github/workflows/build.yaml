@@ -60,11 +60,9 @@ jobs:
         id: build
         run: npm run build
 
-      - name: Test
+      - name: Test app
         id: test
-        run: |
-          npm run prod
-          npm test
+        run: npm run ci
 
       - name: Log in to the Container registry
         id: login
