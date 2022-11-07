@@ -21,11 +21,11 @@ import {
   loadedCounterMetric,
   registry,
 } from "./util/metrics";
+import { TechCookie, techCookieMiddleware } from "./middleware/techCookie";
 
 interface ConsentCookie {
   consent: boolean;
 }
-type TechCookie = number | undefined;
 
 const getCmpJsTemplateValues = (req: Request) => {
   let cookie: ConsentCookie | undefined;
@@ -74,23 +74,7 @@ app.use((req, _, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
-
-  if (techCookie && techCookie < Date.now()) {
-    logger.debug(
-      `got valid tech cookie: ${techCookie < Date.now()}, ${techCookie}`
-    );
-    return next();
-  }
-
-  logger.debug("setting tech cookie");
-  res.cookie(TECH_COOKIE_NAME, Date.now(), {
-    maxAge: COOKIE_MAXAGE,
-    domain: COOKIE_DOMAIN,
-  });
-  return next();
-});
+app.use(techCookieMiddleware);
 
 app.get("/loader.js", async (req, res) => {
   res.setHeader("Content-Type", "application/javascript");
