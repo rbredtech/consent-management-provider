@@ -1,8 +1,4 @@
-import * as dotenv from "dotenv";
-
 import { EnvVar } from "../util/env";
-
-dotenv.config();
 
 export const HTTP_PORT = new EnvVar("HTTP_PORT").getStringOrFail();
 export const HTTP_HOST = new EnvVar("HTTP_HOST").getStringOrFail();
