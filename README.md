@@ -47,22 +47,22 @@ This image is then pushed to <https://github.com/rbredtech/consent-management-pr
 
 ### API Endpoints
 
-- GET `/manager.js` - Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
+- GET `/loader.js` - Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
 - GET `/set-consent?consent=1` - Issue a request to this URL if a user has given consent
 - GET `/set-consent?consent=0` - A request to this URL revokes consent.
 - GET `/remove-consent` - Any previously saved consent decision is deleted
 
 ### Checking of consent status
 
-The `{HOST_URL}/manager.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
+The `{HOST_URL}/loader.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
 
-Add the `manager.js` bundle to your application:
+Add the `loader.js` bundle to your application:
 
 ```html
-<script src="{HOST_URL}/manager.js"></script>
+<script src="{HOST_URL}/loader.js"></script>
 ```
 
-Having added the `manager.js` javascript file to the application, you can check for the user's consent status through the API endpoints provided by the `__tcfapi` object:
+Having added the `loader.js` javascript file to the application, you can check for the user's consent status through the API endpoints provided by the `__tcfapi` object:
 
 ```js
 const CMP_VENDOR_ID = 4040; // custom Red Tech vendor ID
