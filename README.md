@@ -48,7 +48,8 @@ This image is then pushed to <https://github.com/rbredtech/consent-management-pr
 ### API Endpoints
 
 - GET `/loader.js` - Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
-- GET `/set-consent?consent=1` - Issue a request to this URL if a user has given consent
+- GET `/loader_with_banner.js` - Alternative to Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status including support for consent banner display, see below for `__tcfapi('showBanner', ...)`.
+- GET `/set-consent?consent=1` - Issue a request to this URL if a user has given consent, alternatively use the API, see below for `__tcfapi('setConset', ...)`.
 - GET `/set-consent?consent=0` - A request to this URL revokes consent.
 - GET `/remove-consent` - Any previously saved consent decision is deleted
 
@@ -81,6 +82,19 @@ __tcfapi('ping', 2, (pingReturn) => {
       }
   }, [CMP_VENDOR_ID]);
 });
+```
+
+### Displaying consent banner
+
+By using the alternative script `/loader_with_banner.js` an additional API is available to invoke the display of a consent banner.
+
+This functionality needs access to the key input handler to capture key events from the remote control. It is recommended that the
+existing key handler of the HbbTV application is unregistered and only registered again once the consent banner is no longer displayed.
+
+```js
+__tcfapi('showBanner', 2, () => {
+    // user has closed the banner by remote control or the banner timeout was reached
+  });
 ```
 
 ### Setting of consent status

@@ -1,7 +1,9 @@
+import { readFileSync } from "fs";
 import path from "path";
+
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, { Request } from "express";
+import express, { Request, Response } from "express";
 import ejs from "ejs";
 
 import {
@@ -12,6 +14,7 @@ import {
   COOKIE_MAXAGE,
   TECH_COOKIE_MIN,
   TECH_COOKIE_NAME,
+  BANNER_TIMEOUT,
 } from "./config";
 import { minify } from "./util/minify";
 import { logger } from "./util/logger";
@@ -23,9 +26,19 @@ import {
 } from "./util/metrics";
 import { TechCookie, techCookieMiddleware } from "./middleware/techCookie";
 
+declare global {
+	namespace Express {
+		interface Request {
+      withBanner: boolean,
+    }
+  }
+}
+
 interface ConsentCookie {
   consent: boolean;
 }
+
+const BANNER_SCRIPT = readFileSync(path.join(__dirname, "../templates/banner.ejs")).toString();
 
 const getCmpJsTemplateValues = (req: Request) => {
   let cookie: ConsentCookie | undefined;
@@ -55,10 +68,15 @@ const getCmpJsTemplateValues = (req: Request) => {
     cmpStatus = "disabled";
   }
 
+  const BANNER_CREATION = req.withBanner ? BANNER_SCRIPT : "";
+
   return {
     TC_STRING: "tcstr",
     CMP_STATUS: cmpStatus,
     TC_CONSENT: tcConsent ?? "undefined",
+    CONSENT_SERVER_HOST: HTTP_HOST,
+    URL_SCHEME: req.protocol,
+    BANNER_CREATION,
   };
 };
 
@@ -76,7 +94,7 @@ app.use((req, _, next) => {
 
 app.use(techCookieMiddleware);
 
-app.get("/loader.js", async (req, res) => {
+const loaderHandler = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
@@ -89,6 +107,7 @@ app.get("/loader.js", async (req, res) => {
         CONSENT: true,
         CONSENT_SERVER_HOST: HTTP_HOST,
         URL_SCHEME: req.protocol,
+        BANNER: req.withBanner ? "_with_banner" : "",
       }
     );
 
@@ -102,18 +121,32 @@ app.get("/loader.js", async (req, res) => {
   } catch (e) {
     res.status(500).send(e);
   }
-});
+};
 
-app.get("/iframe.html", (req, res) => {
+app.get("/loader.js", loaderHandler);
+app.get("/loader_with_banner.js", async (req, _, next) => {
+  req.withBanner = true;
+  next();
+}, loaderHandler);
+
+
+const iframeHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
   res.setHeader("Cache-Control", "no-store");
   res.render("iframe", {
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
+    BANNER: req.withBanner ? "_with_banner" : "",
   });
-});
+};
 
-app.get("/manager-iframe.js", async (req, res) => {
+app.get("/iframe.html", iframeHandler);
+app.get("/iframe_with_banner.html", (req, _, next) => {
+  req.withBanner = true;
+  next();
+}, iframeHandler);
+
+const managerIframeHandler = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
@@ -123,10 +156,11 @@ app.get("/manager-iframe.js", async (req, res) => {
     const values = getCmpJsTemplateValues(req);
     const cmpJs = await ejs.renderFile(
       path.join(__dirname, "../templates/mini-cmp.ejs"),
-      values
+      values,
     );
     const iframeMsgJs = await ejs.renderFile(
-      path.join(__dirname, "../templates/iframe-msg.ejs")
+      path.join(__dirname, "../templates/iframe-msg.ejs"),
+      { BANNER_TIMEOUT } as ejs.Data,
     );
 
     const combinedMinified = minify([cmpJs, iframeMsgJs]);
@@ -139,9 +173,16 @@ app.get("/manager-iframe.js", async (req, res) => {
   } catch (e) {
     res.status(500).send(e);
   }
-});
+};
 
-app.get(["/manager.js", "/mini-cmp.js"], async (req, res) => {
+app.get("/manager-iframe.js", managerIframeHandler);
+app.get("/manager-iframe_with_banner.js", async (req, _, next) => {
+  req.withBanner = true;
+  next();
+}, managerIframeHandler);
+
+
+const managerHandler = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
@@ -163,7 +204,13 @@ app.get(["/manager.js", "/mini-cmp.js"], async (req, res) => {
   } catch (e) {
     res.status(500).send(e);
   }
-});
+};
+
+app.get(["/manager.js", "/mini-cmp.js"], managerHandler);
+app.get("/manager_with_banner.js", (req, _, next) => {
+  req.withBanner = true;
+  next();
+}, managerHandler);
 
 app.get("/set-consent", (req, res) => {
   const cookie: ConsentCookie = {

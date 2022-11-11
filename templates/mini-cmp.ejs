@@ -52,7 +52,6 @@ window.__tcfapi = function(command, version, callback, parameter) {
       break;
     case 'addEventListener':
       _listeners[_listenerCnt] = callback;
-      return _listenerCnt++;
       break;
     case 'removeEventListener':
       var listener = _listeners[parameter];
@@ -68,8 +67,10 @@ window.__tcfapi = function(command, version, callback, parameter) {
       break;
     case 'setConsent':
       var i = document.createElement('img');
-      i.src = 'set-consent?consent=' + (parameter == "true" ? 1 : 0);
+      i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0);
       callback();
       break;
     }
 };
+
+<%-BANNER_CREATION%>
