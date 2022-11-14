@@ -17,28 +17,32 @@ jobs:
     timeout-minutes: 30
 
     outputs:
-      version: ${{ steps.version.outputs.content }}
+      version: ${{ steps.package-version.outputs.current-version }}
 
     steps:
-      - name: Checkout repository
-        id: checkout
-        uses: actions/checkout@v3
+      - name: Log in to the Container registry
+        id: login
+        uses: docker/login-action@v2
         with:
-          fetch-depth: 0
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Read version information
-        id: version
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./version.txt
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
 
       - name: Check if version does not yet exist
         id: compare
-        uses: GuillaumeFalourd/assert-command-line-output@v2
-        with:
-          command_line: git tag -l ${{ steps.version.outputs.content }}
-          assert_file_path: ./version.txt
-          expected_result: FAILED
+        run: |
+          docker pull ghcr.io/${{github.repository_owner}}/${{ github.repository }}:${{format('v{0}', steps.package-version.outputs.current-version)}} >/dev/null 2>&1
+          exit_code=$?
+          if [ $exit_code = 0 ]; then
+              echo Version already exists
+              exit 1
+          else
+              exit 0
+          fi
 
   build-and-push-image:
     name: Build and push image
