@@ -43,7 +43,8 @@ jobs:
       - name: Check if version does not yet exist
         id: check
         run: |
-          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ steps.version.outputs.content }} >/dev/null 2>&1; then
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ format('v{0}', steps.version.outputs.content) }} >/dev/null 2>&1; then
+            echo "Version already exists"
             exit 1
           fi
 
