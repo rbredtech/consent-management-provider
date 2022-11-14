@@ -11,7 +11,7 @@
   function callQueue() {
     for (var i=0; i<_q.length; i++) {
       var f=_q[i];
-      window.__tcfapi.apply(null, f.slice(1));
+      window.__tcfapi.apply(null, f.slice());
     }
     delete _q;
   }
