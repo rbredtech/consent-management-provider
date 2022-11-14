@@ -1,0 +1,30 @@
+const inner = `<div id="agttcnstbnnr"
+  style="position:absolute; left:20px; right:20px; bottom:20px; font-family:Arial; font-size:16px; font-weight:400; line-height:24px; color:#505050; background-color:#ffffff; border-radius:8px; border: 4px solid #76b642">
+  <div style="margin: 30px 70px 0;"><span
+      style="font-size: 24px;line-height: 24px;font-weight: 500;color:#76b642">Datenschutzeinwilligung zu
+      Reichweitenmessung</span><br></br><span>Dieser Sender ist Teil der Arbeitsgemeinschaft Teletest (kurz AGTT), ein
+      Verbund der österreichischen Fernsehsender und TV-Vermarkter zur Reichweitenmessung. Eine Liste der Sender, die
+      sich an einem einheitlichen Messverfahren beteiligen, finden Sie unter agtt.at/hbb-Messung. Um die
+      Programmreichweiten der Sender der AGTT zu erfassen und somit das TV Angebot stetig verbessern zu können, würden
+      wir gerne das Nutzungsverhalten Ihres Geräts verstehen. Ihre Einwilligung vorausgesetzt, wird hierzu ein Cookie
+      auf Ihrem Gerät platziert und folgende Informationen aus Ihrem Gerät ausgelesen: Geräte ID, IP Adresse,
+      Systeminformationen (Browserinformationen), Geräteinformationen (HbbTV Version, TV Hersteller, satelliten- oder
+      kabelbezogener Übertragungsweg, Geräteauflösung). Die Informationen werden von uns und von uns beauftragten
+      Dritten in der EU verarbeitet. Dennoch kann ein Zugriff aus den USA, welche über kein ausreichendes
+      Datenschutzniveau verfügen, nicht gänzlich ausgeschlossen werden. Weitere Informationen finden Sie in unserer
+      Datenschutzerklärung.</span></div>
+  <div style="color: #76b642; margin: 30px 70px 40px;">
+    <span id="consBtnAgree" class="agtt-sel"
+      style="margin-right: 10px; padding: 10px; border: 3px solid #76b642; border-radius: 8px">Zustimmen</span>
+    <span id="consBtnDismiss"
+      style="margin-right: 10px;padding: 10px;border: 1px solid #76b642; border-radius: 8px">Nicht jetzt</span>
+  </div>
+</div>`;
+
+function addBanner() {
+document.body.insertAdjacentHTML("beforeend", inner);
+}
+
+function hideBanner() {
+document.getElementById("agttcnstbnnr").style.display = "none";
+}

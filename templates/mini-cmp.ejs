@@ -17,13 +17,13 @@ window.__tcfapi = function(command, version, callback, parameter) {
       break;
     case 'getTCData':
       callback({
-        tcString: {{TC_STRING}},
+        tcString: '<%-TC_STRING%>',
         tcfPolicyVersion: 2,
         cmpId: 4040,
         cmpVersion: 1,
         gdprApplies: true,
         eventStatus: 'tcloaded',
-        cmpStatus: {{CMP_STATUS}},
+        cmpStatus: '<%-CMP_STATUS%>',
         listenerId: undefined,
         isServiceSpecific: true,
         useNonStandardStacks: false,
@@ -45,14 +45,13 @@ window.__tcfapi = function(command, version, callback, parameter) {
         },
         vendor: {
           consents: {
-            4040: {{TC_CONSENT}}
+            4040: <%-TC_CONSENT%>
           }
         }
       }, true);
       break;
     case 'addEventListener':
       _listeners[_listenerCnt] = callback;
-      return _listenerCnt++;
       break;
     case 'removeEventListener':
       var listener = _listeners[parameter];
@@ -65,6 +64,11 @@ window.__tcfapi = function(command, version, callback, parameter) {
       setTimeout(function () {
         callback(true);
       }, 1);
+      break;
+    case 'setConsent':
+      var i = document.createElement('img');
+      i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0);
+      callback();
       break;
     }
 };

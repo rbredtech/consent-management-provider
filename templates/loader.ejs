@@ -1,0 +1,115 @@
+(function(){try {
+  var _q = [];
+  window.__tcfapi = function(command, version, callback, parameter) {
+    _q[_q.length] = Array.prototype.slice.call(arguments);
+  };
+
+  var has_consent=<%-CONSENT%>;
+  function getQuery(did) {
+    return (did ? '&did=' + did : '');
+  }
+  function callQueue() {
+    for (var i=0; i<_q.length; i++) {
+      var f=_q[i];
+      window.__tcfapi.apply(null, f.slice(1));
+    }
+    delete _q;
+  }
+  var cbcnt = 0;
+  var cbmap = {};
+  var isLog = 0;
+  var _iframe;
+  function message(m, cb) {
+    if (!_iframe.contentWindow) {
+      return;
+    }
+    cbmap[++cbcnt] = [cb];
+    if (m === 'log') isLog = cbcnt;
+    _iframe.contentWindow.postMessage(cbcnt + ';' + m, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
+  }
+  function kbd(cb) {
+    var KeyEvent = window['KeyEvent'] || {};
+    KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
+    KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window['VK_RIGHT']  || 39;
+    KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER']  || 13;
+    var objects = document.getElementsByTagName('object');
+    var mgr;
+    for (var i=0; i < objects.length; i++) {
+      if (objects[i].type === 'application/oipfApplicationManager') {
+        mgr = objects[i];
+        break;
+      }
+    }
+    if (!mgr) {
+      console.log('error: oipfApplicationManager not found, cannot handle remote control input keys');
+      return;
+    }
+    var app = mgr && mgr.getOwnerApplication && mgr.getOwnerApplication(document);
+    var keyset = app && app.privateData.keyset;
+    keyset && keyset.setValue(keyset.NAVIGATION);
+    document.onkeydown = function(event) {
+      if (event.keyCode === KeyEvent.VK_ENTER) message('vkenter', cb);
+      if (event.keyCode === KeyEvent.VK_LEFT) message('vkleft');
+      if (event.keyCode === KeyEvent.VK_RIGHT) message('vkright');
+    }
+  }
+  function loadiframe() {
+    if (document.getElementsByTagName('body').length < 1) {
+      setTimeout(loadiframe, 100);
+      return;
+    }
+
+    var iframe = document.createElement('iframe');
+    _iframe = iframe; // global to this script context
+    iframe.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/iframe<%-BANNER%>.html' + getQuery());
+    iframe.setAttribute('style', 'position:absolute; border:0; outline:0; top:0; left:0; width:100%; height:100%; z-index: 5599');
+    iframe.setAttribute('frameborder', '0');
+    document.getElementsByTagName('body')[0].appendChild(iframe);
+
+    iframe.addEventListener('load', function() {
+      window.__tcfapi = function(cmd, ver, cb, param) {
+        if (cmd === 'showBanner') {
+          message('showbanner');
+          kbd(cb);
+          return;
+        }
+        message('cmd;' + cmd + ';' + ver + ';' + param, function(r, s) {cb && cb(r, s)});
+      };
+      if (window.addEventListener) {
+        window.addEventListener('message', function(ev) {
+          try {
+            if (ev.origin === '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>' && ev.data) {
+              var m = ev.data.split(';');
+              var pos = m[0] === 'err' ? 1 : 0;
+              var id = m[pos];
+              var cb = cbmap[id][pos];
+              if (isLog != id) delete cbmap[id];
+              var r = JSON.parse(atob(m[++pos]));
+              var s = m[++pos] ? true : undefined;
+              if (cb) cb(r, s);
+            }
+          } catch (e) {}
+        }, false);
+      }
+      callQueue();
+    });
+  }
+
+  if (window.navigator && navigator.userAgent && navigator.userAgent.indexOf &&
+    navigator.userAgent.indexOf('Presto') === -1) {
+    setTimeout(loadiframe, 1);
+  } else {
+    var did;
+    if (has_consent && window.localStorage && localStorage.getItem) {
+      var _did = localStorage.getItem('did');
+      if (_did) did = _did;
+    }
+    var a = document.createElement('script');
+    a.setAttribute('type', 'text/javascript');
+    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager<%-BANNER%>.js?' + getQuery(did));
+    a.addEventListener('load', callQueue);
+    document.getElementsByTagName('head')[0].appendChild(a);
+    if (!has_consent && window.localStorage && localStorage.removeItem) localStorage.removeItem('did');
+  }
+} catch(e) {}}
+)();
