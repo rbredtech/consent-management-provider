@@ -28,19 +28,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: get-npm-version
+      - name: Get package version
         id: package-version
-        uses: martinbeentjes/npm-get-version-action@main
+        uses: koj-co/package-version-action@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check if version does not yet exist
         id: compare
+        shell: bash
         run: |
-          docker pull ghcr.io/${{ github.repository }}:${{format('v{0}', steps.package-version.outputs.current-version)}} >/dev/null 2>&1
+          docker pull ghcr.io/${{ github.repository }}:${{format('v{0}', steps.package-version.outputs.package-version)}} >/dev/null 2>&1
           exit_code=$?
           if [ $exit_code = 0 ]; then
-              exit 1
+            exit 1
           else
-              exit 0
+            exit 0
           fi
 
   build-and-push-image:
