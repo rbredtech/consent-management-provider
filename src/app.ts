@@ -53,12 +53,13 @@ const getCmpJsTemplateValues = (req: Request) => {
     tcConsent = cookie?.consent ?? false;
   }
 
-  let cmpStatus: "loaded" | "disabled" = "loaded";
+  let cmpStatus: "loaded" | "disabled" = "disabled";
   const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
-  if (!techCookie || Date.now() - techCookie < TECH_COOKIE_MIN) {
-    // if tech cookie doesn't exist or is not old enough, the cmp is
-    // disabled. that means no ads or tracking should be used
-    cmpStatus = "disabled";
+
+  if (techCookie && Date.now() - techCookie >= TECH_COOKIE_MIN) {
+    // if the tech cookie is set and is old enough, the cmp is
+    // enabled
+    cmpStatus = "loaded";
   }
 
   return {
