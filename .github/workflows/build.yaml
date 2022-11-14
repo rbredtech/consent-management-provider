@@ -38,7 +38,6 @@ jobs:
           docker pull ghcr.io/${{ github.repository }}:${{format('v{0}', steps.package-version.outputs.current-version)}} >/dev/null 2>&1
           exit_code=$?
           if [ $exit_code = 0 ]; then
-              echo "Version already exists"
               exit 1
           else
               exit 0
