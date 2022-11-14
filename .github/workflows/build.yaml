@@ -20,6 +20,10 @@ jobs:
       version: ${{ steps.package-version.outputs.current-version }}
 
     steps:
+      - name: Checkout repository
+        id: checkout
+        uses: actions/checkout@v3
+
       - name: Log in to the Container registry
         id: login
         uses: docker/login-action@v2
@@ -28,19 +32,18 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get package version
+      - name: get-npm-version
         id: package-version
-        uses: koj-co/package-version-action@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: martinbeentjes/npm-get-version-action@main
 
       - name: Check if version does not yet exist
         id: compare
         shell: bash
         run: |
-          docker pull ghcr.io/${{ github.repository }}:${{format('v{0}', steps.package-version.outputs.package-version)}} >/dev/null 2>&1
+          docker pull ghcr.io/${{ github.repository }}:${{format('v{0}', steps.package-version.outputs.current-version)}} >/dev/null 2>&1
           exit_code=$?
           if [ $exit_code = 0 ]; then
+            echo "Version already exists"
             exit 1
           else
             exit 0
