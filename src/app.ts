@@ -24,21 +24,22 @@ import {
   loadedCounterMetric,
   registry,
 } from "./util/metrics";
-import { TechCookie, techCookieMiddleware } from "./middleware/techCookie";
 
-declare global {
-	namespace Express {
-		interface Request {
-      withBanner: boolean,
-    }
-  }
-}
+import { loggerMiddleware } from "./middleware/logger";
+import { TechCookie, techCookieMiddleware } from "./middleware/techCookie";
+import { withBannerMiddleware } from "./middleware/withBanner";
 
 interface ConsentCookie {
   consent: boolean;
 }
 
-const BANNER_SCRIPT = readFileSync(path.join(__dirname, "../templates/banner.ejs")).toString();
+declare global {
+  namespace Express {
+    interface Request {
+      withBanner: boolean;
+    }
+  }
+}
 
 const getCmpJsTemplateValues = (req: Request) => {
   let cookie: ConsentCookie | undefined;
@@ -68,15 +69,12 @@ const getCmpJsTemplateValues = (req: Request) => {
     cmpStatus = "disabled";
   }
 
-  const BANNER_CREATION = req.withBanner ? BANNER_SCRIPT : "";
-
   return {
     TC_STRING: "tcstr",
     CMP_STATUS: cmpStatus,
     TC_CONSENT: tcConsent ?? "undefined",
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
-    BANNER_CREATION,
   };
 };
 
@@ -87,11 +85,7 @@ app.use(cookieParser());
 app.set("views", path.join(__dirname, "../templates"));
 app.set("view engine", "ejs");
 
-app.use((req, _, next) => {
-  logger.debug(JSON.stringify(req.cookies));
-  next();
-});
-
+app.use(loggerMiddleware);
 app.use(techCookieMiddleware);
 
 const loaderHandler = async (req: Request, res: Response) => {
@@ -124,11 +118,7 @@ const loaderHandler = async (req: Request, res: Response) => {
 };
 
 app.get("/loader.js", loaderHandler);
-app.get("/loader_with_banner.js", async (req, _, next) => {
-  req.withBanner = true;
-  next();
-}, loaderHandler);
-
+app.get("/loader_with_banner.js", withBannerMiddleware, loaderHandler);
 
 const iframeHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
@@ -141,10 +131,7 @@ const iframeHandler = (req: Request, res: Response) => {
 };
 
 app.get("/iframe.html", iframeHandler);
-app.get("/iframe_with_banner.html", (req, _, next) => {
-  req.withBanner = true;
-  next();
-}, iframeHandler);
+app.get("/iframe_with_banner.html", withBannerMiddleware, iframeHandler);
 
 const managerIframeHandler = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
@@ -156,14 +143,24 @@ const managerIframeHandler = async (req: Request, res: Response) => {
     const values = getCmpJsTemplateValues(req);
     const cmpJs = await ejs.renderFile(
       path.join(__dirname, "../templates/mini-cmp.ejs"),
-      values,
+      values
     );
     const iframeMsgJs = await ejs.renderFile(
       path.join(__dirname, "../templates/iframe-msg.ejs"),
-      { BANNER_TIMEOUT } as ejs.Data,
+      { BANNER_TIMEOUT }
     );
 
-    const combinedMinified = minify([cmpJs, iframeMsgJs]);
+    let bannerJs: string | undefined = undefined;
+    if (req.withBanner) {
+      bannerJs = await ejs.renderFile(
+        path.join(__dirname, "../templates/banner.ejs")
+      );
+    }
+
+    const combinedMinified = minify(
+      bannerJs ? [cmpJs, iframeMsgJs, bannerJs] : [cmpJs, iframeMsgJs]
+    );
+
     if (combinedMinified.error) {
       res.status(500).send(combinedMinified.error);
       return;
@@ -176,11 +173,11 @@ const managerIframeHandler = async (req: Request, res: Response) => {
 };
 
 app.get("/manager-iframe.js", managerIframeHandler);
-app.get("/manager-iframe_with_banner.js", async (req, _, next) => {
-  req.withBanner = true;
-  next();
-}, managerIframeHandler);
-
+app.get(
+  "/manager-iframe_with_banner.js",
+  withBannerMiddleware,
+  managerIframeHandler
+);
 
 const managerHandler = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
@@ -195,7 +192,14 @@ const managerHandler = async (req: Request, res: Response) => {
       values
     );
 
-    const cmpJsMinified = minify(cmpJs);
+    let bannerJs: string | undefined = undefined;
+    if (req.withBanner) {
+      bannerJs = await ejs.renderFile(
+        path.join(__dirname, ".../templates/banner.ejs")
+      );
+    }
+
+    const cmpJsMinified = minify(bannerJs ? [cmpJs, bannerJs] : cmpJs);
     if (cmpJsMinified.error) {
       res.status(500).send(cmpJsMinified.error);
       return;
@@ -207,10 +211,7 @@ const managerHandler = async (req: Request, res: Response) => {
 };
 
 app.get(["/manager.js", "/mini-cmp.js"], managerHandler);
-app.get("/manager_with_banner.js", (req, _, next) => {
-  req.withBanner = true;
-  next();
-}, managerHandler);
+app.get("/manager_with_banner.js", withBannerMiddleware, managerHandler);
 
 app.get("/set-consent", (req, res) => {
   const cookie: ConsentCookie = {
