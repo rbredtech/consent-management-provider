@@ -43,8 +43,8 @@ jobs:
       - name: Check if version does not yet exist
         id: check
         run: |
-          if docker manifest inspect ghcr.io/rbredtech/${{ github.repository }}:${{ steps.version.outputs.content }} >/dev/null 2>&1; then
-            core.setFailed('Version already exists')
+          if docker manifest inspect ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:${{ steps.version.outputs.content }} >/dev/null 2>&1; then
+            exit 1
           fi
 
   build-and-push-image:
