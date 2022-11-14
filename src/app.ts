@@ -1,4 +1,3 @@
-import { readFileSync } from "fs";
 import path from "path";
 
 import cookieParser from "cookie-parser";
@@ -15,6 +14,7 @@ import {
   TECH_COOKIE_MIN,
   TECH_COOKIE_NAME,
   BANNER_TIMEOUT,
+  CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
 } from "./config";
 import { minify } from "./util/minify";
 import { logger } from "./util/logger";
@@ -61,6 +61,16 @@ const getCmpJsTemplateValues = (req: Request) => {
     // enabled
     cmpStatus = "loaded";
   }
+
+  if (cmpStatus === "loaded"
+    && Math.floor(Math.random() * 101) > CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT) {
+
+    // request randomly choosen to be outside the configured sampling threshold,
+    // so disable consent status
+    cmpStatus = "disabled";
+  }
+
+  if (cmpStatus === "loaded") logger.debug("enable consent status for this request");
 
   return {
     TC_STRING: "tcstr",
