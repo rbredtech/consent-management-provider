@@ -18,3 +18,4 @@ export const TECH_COOKIE_MIN = new EnvVar("TECH_COOKIE_MIN").getNumberOrDefault(
 export const BANNER_TIMEOUT = new EnvVar("BANNER_TIMEOUT").getNumberOrDefault(
   1000 * 60 * 2 // 2 mins
 );
+export const CMP_ENABLED = new EnvVar("CMP_ENABLED").getBooleanOrDefault(true);

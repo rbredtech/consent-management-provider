@@ -15,6 +15,7 @@ import {
   TECH_COOKIE_MIN,
   TECH_COOKIE_NAME,
   BANNER_TIMEOUT,
+  CMP_ENABLED,
 } from "./config";
 import { minify } from "./util/minify";
 import { logger } from "./util/logger";
@@ -56,7 +57,7 @@ const getCmpJsTemplateValues = (req: Request) => {
   let cmpStatus: "loaded" | "disabled" = "disabled";
   const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
 
-  if (techCookie && Date.now() - techCookie >= TECH_COOKIE_MIN) {
+  if (CMP_ENABLED && techCookie && Date.now() - techCookie >= TECH_COOKIE_MIN) {
     // if the tech cookie is set and is old enough, the cmp is
     // enabled
     cmpStatus = "loaded";
