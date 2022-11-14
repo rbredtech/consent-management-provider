@@ -38,16 +38,7 @@ jobs:
 
       - name: Check if version does not yet exist
         id: compare
-        shell: bash
-        run: |
-          docker pull ghcr.io/${{ github.repository }}:${{format('v{0}', steps.package-version.outputs.current-version)}} >/dev/null 2>&1
-          exit_code=$?
-          if [ $exit_code = 0 ]; then
-            echo "Version already exists"
-            exit 1
-          else
-            exit 0
-          fi
+        run: ./test_version.sh
 
   build-and-push-image:
     name: Build and push image
