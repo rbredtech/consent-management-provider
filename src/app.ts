@@ -93,7 +93,7 @@ const loaderHandler = async (req: Request, res: Response) => {
         CONSENT: true,
         CONSENT_SERVER_HOST: HTTP_HOST,
         URL_SCHEME: req.protocol,
-        BANNER: req.withBanner ? "_with_banner" : "",
+        BANNER: req.withBanner ? "-with-banner" : "",
       }
     );
 
@@ -110,7 +110,7 @@ const loaderHandler = async (req: Request, res: Response) => {
 };
 
 app.get("/loader.js", loaderHandler);
-app.get("/loader_with_banner.js", withBannerMiddleware, loaderHandler);
+app.get("/loader-with-banner.js", withBannerMiddleware, loaderHandler);
 
 const iframeHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
@@ -118,12 +118,12 @@ const iframeHandler = (req: Request, res: Response) => {
   res.render("iframe", {
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
-    BANNER: req.withBanner ? "_with_banner" : "",
+    BANNER: req.withBanner ? "-with-banner" : "",
   });
 };
 
 app.get("/iframe.html", iframeHandler);
-app.get("/iframe_with_banner.html", withBannerMiddleware, iframeHandler);
+app.get("/iframe-with-banner.html", withBannerMiddleware, iframeHandler);
 
 const managerIframeHandler = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
@@ -166,7 +166,7 @@ const managerIframeHandler = async (req: Request, res: Response) => {
 
 app.get("/manager-iframe.js", managerIframeHandler);
 app.get(
-  "/manager-iframe_with_banner.js",
+  "/manager-iframe-with-banner.js",
   withBannerMiddleware,
   managerIframeHandler
 );
@@ -203,7 +203,7 @@ const managerHandler = async (req: Request, res: Response) => {
 };
 
 app.get(["/manager.js", "/mini-cmp.js"], managerHandler);
-app.get("/manager_with_banner.js", withBannerMiddleware, managerHandler);
+app.get("/manager-with-banner.js", withBannerMiddleware, managerHandler);
 
 app.get("/set-consent", (req, res) => {
   const cookie: ConsentCookie = {
