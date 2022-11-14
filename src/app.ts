@@ -225,17 +225,6 @@ app.get("/set-consent", (req, res) => {
   res.sendStatus(200);
 });
 
-app.get("/remove-consent", (req, res) => {
-  consentCounterMetric.labels({ consent: "remove" }).inc();
-
-  res.cookie(COOKIE_NAME, "{}", {
-    maxAge: 0,
-    domain: COOKIE_DOMAIN,
-  });
-  res.setHeader("Cache-Control", "no-store");
-  res.sendStatus(200);
-});
-
 app.get("/metrics", async (req, res) => {
   res
     .status(200)
