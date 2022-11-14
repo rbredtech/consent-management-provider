@@ -52,6 +52,61 @@ This image is then pushed to <https://github.com/rbredtech/consent-management-pr
 - GET `/set-consent?consent=1` - Issue a request to this URL if a user has given consent, alternatively use the API, see below for `__tcfapi('setConset', ...)`.
 - GET `/set-consent?consent=0` - A request to this URL revokes consent.
 
+### __tcfapi methods
+
+Including the loader script into the application will expose the `window.__tcfapi()` method for client side checking of the consent status. The `__tcfapi` method has the following call signature:
+
+```js
+__tcfapi(method, version, callback?, parameter?)
+```
+
+| Method | Description     | Parameter | Callback  |
+|--------|-----------------|------------|----------|
+| ping   |Get API metadata |  | (status: TCStatus) => void  |
+| getTCData | Retrieve consent decision | | (data: TCData) => void |
+| showBanner | displays a consent banner to the user (only available if loader-with-banner.js was included) | | |
+| setConsent | Alter consent decision | consent: boolean | |
+| addEventListener | Subscribe on internal event log for debugging purposes | |
+| removeEventListener | Unsubscribe from internal event log | |
+
+```js
+type TCStatus = {
+  gdprApplies: boolean,
+  cmpLoaded: boolean,
+  cmpStatus: 'loaded' | 'disabled',
+  displayStatus: 'hidden',
+  apiVersion: string,
+  cmpVersion: number,
+  cmpId: number,
+  gvlVersion: number,
+  tcfPolicyVersion: number,
+}
+
+type TCData = {
+  tcString: string,
+  tcfPolicyVersion: number,
+  cmpId: number,
+  cmpVersion: number,
+  gdprApplies: boolean,
+  eventStatus: string,
+  cmpStatus: 'loaded' | 'disabled',
+  listenerId: string | undefined,
+  isServiceSpecific: boolean,
+  useNonStandardStacks: boolean,
+  publisherCC: string,
+  purposeOneTreatment: boolean,
+  purpose: {
+    consents: Record<number, string>,
+  },
+  legitimateInterests: {
+    consents: Record<number, string>,
+  },
+  vendor: {
+    consents: Record<number, string>,
+  }
+}
+```
+
 ### Checking of consent status
 
 The `{HOST_URL}/loader.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
