@@ -32,13 +32,20 @@ jobs:
         with:
           path: ./version.txt
 
-      - name: Check if version does not yet exist
-        id: compare
-        uses: GuillaumeFalourd/assert-command-line-output@v2
+      - name: Log in to the Container registry
+        id: login
+        uses: docker/login-action@v2
         with:
-          command_line: git tag -l ${{ steps.version.outputs.content }}
-          assert_file_path: ./version.txt
-          expected_result: FAILED
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if version does not yet exist
+        id: check
+        run: |
+          if docker manifest inspect ghcr.io/rbredtech/${{ github.repository }}:${{ steps.version.outputs.content }} >/dev/null 2>&1; then
+            core.setFailed('Version already exists')
+          fi
 
   build-and-push-image:
     name: Build and push image
