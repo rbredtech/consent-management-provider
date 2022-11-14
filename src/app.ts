@@ -33,14 +33,6 @@ interface ConsentCookie {
   consent: boolean;
 }
 
-declare global {
-  namespace Express {
-    interface Request {
-      withBanner: boolean;
-    }
-  }
-}
-
 const getCmpJsTemplateValues = (req: Request) => {
   let cookie: ConsentCookie | undefined;
   if (req.cookies[COOKIE_NAME]) {
