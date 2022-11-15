@@ -15,8 +15,11 @@
     if (did) {
       query = query + 'did=' + did;
     }
+    if (did && channelId) {
+      query = query + "&"
+    }
     if (channelId) {
-      query = query + '&channelId=' + channelId;
+      query = query + 'channelId=' + channelId;
     }
     return query;
   }
