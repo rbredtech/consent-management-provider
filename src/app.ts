@@ -1,6 +1,4 @@
-import { readFileSync } from "fs";
 import path from "path";
-
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Request, Response } from "express";
@@ -33,8 +31,23 @@ interface ConsentCookie {
   consent: boolean;
 }
 
+const hasConsent = (parameterConsent: string | undefined, cookieConsent: boolean | undefined): boolean | undefined => {
+  let consent = undefined;
+
+  if (parameterConsent !== undefined) {
+    consent = parameterConsent === "true";
+  } else if (cookieConsent !== undefined) {
+    consent = cookieConsent;
+  }
+
+  return consent;
+}
+
 const getCmpJsTemplateValues = (req: Request) => {
   let cookie: ConsentCookie | undefined;
+  let tcConsent: boolean | undefined;
+  const parameterConsent: string | undefined = req.query["consent"]?.toString() ?? undefined;
+  logger.debug(`Consent parameter: ${parameterConsent}`)
   if (req.cookies[COOKIE_NAME]) {
     try {
       cookie = JSON.parse(
@@ -44,14 +57,12 @@ const getCmpJsTemplateValues = (req: Request) => {
       logger.info(`Error parsing cookie ${COOKIE_NAME}`, e);
     }
   }
-  logger.debug(
-    `hasCookie=${cookie !== undefined}; hasConsent=${cookie?.consent}`
-  );
+  const consent = parameterConsent || (cookie?.consent ?? false);
 
-  let tcConsent: boolean | undefined;
-  if (cookie) {
-    tcConsent = cookie?.consent ?? false;
-  }
+  tcConsent = hasConsent(parameterConsent, cookie?.consent)
+  logger.debug(
+      `Cookie=${cookie?.consent}; Parameter=${parameterConsent}; Consent=${tcConsent}`
+  );
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
   const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
@@ -117,6 +128,7 @@ const iframeHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
   res.setHeader("Cache-Control", "no-store");
   res.render("iframe", {
+    COOKIE_NAME,
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     BANNER: req.withBanner ? "-with-banner" : "",
@@ -127,9 +139,6 @@ app.get("/iframe.html", iframeHandler);
 app.get("/iframe-with-banner.html", withBannerMiddleware, iframeHandler);
 
 const managerIframeHandler = async (req: Request, res: Response) => {
-  res.setHeader("Content-Type", "application/javascript");
-  res.setHeader("Cache-Control", "no-store");
-
   configuredCounterMetric.labels({ type: "iframe" }).inc();
 
   try {
@@ -159,6 +168,8 @@ const managerIframeHandler = async (req: Request, res: Response) => {
       return;
     }
 
+    res.setHeader("Content-Type", "application/javascript");
+    res.setHeader("Cache-Control", "no-store");
     res.send(combinedMinified.code);
   } catch (e) {
     res.status(500).send(e);
@@ -206,23 +217,48 @@ const managerHandler = async (req: Request, res: Response) => {
 app.get(["/manager.js", "/mini-cmp.js"], managerHandler);
 app.get("/manager-with-banner.js", withBannerMiddleware, managerHandler);
 
-app.get("/set-consent", (req, res) => {
+app.get("/set-consent", async (req, res) => {
+  const consent = req.query?.consent === "1";
   const cookie: ConsentCookie = {
-    consent: req.query?.consent === "1",
+    consent
   };
 
   consentCounterMetric.labels({ consent: cookie.consent.toString() }).inc();
 
-  res.cookie(
-    COOKIE_NAME,
-    Buffer.from(JSON.stringify(cookie)).toString("base64"),
-    {
-      maxAge: COOKIE_MAXAGE,
-      domain: COOKIE_DOMAIN,
+  try {
+    console.log(consent);
+    const content = await ejs.renderFile(
+        path.join(__dirname, "../templates/set-consent.ejs"),
+        {
+          COOKIE_NAME,
+          CONSENT: consent
+        }
+    );
+
+    console.log(consent);
+    const contentMinified = minify(content);
+    if (contentMinified.error) {
+      res.status(500)
+          .send(contentMinified.error);
+      return;
     }
-  );
-  res.setHeader("Cache-Control", "no-store");
-  res.sendStatus(200);
+    res.cookie(
+        COOKIE_NAME,
+        Buffer.from(JSON.stringify(cookie))
+            .toString("base64"),
+        {
+          maxAge: COOKIE_MAXAGE,
+          domain: COOKIE_DOMAIN,
+        }
+    );
+    res.setHeader("Content-Type", "application/javascript");
+    res.setHeader("Cache-Control", "no-store");
+    res.send(contentMinified.code);
+  } catch (e) {
+    console.error(e);
+    res.status(500)
+        .send(e);
+  }
 });
 
 app.get("/metrics", async (req, res) => {

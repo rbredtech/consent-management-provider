@@ -24,7 +24,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
         gdprApplies: true,
         eventStatus: 'tcloaded',
         cmpStatus: '<%-CMP_STATUS%>',
-        listenerId: undefined,
+        listene2rId: undefined,
         isServiceSpecific: true,
         useNonStandardStacks: false,
         publisherCC: 'AT',
@@ -66,8 +66,10 @@ window.__tcfapi = function(command, version, callback, parameter) {
       }, 1);
       break;
     case 'setConsent':
-      var i = document.createElement('img');
-      i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0);
+      var i = document.createElement('script');
+      i.setAttribute('type', 'text/javascript');
+      i.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0));
+      document.getElementsByTagName('head')[0].appendChild(i);
       callback();
       break;
     }

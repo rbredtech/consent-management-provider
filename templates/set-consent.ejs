@@ -1,0 +1,5 @@
+try {
+    if(window.localStorage && localStorage.setItem) {
+        localStorage.setItem('<%-COOKIE_NAME%>', '<%-CONSENT%>');
+    }
+} catch(e) {}

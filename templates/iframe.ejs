@@ -8,8 +8,11 @@
   <script type='text/javascript'>
     //<![CDATA[
     try {
+      var consentDecision = (window.localStorage && localStorage.getItem) ? localStorage.getItem('<%-COOKIE_NAME%>') : '';
+      var consentParameter = consentDecision ? '?consent=' + consentDecision : '';
       var s = document.createElement('script');
-      s.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager-iframe<%-BANNER%>.js');
+      var managerUrl = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager-iframe<%-BANNER%>.js' + consentParameter;
+      s.setAttribute('src', managerUrl);
       s.setAttribute('type', 'text/javascript');
       document.getElementsByTagName('head')[0].appendChild(s);
     } catch (e) { }
