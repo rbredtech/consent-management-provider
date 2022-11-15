@@ -40,12 +40,14 @@ Creating a new version of the CMP has to follow these steps:
 - create branch for new version
 - update `version` field in `package.json`
 
-Upon merging this branch to master, GHA will pick up the change of the `version` field and create a new docker image, tagged with the new version.
+Upon merging this branch to master, Github Actions will pick up the change of the `version` field and create a new docker image, tagged with the new version.
 This image is then pushed to <https://github.com/rbredtech/consent-management-provider/pkgs/container/consent-management-provider>
 
 ## Usage
 
 ### API Endpoints
+
+All API endpoints take an optional query parameter`channelId`, which is used to collect metrics about the opt-in/out ratio on a specific channel.
 
 - GET `/loader.js` - Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
 - GET `/loader-with-banner.js` - Alternative to Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status including support for consent banner display, see below for `__tcfapi('showBanner', ...)`.
@@ -114,20 +116,21 @@ The `{HOST_URL}/loader.js` script can be added as javascript bundle to your appl
 Add the `loader.js` bundle to your application:
 
 ```html
-<script src="{HOST_URL}/loader.js"></script>
+<script src="{HOST_URL}/loader.js?channelId=1234"></script>
 ```
 
+The `channelId` query parameter is optional and is used to collect metrics about which channel opt-ins/outs come from.
 Having added the `loader.js` javascript file to the application, you can check for the user's consent status through the API endpoints provided by the `__tcfapi` object:
 
 ```js
 const CMP_VENDOR_ID = 4040; // custom Red Tech vendor ID
-__tcfapi('ping', 2, (pingReturn) => {
+__tcfapi('ping', 2, function(pingReturn) {
   if (pingReturn.cmpStatus !== 'loaded') {
       // periodically check again until cmpStatus is loaded
       return;
   }
 
-  __tcfapi('getTCData', 2, (tcData, success) => {
+  __tcfapi('getTCData', 2, function(tcData, success) {
       const consent = tcData.vendor.consents[CMP_VENDOR_ID];
       if (consent) {
         // user gave consent
@@ -146,7 +149,7 @@ This functionality needs access to the key input handler to capture key events f
 existing key handler of the HbbTV application is unregistered and only registered again once the consent banner is no longer displayed.
 
 ```js
-__tcfapi('showBanner', 2, () => {
+__tcfapi('showBanner', 2, function() {
     // user has closed the banner by remote control or the banner timeout was reached
   });
 ```
@@ -160,7 +163,7 @@ Setting the query parameter to  `?consent=0` removes the consent for a user (e.g
 There is also an API function available that works like:
 
 ```js
-__tcfapi('setConsent', 2, () => {
+__tcfapi('setConsent', 2, function() {
     // call returned successfully
   }, true); // set to false to revoke content
 ```
