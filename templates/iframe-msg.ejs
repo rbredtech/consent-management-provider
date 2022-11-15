@@ -1,40 +1,40 @@
 (function () {
   function _message(msg) {
-    if (window["parent"] && window.parent["postMessage"]) {
-      window.parent.postMessage(msg, "*");
+    if (window['parent'] && window.parent['postMessage']) {
+      window.parent.postMessage(msg, '*');
     }
   }
-  if (window["addEventListener"]) {
+  if (window['addEventListener']) {
     window.addEventListener(
-      "message",
+      'message',
       function (ev) {
-        var m = ev.data.split(";");
+        var m = ev.data.split(';');
         var id = m[0];
         switch (m[1]) {
-          case "cmd":
+          case 'cmd':
             __tcfapi(
               m[2],
               m[3],
               function (r, s) {
-                _message(id + ";" + btoa(JSON.stringify(r)) + (s ? ";1" : ""));
+                _message(id + ';' + btoa(JSON.stringify(r)) + (s ? ';1' : ''));
               },
               m[4]
             );
             break;
-          case "showbanner":
+          case 'showbanner':
             addBanner(); // from banner.ejs
             setTimeout(hideBanner, <%-BANNER_TIMEOUT%>);
             break;
-          case "vkenter":
+          case 'vkenter':
             this.document.getElementById('agttcnstbnnr').style.display = 'none'; // every action hides banner
             var btna = this.document.getElementById('consBtnAgree').style;
             if (btna.border.indexOf('3px') >= 0) {
               __tcfapi('setConsent', 2, function() {}, true); // gave consent
             }
-            _message(id + ";" + btoa(JSON.stringify(1)) + (s ? ";1" : ""));
+            _message(id + ';' + btoa(JSON.stringify(1)) + (s ? ';1' : ''));
             break;
-          case "vkleft":
-          case "vkright":
+          case 'vkleft':
+          case 'vkright':
             // toggle selected button
             var btna = this.document.getElementById('consBtnAgree').style;
             var btnd = this.document.getElementById('consBtnDismiss').style;
