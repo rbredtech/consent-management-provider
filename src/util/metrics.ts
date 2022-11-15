@@ -5,7 +5,7 @@ const registry = new Registry();
 const consentCounterMetric = new Counter({
   name: "consent_management_consent",
   help: "Consent decision made",
-  labelNames: ["consent"] as const,
+  labelNames: ["consent", "channel"] as const,
 });
 
 const loadedCounterMetric = new Counter({

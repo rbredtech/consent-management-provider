@@ -68,6 +68,7 @@ const getCmpJsTemplateValues = (req: Request) => {
     TC_CONSENT: tcConsent ?? "undefined",
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
+    CHANNEL_ID: req.query.channelId?.toString(),
   };
 };
 
@@ -82,6 +83,13 @@ app.use(loggerMiddleware);
 app.use(techCookieMiddleware);
 
 const loaderHandler = async (req: Request, res: Response) => {
+  const channelId = req.query.channelId?.toString();
+
+  if (!channelId) {
+    res.status(500).send({ error: "query parameter channelId is missing" });
+    return;
+  }
+
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
@@ -95,6 +103,7 @@ const loaderHandler = async (req: Request, res: Response) => {
         CONSENT_SERVER_HOST: HTTP_HOST,
         URL_SCHEME: req.protocol,
         BANNER: req.withBanner ? "-with-banner" : "",
+        CHANNEL_ID: channelId,
       }
     );
 
@@ -114,12 +123,20 @@ app.get("/loader.js", loaderHandler);
 app.get("/loader-with-banner.js", withBannerMiddleware, loaderHandler);
 
 const iframeHandler = (req: Request, res: Response) => {
+  const channelId = req.query.channelId?.toString();
+
+  if (!channelId) {
+    res.status(500).send({ error: "query parameter channelId is missing" });
+    return;
+  }
+
   res.setHeader("Content-Type", "text/html");
   res.setHeader("Cache-Control", "no-store");
   res.render("iframe", {
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     BANNER: req.withBanner ? "-with-banner" : "",
+    CHANNEL_ID: channelId,
   });
 };
 
@@ -127,6 +144,13 @@ app.get("/iframe.html", iframeHandler);
 app.get("/iframe-with-banner.html", withBannerMiddleware, iframeHandler);
 
 const managerIframeHandler = async (req: Request, res: Response) => {
+  const channelId = req.query.channelId?.toString();
+
+  if (!channelId) {
+    res.status(500).send({ error: "query parameter channelId is missing" });
+    return;
+  }
+
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
@@ -207,11 +231,18 @@ app.get(["/manager.js", "/mini-cmp.js"], managerHandler);
 app.get("/manager-with-banner.js", withBannerMiddleware, managerHandler);
 
 app.get("/set-consent", (req, res) => {
+  const channelId = req.query.channelId?.toString();
+
+  if (!channelId) {
+    res.status(500).send({ error: "query parameter channelId is missing" });
+    return;
+  }
+
   const cookie: ConsentCookie = {
     consent: req.query?.consent === "1",
   };
 
-  consentCounterMetric.labels({ consent: cookie.consent.toString() }).inc();
+  consentCounterMetric.labels({ consent: cookie.consent.toString(), channel: channelId }).inc();
 
   res.cookie(
     COOKIE_NAME,

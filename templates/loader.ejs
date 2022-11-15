@@ -5,9 +5,12 @@
   };
 
   var has_consent=<%-CONSENT%>;
-  function getQuery(did) {
-    return (did ? '&did=' + did : '');
+  var channelId=<%-CHANNEL_ID%>;
+
+  function getQuery(did, channelId) {
+    return (did ? '?did=' + did + '&channelId=' + channelId : '?channelId=' + channelId);
   }
+
   function callQueue() {
     for (var i=0; i<_q.length; i++) {
       var f=_q[i];
@@ -27,6 +30,7 @@
     if (m === 'log') isLog = cbcnt;
     _iframe.contentWindow.postMessage(cbcnt + ';' + m, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
   }
+
   function kbd(cb) {
     var KeyEvent = window['KeyEvent'] || {};
     KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
@@ -53,6 +57,7 @@
       if (event.keyCode === KeyEvent.VK_RIGHT) message('vkright');
     }
   }
+
   function loadiframe() {
     if (document.getElementsByTagName('body').length < 1) {
       setTimeout(loadiframe, 100);
@@ -106,7 +111,7 @@
     }
     var a = document.createElement('script');
     a.setAttribute('type', 'text/javascript');
-    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager<%-BANNER%>.js?' + getQuery(did));
+    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager<%-BANNER%>.js' + getQuery(did, channelId));
     a.addEventListener('load', callQueue);
     document.getElementsByTagName('head')[0].appendChild(a);
     if (!has_consent && window.localStorage && localStorage.removeItem) localStorage.removeItem('did');
