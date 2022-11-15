@@ -38,9 +38,9 @@ IAB unregistered vendor ID of `4040`.
 Creating a new version of the CMP has to follow these steps:
 
 - create branch for new version
-- update `version.txt`
+- update `version` field in `package.json`
 
-Upon merging this branch to master, GHA will pick up the change of `version.txt` and create a new docker image, tagged with the version stated in `version.txt`.
+Upon merging this branch to master, GHA will pick up the change of the `version` field and create a new docker image, tagged with the new version.
 This image is then pushed to <https://github.com/rbredtech/consent-management-provider/pkgs/container/consent-management-provider>
 
 ## Usage
