@@ -47,6 +47,8 @@ This image is then pushed to <https://github.com/rbredtech/consent-management-pr
 
 ### API Endpoints
 
+All API endpoints require a `channelId` query param to be set.
+
 - GET `/loader.js` - Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
 - GET `/loader-with-banner.js` - Alternative to Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status including support for consent banner display, see below for `__tcfapi('showBanner', ...)`.
 - GET `/set-consent?consent=1` - Issue a request to this URL if a user has given consent, alternatively use the API, see below for `__tcfapi('setConset', ...)`.
@@ -114,7 +116,7 @@ The `{HOST_URL}/loader.js` script can be added as javascript bundle to your appl
 Add the `loader.js` bundle to your application:
 
 ```html
-<script src="{HOST_URL}/loader.js"></script>
+<script src="{HOST_URL}/loader.js?channelId=1234"></script>
 ```
 
 Having added the `loader.js` javascript file to the application, you can check for the user's consent status through the API endpoints provided by the `__tcfapi` object:
