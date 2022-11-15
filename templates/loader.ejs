@@ -5,10 +5,20 @@
   };
 
   var has_consent=<%-CONSENT%>;
-  var channelId=<%-CHANNEL_ID%>;
+  var channelId='<%-CHANNEL_ID%>';
 
   function getQuery(did, channelId) {
-    return (did ? '?did=' + did + '&channelId=' + channelId : '?channelId=' + channelId);
+    var query = '';
+    if (did || channelId) {
+      query = '?';
+    }
+    if (did) {
+      query = query + 'did=' + did;
+    }
+    if (channelId) {
+      query = query + '&channelId=' + channelId;
+    }
+    return query;
   }
 
   function callQueue() {

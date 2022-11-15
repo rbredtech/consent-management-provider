@@ -1,4 +1,3 @@
-import { readFileSync } from "fs";
 import path from "path";
 
 import cookieParser from "cookie-parser";
@@ -68,7 +67,7 @@ const getCmpJsTemplateValues = (req: Request) => {
     TC_CONSENT: tcConsent ?? "undefined",
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
-    CHANNEL_ID: req.query.channelId?.toString(),
+    CHANNEL_ID: req.query.channelId ? req.query.channelId.toString() : "",
   };
 };
 
@@ -83,13 +82,9 @@ app.use(loggerMiddleware);
 app.use(techCookieMiddleware);
 
 const loaderHandler = async (req: Request, res: Response) => {
-  if (!req.query.channelId) {
-    res.status(500).send({ error: "uery parameter channelId is missing" });
-  }
-
   const channelId = Number(req.query.channelId);
 
-  if (isNaN(channelId)) {
+  if (req.query.channelId && isNaN(channelId)) {
     res
       .status(500)
       .send({ error: "query parameter channelId must be numeric" });
@@ -109,7 +104,7 @@ const loaderHandler = async (req: Request, res: Response) => {
         CONSENT_SERVER_HOST: HTTP_HOST,
         URL_SCHEME: req.protocol,
         BANNER: req.withBanner ? "-with-banner" : "",
-        CHANNEL_ID: channelId,
+        CHANNEL_ID: req.query.channelId ? channelId : "",
       }
     );
 
@@ -129,13 +124,9 @@ app.get("/loader.js", loaderHandler);
 app.get("/loader-with-banner.js", withBannerMiddleware, loaderHandler);
 
 const iframeHandler = (req: Request, res: Response) => {
-  if (!req.query.channelId) {
-    res.status(500).send({ error: "uery parameter channelId is missing" });
-  }
-
   const channelId = Number(req.query.channelId);
 
-  if (isNaN(channelId)) {
+  if (req.query.channelId && isNaN(channelId)) {
     res
       .status(500)
       .send({ error: "query parameter channelId must be numeric" });
@@ -148,7 +139,7 @@ const iframeHandler = (req: Request, res: Response) => {
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     BANNER: req.withBanner ? "-with-banner" : "",
-    CHANNEL_ID: channelId,
+    CHANNEL_ID: req.query.channelId ? channelId : "",
   });
 };
 
@@ -156,13 +147,9 @@ app.get("/iframe.html", iframeHandler);
 app.get("/iframe-with-banner.html", withBannerMiddleware, iframeHandler);
 
 const managerIframeHandler = async (req: Request, res: Response) => {
-  if (!req.query.channelId) {
-    res.status(500).send({ error: "uery parameter channelId is missing" });
-  }
-
   const channelId = Number(req.query.channelId);
 
-  if (isNaN(channelId)) {
+  if (req.query.channelId && isNaN(channelId)) {
     res
       .status(500)
       .send({ error: "query parameter channelId must be numeric" });
@@ -249,13 +236,9 @@ app.get(["/manager.js", "/mini-cmp.js"], managerHandler);
 app.get("/manager-with-banner.js", withBannerMiddleware, managerHandler);
 
 app.get("/set-consent", (req, res) => {
-  if (!req.query.channelId) {
-    res.status(500).send({ error: "uery parameter channelId is missing" });
-  }
-
   const channelId = Number(req.query.channelId);
 
-  if (isNaN(channelId)) {
+  if (req.query.channelId && isNaN(channelId)) {
     res
       .status(500)
       .send({ error: "query parameter channelId must be numeric" });
@@ -267,7 +250,10 @@ app.get("/set-consent", (req, res) => {
   };
 
   consentCounterMetric
-    .labels({ consent: cookie.consent.toString(), channel: channelId })
+    .labels({
+      consent: cookie.consent.toString(),
+      channel: req.query.channelId ? channelId : undefined,
+    })
     .inc();
 
   res.cookie(
