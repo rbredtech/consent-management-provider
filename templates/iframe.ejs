@@ -8,8 +8,21 @@
   <script type='text/javascript'>
     //<![CDATA[
     try {
+      var xt = <%-XT%>;
+      var hasConsent;
+
+      if (window.localStorage && localStorage.getItem && localStorage.setItem) {
+        if (!localStorage.getItem('xt')) {
+          // no tech info yet, need to store
+          localStorage.setItem('xt', xt);
+        } else {
+          xt = localStorage.getItem('xt'); // prefer tech info from localStorage
+          hasConsent = localStorage.getItem('xconsent');
+        }
+      }
+
       var s = document.createElement('script');
-      s.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager-iframe<%-BANNER%>.js');
+      s.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager-iframe<%-BANNER%>.js?xt=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : ''));
       s.setAttribute('type', 'text/javascript');
       document.getElementsByTagName('head')[0].appendChild(s);
     } catch (e) { }

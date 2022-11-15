@@ -10,21 +10,23 @@ export function techCookieMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  {
-    const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
+  const techCookie: TechCookie = req.params.xt ?
+    Number(req.params.xt) :
+    req.cookies[TECH_COOKIE_NAME];
 
-    if (techCookie && techCookie < Date.now()) {
-      logger.debug(
-        `got valid tech cookie: ${techCookie < Date.now()}, ${techCookie}`
-      );
-      return next();
-    }
-
-    logger.debug("setting tech cookie");
-    res.cookie(TECH_COOKIE_NAME, Date.now(), {
-      maxAge: COOKIE_MAXAGE,
-      domain: COOKIE_DOMAIN,
-    });
+  if (techCookie && techCookie < Date.now()) {
+    logger.debug(
+      `got valid tech cookie: ${techCookie < Date.now()}, ${techCookie}`
+    );
+    req.timestamp = techCookie;
     return next();
   }
+
+  const timestamp = Date.now();
+  logger.debug(`setting new tech cookie ${timestamp}`);
+  res.cookie(TECH_COOKIE_NAME, timestamp, {
+    maxAge: COOKIE_MAXAGE,
+    domain: COOKIE_DOMAIN,
+  });
+  return next();
 }

@@ -52,6 +52,12 @@ const getCmpJsTemplateValues = (req: Request): { [key:string]: any } => {
   if (cookie) {
     tcConsent = cookie?.consent ?? false;
   }
+  if (req.params.consent) {
+    // consent from url param comes from localStorage on device and takes preference over cookie
+    logger.debug(`consent in url param found ${req.params.consent}`);
+    if (req.params.consent === 'false') tcConsent = false;
+    if (req.params.consent === 'true') tcConsent = true;
+  }
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
   const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
@@ -101,7 +107,7 @@ const loaderHandler = async (req: Request, res: Response) => {
     const loaderJs = await ejs.renderFile(
       path.join(__dirname, "../templates/loader.ejs"),
       {
-        CONSENT: true,
+        XT: req.timestamp,
         CONSENT_SERVER_HOST: HTTP_HOST,
         URL_SCHEME: req.protocol,
         BANNER: req.withBanner ? "-with-banner" : "",
@@ -127,6 +133,7 @@ const iframeHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
   res.setHeader("Cache-Control", "no-store");
   res.render("iframe", {
+    XT: req.timestamp, // TODO
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     BANNER: req.withBanner ? "-with-banner" : "",
