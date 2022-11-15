@@ -33,7 +33,7 @@ interface ConsentCookie {
   consent: boolean;
 }
 
-const getCmpJsTemplateValues = (req: Request) => {
+const getCmpJsTemplateValues = (req: Request): { [key:string]: any } => {
   let cookie: ConsentCookie | undefined;
   if (req.cookies[COOKIE_NAME]) {
     try {
@@ -144,6 +144,7 @@ const managerIframeHandler = async (req: Request, res: Response) => {
 
   try {
     const values = getCmpJsTemplateValues(req);
+    values.BANNER_NO_IFRAME = '';
     const cmpJs = await ejs.renderFile(
       path.join(__dirname, "../templates/mini-cmp.ejs"),
       values
@@ -190,25 +191,36 @@ const managerHandler = async (req: Request, res: Response) => {
 
   try {
     const values = getCmpJsTemplateValues(req);
+
+    let bannerJs: string | undefined = undefined;
+    let kbdJs: string | undefined = undefined;
+
+    // add showBanner if needed
+    if (req.withBanner) {
+      values.BANNER_NO_IFRAME = await ejs.renderFile(
+        path.join(__dirname, "../templates/show-banner-cmd.ejs"),
+        { BANNER_TIMEOUT }
+      );
+      bannerJs = await ejs.renderFile(
+        path.join(__dirname, "../templates/banner.ejs")
+      );
+      kbdJs = await ejs.renderFile(path.join(__dirname, "../templates/kbd.ejs"));
+    } else {
+      values.BANNER_NO_IFRAME = '';
+    }
     const cmpJs = await ejs.renderFile(
       path.join(__dirname, "../templates/mini-cmp.ejs"),
       values
     );
 
-    let bannerJs: string | undefined = undefined;
-    if (req.withBanner) {
-      bannerJs = await ejs.renderFile(
-        path.join(__dirname, ".../templates/banner.ejs")
-      );
-    }
-
-    const cmpJsMinified = minify(bannerJs ? [cmpJs, bannerJs] : cmpJs);
+    const cmpJsMinified = minify(bannerJs && kbdJs ? [bannerJs, kbdJs, cmpJs] : cmpJs);
     if (cmpJsMinified.error) {
       res.status(500).send(cmpJsMinified.error);
       return;
     }
     res.send(cmpJsMinified.code);
   } catch (e) {
+    logger.error(e);
     res.status(500).send(e);
   }
 };

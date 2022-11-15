@@ -70,5 +70,8 @@ window.__tcfapi = function(command, version, callback, parameter) {
       i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0);
       callback();
       break;
+    <%-BANNER_NO_IFRAME%>
+    default:
+      break;
     }
 };

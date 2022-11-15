@@ -9,6 +9,7 @@
     return (did ? '&did=' + did : '');
   }
   function callQueue() {
+    if (!_q) return;
     for (var i=0; i<_q.length; i++) {
       var f=_q[i];
       window.__tcfapi.apply(null, f.slice());
