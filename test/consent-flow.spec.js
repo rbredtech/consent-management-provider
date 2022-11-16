@@ -1,66 +1,50 @@
-const {
-    describe,
-    beforeAll,
-    test,
-    expect,
-    afterAll
-} = require("@jest/globals");
-const puppeteer = require("puppeteer");
-const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
-
-const consentLoader = {
-    PROTOCOL: process.env.CONSENT_LOADER_PROTOCOL || 'http',
-    HOST: process.env.CONSENT_LOADER_HOST || 'localhost',
-    PORT: process.env.CONSENT_LOADER_PORT || '8080'
-};
-let browser,
-    page;
+const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
+const pageHelper = require("./helper/page");
+let page;
 
 beforeAll(async () => {
-    browser = await puppeteer.launch({
-        dumpio: true,
-        args: ['--disable-gpu']
-    });
-    page = await browser.newPage();
-    page.on('request', request => console.log('request', request.url()));
-    page.on('response', response => console.log('response', response.url(), response.status()));
-});
+    page = await pageHelper.get();
+}, 20000);
+
 
 afterAll(async () => {
-    await browser.close();
+    await page.browser().close();
 }, 20000);
 
 describe("Consent Management with technical cookie", () => {
     beforeAll(async () => {
-
-        await page.goto(`http://${HTTP_HOST}/health`);
-        await page.setCookie({
-            value: (Date.now() - 3600000 * 25).toString(),
-            expires: Date.now() + 3600 * 1,
-            domain: consentLoader.HOST,
-            name: "xt"
-        });
+        await page.goto(`http://${pageHelper.HTTP_HOST}/health`);
         await page.evaluate(`localStorage.setItem("xt", "${Date.now() - 3600000 * 49}");`);
     });
 
     describe("Is loaded", () => {
         beforeAll(async () => {
-            const isLoaded = page.waitForResponse(response => response.url()
-                .includes('manager-iframe'));
-            await page.setContent(`<script type='text/javascript' src="http://${HTTP_HOST}/loader.js"></script>`);
-            await isLoaded;
+            await pageHelper.initLoader(page);
         });
 
-        test("Storage status is enabled", async () => {
-            const result = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
-            const status = await result;
+        test("Storage status is enabled and consent is false", async () => {
+            const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 2, resolve)}))`);
 
-            expect(status.cmpStatus)
+            expect(apiResponse.cmpStatus)
                 .toBe("loaded");
-            expect(status.vendor["consent"])
+            expect(apiResponse.vendor["consent"])
                 .toBeUndefined()
-            expect(status.tcfPolicyVersion)
-                .toBe(2);
+        });
+    });
+
+    describe("When consent is given",() => {
+        beforeAll( async () => {
+            await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('setConsent', 1, resolve, false);}))`);
+            await pageHelper.initLoader(page);
+        });
+
+        test("Storage status is enabled and consent is true", async () => {
+            const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 2, resolve)}))`);
+
+            expect(apiResponse.cmpStatus)
+                .toBe("loaded");
+            expect(apiResponse.vendor["consent"])
+                .toBeUndefined()
         });
     });
 });

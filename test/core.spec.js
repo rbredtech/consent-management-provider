@@ -1,37 +1,33 @@
 const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
-const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
-let puppeteer = require("puppeteer");
-let browser, page;
+const pageHelper = require("./helper/page");
+let page;
 
 beforeAll(async () => {
-    browser = await puppeteer.launch({dumpio: true, args: ['--disable-gpu']});
-    page = await browser.newPage();
-    page.on('request', request => console.log(request.url()));
-    page.on('response', response => console.log(response.url()));
+    page = await pageHelper.get();
 }, 20000);
 
 
 afterAll(async () => {
-    await browser.close();
+    await page.browser().close();
 }, 20000);
 
-describe("Consent Management", () => {
-    let isLoaded;
-
+describe("Consent Management is loaded", () => {
     beforeAll( async () => {
-        isLoaded = page.waitForResponse(response => response.url().includes('manager-iframe.js'));
-        await page.setContent(`<script type='text/javascript' src="http://${HTTP_HOST}/loader.js"></script>`);
+        await pageHelper.initLoader(page);
     });
 
-    describe("Content is loaded", () => {
-        beforeAll( async () => {
-            await isLoaded;
-        });
+    test("Ping API call returns basic configuration", async () => {
+        const result = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('ping', 1, resolve)}))`);
 
-        test("Ping API call returns basic configuration", async () => {
-            const result = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('ping', 1, resolve)}))`);
+        return expect(result).resolves.toEqual({"apiVersion": "2.0", "cmpId": 4040, "cmpLoaded": true, "cmpStatus": "loaded", "cmpVersion": 1, "displayStatus": "hidden", "gdprApplies": true, "gvlVersion": 1, "tcfPolicyVersion": 2});
+    });
 
-            return expect(result).resolves.toEqual({"apiVersion": "2.0", "cmpId": 4040, "cmpLoaded": true, "cmpStatus": "loaded", "cmpVersion": 1, "displayStatus": "hidden", "gdprApplies": true, "gvlVersion": 1, "tcfPolicyVersion": 2});
-        });
+    test("Storage status is disabled", async () => {
+        const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
+
+        expect(apiResponse.cmpStatus)
+            .toBe("disabled");
+        expect(apiResponse.vendor["consent"])
+            .toBeUndefined()
     });
 });
