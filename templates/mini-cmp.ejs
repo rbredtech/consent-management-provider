@@ -75,7 +75,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
     case 'setConsent':
       var i = document.createElement('img');
       i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0) + (channelId !== '' ? '&channelId=' + channelId : '');
-      callback(parameter);
+      callback();
       if (window.localStorage && localStorage.setItem) {
         localStorage.setItem('xconsent', parameter);
       }
