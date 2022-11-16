@@ -61,11 +61,9 @@ const getCmpJsTemplateValues = (req: Request): { [key: string]: any } => {
   }
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
-  const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
 
-  if (CMP_ENABLED && techCookie && Date.now() - techCookie >= TECH_COOKIE_MIN) {
-    // if the tech cookie is set and is old enough, the cmp is
-    // enabled
+  if (CMP_ENABLED && req.timestamp && Date.now() - req.timestamp >= TECH_COOKIE_MIN) {
+    // if the tech cookie is set and is old enough, the cmp is enabled
     cmpStatus = "loaded";
   }
 
@@ -156,7 +154,7 @@ const iframeHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
   res.setHeader("Cache-Control", "no-store");
   res.render("iframe", {
-    XT: Date.now(),
+    XT: req.timestamp,
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     BANNER: req.withBanner ? "-with-banner" : "",
