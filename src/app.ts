@@ -19,7 +19,7 @@ app.get("/metrics", async (_req, res) => {
     .send(await registry.metrics());
 });
 
-app.get("/health", async (req, res) => {
+app.get("/health", async (_req, res) => {
   const healthcheck = {
     uptime: process.uptime(),
     message: "OK",
