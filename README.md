@@ -62,12 +62,12 @@ Including the loader script into the application will expose the `window.__tcfap
 __tcfapi(method, version, callback?, parameter?)
 ```
 
-| Method | Description     | Parameter | Callback  |
-|--------|-----------------|------------|----------|
-| ping   |Get API metadata |  | (status: TCStatus) => void  |
-| getTCData | Retrieve consent decision | | (data: TCData) => void |
-| showBanner | displays a consent banner to the user (only available if loader-with-banner.js was included) | | |
-| setConsent | Alter consent decision | consent: boolean | |
+| Method | Description     | Parameter | Callback                   |
+|--------|-----------------|------------|----------------------------|
+| ping   |Get API metadata |  | (status: TCStatus) => void |
+| getTCData | Retrieve consent decision | | (data: TCData) => void     |
+| showBanner | displays a consent banner to the user (only available if loader-with-banner.js was included) | |                            |
+| setConsent | Alter consent decision | consent: boolean | (consent: boolean) => void |
 | addEventListener | Subscribe on internal event log for debugging purposes | |
 | removeEventListener | Unsubscribe from internal event log | |
 
