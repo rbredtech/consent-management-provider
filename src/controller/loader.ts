@@ -2,7 +2,7 @@ import ejs from "ejs";
 import { Request, Response } from "express";
 import path from "path";
 
-import { HTTP_HOST } from "../config";
+import { HTTP_HOST, TECH_COOKIE_NAME } from "../config";
 import { minify } from "../util/minify";
 import { loadedCounterMetric } from "../util/metrics";
 
@@ -26,6 +26,7 @@ export const loaderController = async (req: Request, res: Response) => {
       path.join(__dirname, "../../templates/loader.ejs"),
       {
         XT: Date.now(),
+        TECH_COOKIE_NAME,
         CONSENT_SERVER_HOST: HTTP_HOST,
         URL_SCHEME: req.protocol,
         BANNER: req.withBanner ? "-with-banner" : "",

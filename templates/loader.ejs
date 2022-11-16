@@ -107,17 +107,17 @@
     var hasConsent;
 
     if (window.localStorage && localStorage.getItem && localStorage.setItem) {
-      if (!localStorage.getItem('xt')) {
+      if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
         // no tech info yet, need to store
-        localStorage.setItem('xt', xt);
+        localStorage.setItem('<%-TECH_COOKIE_NAME%>', xt);
       } else {
-        xt = localStorage.getItem('xt'); // prefer tech info from localStorage
+        xt = localStorage.getItem('x<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
         hasConsent = localStorage.getItem('xconsent');
       }
     }
     var a = document.createElement('script');
     a.setAttribute('type', 'text/javascript');
-    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager<%-BANNER%>.js?xt=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
+    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager<%-BANNER%>.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
     a.addEventListener('load', callQueue);
     document.getElementsByTagName('head')[0].appendChild(a);
   }

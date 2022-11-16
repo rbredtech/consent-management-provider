@@ -10,7 +10,7 @@ export function techCookieMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  const techCookie: TechCookie = req.query.xt
+  const techCookie: TechCookie = req.query[TECH_COOKIE_NAME]
     ? Number(req.query[TECH_COOKIE_NAME])
     : req.cookies[TECH_COOKIE_NAME];
 

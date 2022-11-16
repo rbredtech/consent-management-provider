@@ -13,17 +13,17 @@
       var hasConsent;
 
       if (window.localStorage && localStorage.getItem && localStorage.setItem) {
-        if (!localStorage.getItem('xt')) {
+        if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
           // no tech info yet, need to store
-          localStorage.setItem('xt', xt);
+          localStorage.setItem('<%-TECH_COOKIE_NAME%>', xt);
         } else {
-          xt = localStorage.getItem('xt'); // prefer tech info from localStorage
+          xt = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
           hasConsent = localStorage.getItem('xconsent');
         }
       }
 
       var s = document.createElement('script');
-      s.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager-iframe<%-BANNER%>.js?xt=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
+      s.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager-iframe<%-BANNER%>.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
       s.setAttribute('type', 'text/javascript');
       document.getElementsByTagName('head')[0].appendChild(s);
     } catch (e) { }
