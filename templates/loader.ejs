@@ -1,8 +1,11 @@
 (function(){try {
   var _q = [];
+
   window.__tcfapi = function(command, version, callback, parameter) {
     _q[_q.length] = Array.prototype.slice.call(arguments);
   };
+
+  var channelId='<%-CHANNEL_ID%>';
 
   function callQueue() {
     if (!_q) return;
@@ -12,10 +15,12 @@
     }
     delete _q;
   }
+
   var cbcnt = 0;
   var cbmap = {};
   var isLog = 0;
   var _iframe;
+
   function message(m, cb) {
     if (!_iframe.contentWindow) {
       return;
@@ -24,6 +29,7 @@
     if (m === 'log') isLog = cbcnt;
     _iframe.contentWindow.postMessage(cbcnt + ';' + m, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
   }
+
   function kbd(cb) {
     var KeyEvent = window['KeyEvent'] || {};
     KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
@@ -50,6 +56,7 @@
       if (event.keyCode === KeyEvent.VK_RIGHT) message('vkright');
     }
   }
+
   function loadiframe() {
     if (document.getElementsByTagName('body').length < 1) {
       setTimeout(loadiframe, 100);
@@ -110,7 +117,7 @@
     }
     var a = document.createElement('script');
     a.setAttribute('type', 'text/javascript');
-    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager<%-BANNER%>.js?xt=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : ''));
+    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager<%-BANNER%>.js?xt=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
     a.addEventListener('load', callQueue);
     document.getElementsByTagName('head')[0].appendChild(a);
   }

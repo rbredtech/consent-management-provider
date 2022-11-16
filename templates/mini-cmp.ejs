@@ -1,4 +1,5 @@
 window.__tcfapi = function(command, version, callback, parameter) {
+  var channelId='<%-CHANNEL_ID%>';
   var hasConsent = <%-TC_CONSENT%>;
   if (window.localStorage && localStorage.getItem) {
     var lc = localStorage.getItem('consent');
@@ -73,7 +74,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
       break;
     case 'setConsent':
       var i = document.createElement('img');
-      i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0);
+      i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0) + (channelId !== '' ? '&channelId=' + channelId : '');
       callback();
       if (window.localStorage && localStorage.setItem) {
         localStorage.setItem('consent', parameter);

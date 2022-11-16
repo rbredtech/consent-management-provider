@@ -9,6 +9,7 @@
     //<![CDATA[
     try {
       var xt = <%-XT%>;
+      var channelId = '<%-CHANNEL_ID%>';
       var hasConsent;
 
       if (window.localStorage && localStorage.getItem && localStorage.setItem) {
@@ -22,7 +23,7 @@
       }
 
       var s = document.createElement('script');
-      s.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager-iframe<%-BANNER%>.js?xt=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : ''));
+      s.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager-iframe<%-BANNER%>.js?xt=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
       s.setAttribute('type', 'text/javascript');
       document.getElementsByTagName('head')[0].appendChild(s);
     } catch (e) { }
