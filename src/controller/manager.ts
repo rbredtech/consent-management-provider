@@ -25,20 +25,20 @@ export const managerController = async (req: Request, res: Response) => {
     // add showBanner if needed
     if (req.withBanner) {
       values.BANNER_NO_IFRAME = await ejs.renderFile(
-        path.join(__dirname, "../templates/show-banner-cmd.ejs"),
+        path.join(__dirname, "../../templates/show-banner-cmd.ejs"),
         { BANNER_TIMEOUT }
       );
       bannerJs = await ejs.renderFile(
-        path.join(__dirname, "../templates/banner.ejs")
+        path.join(__dirname, "../../templates/banner.ejs")
       );
       kbdJs = await ejs.renderFile(
-        path.join(__dirname, "../templates/kbd.ejs")
+        path.join(__dirname, "../../templates/kbd.ejs")
       );
     } else {
       values.BANNER_NO_IFRAME = "";
     }
     const cmpJs = await ejs.renderFile(
-      path.join(__dirname, "../templates/mini-cmp.ejs"),
+      path.join(__dirname, "../../templates/mini-cmp.ejs"),
       values
     );
 

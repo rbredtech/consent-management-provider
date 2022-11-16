@@ -23,7 +23,7 @@ export const loaderController = async (req: Request, res: Response) => {
 
   try {
     const loaderJs = await ejs.renderFile(
-      path.join(__dirname, "../templates/loader.ejs"),
+      path.join(__dirname, "../../templates/loader.ejs"),
       {
         XT: Date.now(),
         CONSENT_SERVER_HOST: HTTP_HOST,

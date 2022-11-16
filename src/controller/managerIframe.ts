@@ -28,18 +28,18 @@ export const managerIframeController = async (req: Request, res: Response) => {
     const values = getTemplateValues(req);
     values.BANNER_NO_IFRAME = "";
     const cmpJs = await ejs.renderFile(
-      path.join(__dirname, "../templates/mini-cmp.ejs"),
+      path.join(__dirname, "../../templates/mini-cmp.ejs"),
       values
     );
     const iframeMsgJs = await ejs.renderFile(
-      path.join(__dirname, "../templates/iframe-msg.ejs"),
+      path.join(__dirname, "../../templates/iframe-msg.ejs"),
       { BANNER_TIMEOUT }
     );
 
     let bannerJs: string | undefined = undefined;
     if (req.withBanner) {
       bannerJs = await ejs.renderFile(
-        path.join(__dirname, "../templates/banner.ejs")
+        path.join(__dirname, "../../templates/banner.ejs")
       );
     }
 
