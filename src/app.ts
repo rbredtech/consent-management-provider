@@ -33,7 +33,7 @@ interface ConsentCookie {
   consent: boolean;
 }
 
-const getCmpJsTemplateValues = (req: Request): { [key:string]: any } => {
+const getCmpJsTemplateValues = (req: Request): { [key: string]: any } => {
   let cookie: ConsentCookie | undefined;
   if (req.cookies[COOKIE_NAME]) {
     try {
@@ -55,8 +55,8 @@ const getCmpJsTemplateValues = (req: Request): { [key:string]: any } => {
   if (req.params.consent) {
     // consent from url param comes from localStorage on device and takes preference over cookie
     logger.debug(`consent in url param found ${req.params.consent}`);
-    if (req.params.consent === 'false') tcConsent = false;
-    if (req.params.consent === 'true') tcConsent = true;
+    if (req.params.consent === "false") tcConsent = false;
+    if (req.params.consent === "true") tcConsent = true;
   }
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
@@ -68,15 +68,17 @@ const getCmpJsTemplateValues = (req: Request): { [key:string]: any } => {
     cmpStatus = "loaded";
   }
 
-  if (cmpStatus === "loaded"
-    && Math.floor(Math.random() * 101) > CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT) {
-
+  if (
+    cmpStatus === "loaded" &&
+    Math.floor(Math.random() * 101) > CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT
+  ) {
     // request randomly choosen to be outside the configured sampling threshold,
     // so disable consent status
     cmpStatus = "disabled";
   }
 
-  if (cmpStatus === "loaded") logger.debug("enable consent status for this request");
+  if (cmpStatus === "loaded")
+    logger.debug("enable consent status for this request");
 
   return {
     TC_STRING: "tcstr",
@@ -84,6 +86,7 @@ const getCmpJsTemplateValues = (req: Request): { [key:string]: any } => {
     TC_CONSENT: tcConsent ?? "undefined",
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
+    CHANNEL_ID: req.query.channelId ? req.query.channelId.toString() : "",
   };
 };
 
@@ -98,6 +101,15 @@ app.use(loggerMiddleware);
 app.use(techCookieMiddleware);
 
 const loaderHandler = async (req: Request, res: Response) => {
+  const channelId = Number(req.query.channelId);
+
+  if (req.query.channelId && isNaN(channelId)) {
+    res
+      .status(500)
+      .send({ error: "query parameter channelId must be numeric" });
+    return;
+  }
+
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
@@ -111,6 +123,7 @@ const loaderHandler = async (req: Request, res: Response) => {
         CONSENT_SERVER_HOST: HTTP_HOST,
         URL_SCHEME: req.protocol,
         BANNER: req.withBanner ? "-with-banner" : "",
+        CHANNEL_ID: req.query.channelId ? channelId : "",
       }
     );
 
@@ -130,13 +143,23 @@ app.get("/loader.js", loaderHandler);
 app.get("/loader-with-banner.js", withBannerMiddleware, loaderHandler);
 
 const iframeHandler = (req: Request, res: Response) => {
+  const channelId = Number(req.query.channelId);
+
+  if (req.query.channelId && isNaN(channelId)) {
+    res
+      .status(500)
+      .send({ error: "query parameter channelId must be numeric" });
+    return;
+  }
+
   res.setHeader("Content-Type", "text/html");
   res.setHeader("Cache-Control", "no-store");
   res.render("iframe", {
-    XT: Date.now(), // TODO
+    XT: Date.now(),
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     BANNER: req.withBanner ? "-with-banner" : "",
+    CHANNEL_ID: req.query.channelId ? channelId : "",
   });
 };
 
@@ -144,6 +167,15 @@ app.get("/iframe.html", iframeHandler);
 app.get("/iframe-with-banner.html", withBannerMiddleware, iframeHandler);
 
 const managerIframeHandler = async (req: Request, res: Response) => {
+  const channelId = Number(req.query.channelId);
+
+  if (req.query.channelId && isNaN(channelId)) {
+    res
+      .status(500)
+      .send({ error: "query parameter channelId must be numeric" });
+    return;
+  }
+
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
@@ -151,7 +183,7 @@ const managerIframeHandler = async (req: Request, res: Response) => {
 
   try {
     const values = getCmpJsTemplateValues(req);
-    values.BANNER_NO_IFRAME = '';
+    values.BANNER_NO_IFRAME = "";
     const cmpJs = await ejs.renderFile(
       path.join(__dirname, "../templates/mini-cmp.ejs"),
       values
@@ -211,16 +243,20 @@ const managerHandler = async (req: Request, res: Response) => {
       bannerJs = await ejs.renderFile(
         path.join(__dirname, "../templates/banner.ejs")
       );
-      kbdJs = await ejs.renderFile(path.join(__dirname, "../templates/kbd.ejs"));
+      kbdJs = await ejs.renderFile(
+        path.join(__dirname, "../templates/kbd.ejs")
+      );
     } else {
-      values.BANNER_NO_IFRAME = '';
+      values.BANNER_NO_IFRAME = "";
     }
     const cmpJs = await ejs.renderFile(
       path.join(__dirname, "../templates/mini-cmp.ejs"),
       values
     );
 
-    const cmpJsMinified = minify(bannerJs && kbdJs ? [bannerJs, kbdJs, cmpJs] : cmpJs);
+    const cmpJsMinified = minify(
+      bannerJs && kbdJs ? [bannerJs, kbdJs, cmpJs] : cmpJs
+    );
     if (cmpJsMinified.error) {
       res.status(500).send(cmpJsMinified.error);
       return;
@@ -236,11 +272,25 @@ app.get(["/manager.js", "/mini-cmp.js"], managerHandler);
 app.get("/manager-with-banner.js", withBannerMiddleware, managerHandler);
 
 app.get("/set-consent", (req, res) => {
+  const channelId = Number(req.query.channelId);
+
+  if (req.query.channelId && isNaN(channelId)) {
+    res
+      .status(500)
+      .send({ error: "query parameter channelId must be numeric" });
+    return;
+  }
+
   const cookie: ConsentCookie = {
     consent: req.query?.consent === "1",
   };
 
-  consentCounterMetric.labels({ consent: cookie.consent.toString() }).inc();
+  consentCounterMetric
+    .labels({
+      consent: cookie.consent.toString(),
+      channel: req.query.channelId ? channelId : undefined,
+    })
+    .inc();
 
   res.cookie(
     COOKIE_NAME,
