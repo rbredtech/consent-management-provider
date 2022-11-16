@@ -5,6 +5,8 @@ function handlevk(key, cb) {
       var btna = this.document.getElementById('consBtnAgree').style;
       if (btna.border.indexOf('3px') >= 0) {
         __tcfapi('setConsent', 2, cb, true); // gave consent
+      } else {
+        cb();
       }
       break;
     case "vkleft":
