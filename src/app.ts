@@ -119,7 +119,7 @@ const loaderHandler = async (req: Request, res: Response) => {
     const loaderJs = await ejs.renderFile(
       path.join(__dirname, "../templates/loader.ejs"),
       {
-        XT: req.timestamp,
+        XT: Date.now(),
         CONSENT_SERVER_HOST: HTTP_HOST,
         URL_SCHEME: req.protocol,
         BANNER: req.withBanner ? "-with-banner" : "",
@@ -155,7 +155,7 @@ const iframeHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
   res.setHeader("Cache-Control", "no-store");
   res.render("iframe", {
-    XT: req.timestamp, // TODO
+    XT: Date.now(), // TODO
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     BANNER: req.withBanner ? "-with-banner" : "",

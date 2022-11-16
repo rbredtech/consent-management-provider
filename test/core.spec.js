@@ -1,9 +1,7 @@
 const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
+const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
 let puppeteer = require("puppeteer");
-
 let browser, page;
-
-const scriptUrl = `http://127.0.0.1:3000/loader.js`;
 
 beforeAll(async () => {
     browser = await puppeteer.launch({dumpio: true, args: ['--disable-gpu']});
@@ -22,7 +20,7 @@ describe("Consent Management", () => {
 
     beforeAll( async () => {
         isLoaded = page.waitForResponse(response => response.url().includes('manager-iframe.js'));
-        await page.setContent(`<script type='text/javascript' src="${scriptUrl}"></script>`);
+        await page.setContent(`<script type='text/javascript' src="http://${HTTP_HOST}/loader.js"></script>`);
     });
 
     describe("Content is loaded", () => {
