@@ -28,5 +28,6 @@ export function techCookieMiddleware(
     maxAge: COOKIE_MAXAGE,
     domain: COOKIE_DOMAIN,
   });
+  req.timestamp = timestamp;
   return next();
 }

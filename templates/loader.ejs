@@ -38,7 +38,7 @@
     var objects = document.getElementsByTagName('object');
     var mgr;
     for (var i=0; i < objects.length; i++) {
-      if (objects[i].type === 'application/oipfApplicationManager') {
+      if (objects[i].type.toLowerCase() === 'application/oipfApplicationManager'.toLowerCase()) {
         mgr = objects[i];
         break;
       }

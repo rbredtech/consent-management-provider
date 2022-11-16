@@ -5,6 +5,8 @@ function handlevk(key, cb) {
       var btna = this.document.getElementById('consBtnAgree').style;
       if (btna.border.indexOf('3px') >= 0) {
         __tcfapi('setConsent', 2, cb, true); // gave consent
+      } else {
+        cb();
       }
       break;
     case "vkleft":
@@ -32,7 +34,7 @@ function kbd(cb) {
   var objects = document.getElementsByTagName('object');
   var mgr;
   for (var i=0; i < objects.length; i++) {
-    if (objects[i].type === 'application/oipfApplicationManager') {
+    if (objects[i].type.toLowerCase() === 'application/oipfApplicationManager'.toLowerCase()) {
       mgr = objects[i];
       break;
     }
