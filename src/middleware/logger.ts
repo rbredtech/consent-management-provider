@@ -7,6 +7,6 @@ export function loggerMiddleware(
   _res: Response,
   next: NextFunction
 ) {
-  logger.debug(JSON.stringify(req.cookies));
+  logger.debug(`url ${req.originalUrl} cookies: ${JSON.stringify(req.cookies)}`);
   next();
 }
