@@ -10,9 +10,9 @@ export function techCookieMiddleware(
   res: Response,
   next: NextFunction
 ) {
-  const techCookie: TechCookie = req.params.xt ?
-    Number(req.params.xt) :
-    req.cookies[TECH_COOKIE_NAME];
+  const techCookie: TechCookie = req.params.xt
+    ? Number(req.params.xt)
+    : req.cookies[TECH_COOKIE_NAME];
 
   if (techCookie && techCookie < Date.now()) {
     logger.debug(

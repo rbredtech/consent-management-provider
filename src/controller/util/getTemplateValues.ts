@@ -9,7 +9,6 @@ import {
   CMP_ENABLED,
 } from "../../config";
 
-import { TechCookie } from "../../middleware/techCookie";
 import { logger } from "../../util/logger";
 
 export const getTemplateValues = (req: Request): { [key: string]: any } => {
