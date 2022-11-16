@@ -8,10 +8,12 @@
   <script type='text/javascript'>
     //<![CDATA[
     try {
+      var technicalAge = (window.localStorage && localStorage.getItem) ? localStorage.getItem('xt') : '';
       var consentDecision = (window.localStorage && localStorage.getItem) ? localStorage.getItem('<%-COOKIE_NAME%>') : '';
-      var consentParameter = consentDecision ? '?consent=' + consentDecision : '';
+      var parameters = ['consent=' + consentDecision];
+      parameters.push('xt=' + technicalAge)
       var s = document.createElement('script');
-      var managerUrl = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager-iframe<%-BANNER%>.js' + consentParameter;
+      var managerUrl = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager-iframe<%-BANNER%>.js?' + parameters.join('&');
       s.setAttribute('src', managerUrl);
       s.setAttribute('type', 'text/javascript');
       document.getElementsByTagName('head')[0].appendChild(s);

@@ -47,7 +47,8 @@ const getCmpJsTemplateValues = (req: Request) => {
   let cookie: ConsentCookie | undefined;
   let tcConsent: boolean | undefined;
   const parameterConsent: string | undefined = req.query["consent"]?.toString() ?? undefined;
-  logger.debug(`Consent parameter: ${parameterConsent}`)
+  const parameterXt: string | undefined = req.query["xt"]?.toString() ?? undefined;
+
   if (req.cookies[COOKIE_NAME]) {
     try {
       cookie = JSON.parse(
@@ -57,7 +58,6 @@ const getCmpJsTemplateValues = (req: Request) => {
       logger.info(`Error parsing cookie ${COOKIE_NAME}`, e);
     }
   }
-  const consent = parameterConsent || (cookie?.consent ?? false);
 
   tcConsent = hasConsent(parameterConsent, cookie?.consent)
   logger.debug(

@@ -3,7 +3,11 @@ let puppeteer = require("puppeteer");
 
 let browser, page;
 
-const scriptUrl = `http://127.0.0.1:3000/loader.js`;
+const consentLoader = {
+    PROTOCOL: process.env.CONSENT_LOADER_PROTOCOL || 'http',
+    HOST: process.env.CONSENT_LOADER_HOST || '127.0.0.1',
+    PORT: process.env.CONSENT_LOADER_PORT || '8080'
+};
 
 beforeAll(async () => {
     browser = await puppeteer.launch({dumpio: true, args: ['--disable-gpu']});
@@ -22,7 +26,7 @@ describe("Consent Management", () => {
 
     beforeAll( async () => {
         isLoaded = page.waitForResponse(response => response.url().includes('manager-iframe.js'));
-        await page.setContent(`<script type='text/javascript' src="${scriptUrl}"></script>`);
+        await page.setContent(`<script type='text/javascript' src="${consentLoader.PROTOCOL}://${consentLoader.HOST}:${consentLoader.PORT}/loader.js"></script>`);
     });
 
     describe("Content is loaded", () => {

@@ -69,6 +69,7 @@ jobs:
           HTTP_PORT: 3000
           HTTP_HOST: localhost:3000
           COOKIE_DOMAIN: localhost
+          CONSENT_LOADER_URL_BASE: http://127.0.0.1:3000
 
       - name: Log in to the Container registry
         id: login
