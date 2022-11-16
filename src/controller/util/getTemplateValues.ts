@@ -30,11 +30,11 @@ export const getTemplateValues = (req: Request): { [key: string]: any } => {
   if (cookie) {
     tcConsent = cookie?.consent ?? false;
   }
-  if (req.params.consent) {
+  if (req.query.consent) {
     // consent from url param comes from localStorage on device and takes preference over cookie
-    logger.debug(`consent in url param found ${req.params.consent}`);
-    if (req.params.consent === "false") tcConsent = false;
-    if (req.params.consent === "true") tcConsent = true;
+    logger.debug(`consent in url param found ${req.query.consent}`);
+    if (req.query.consent === "false") tcConsent = false;
+    if (req.query.consent === "true") tcConsent = true;
   }
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
