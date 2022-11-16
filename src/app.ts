@@ -60,11 +60,8 @@ const getCmpJsTemplateValues = (req: Request): { [key:string]: any } => {
   }
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
-  const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
-
-  if (techCookie && Date.now() - techCookie >= TECH_COOKIE_MIN) {
-    // if the tech cookie is set and is old enough, the cmp is
-    // enabled
+  if (req.timestamp && Date.now() - req.timestamp >= TECH_COOKIE_MIN) {
+    // if the tech cookie is set and is old enough, the cmp is enabled
     cmpStatus = "loaded";
   }
 
