@@ -5,6 +5,10 @@ declare global {
       withBanner: boolean;
     }
   }
+
+  interface ConsentCookie {
+    consent: boolean;
+  }
 }
 
 export {};

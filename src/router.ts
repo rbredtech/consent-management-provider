@@ -8,7 +8,7 @@ import {
   managerController,
   managerIframeController,
   setConsentController,
-} from "./controllers";
+} from "./controller";
 
 import { loggerMiddleware } from "./middleware/logger";
 import { techCookieMiddleware } from "./middleware/techCookie";
