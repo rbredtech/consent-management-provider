@@ -1,4 +1,3 @@
-import { readFileSync } from "fs";
 import path from "path";
 
 import cookieParser from "cookie-parser";
@@ -15,6 +14,7 @@ import {
   TECH_COOKIE_MIN,
   TECH_COOKIE_NAME,
   BANNER_TIMEOUT,
+  CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
 } from "./config";
 import { minify } from "./util/minify";
 import { logger } from "./util/logger";
@@ -33,7 +33,7 @@ interface ConsentCookie {
   consent: boolean;
 }
 
-const getCmpJsTemplateValues = (req: Request) => {
+const getCmpJsTemplateValues = (req: Request): { [key:string]: any } => {
   let cookie: ConsentCookie | undefined;
   if (req.cookies[COOKIE_NAME]) {
     try {
@@ -52,6 +52,12 @@ const getCmpJsTemplateValues = (req: Request) => {
   if (cookie) {
     tcConsent = cookie?.consent ?? false;
   }
+  if (req.params.consent) {
+    // consent from url param comes from localStorage on device and takes preference over cookie
+    logger.debug(`consent in url param found ${req.params.consent}`);
+    if (req.params.consent === 'false') tcConsent = false;
+    if (req.params.consent === 'true') tcConsent = true;
+  }
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
   const techCookie: TechCookie = req.cookies[TECH_COOKIE_NAME];
@@ -61,6 +67,16 @@ const getCmpJsTemplateValues = (req: Request) => {
     // enabled
     cmpStatus = "loaded";
   }
+
+  if (cmpStatus === "loaded"
+    && Math.floor(Math.random() * 101) > CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT) {
+
+    // request randomly choosen to be outside the configured sampling threshold,
+    // so disable consent status
+    cmpStatus = "disabled";
+  }
+
+  if (cmpStatus === "loaded") logger.debug("enable consent status for this request");
 
   return {
     TC_STRING: "tcstr",
@@ -91,7 +107,7 @@ const loaderHandler = async (req: Request, res: Response) => {
     const loaderJs = await ejs.renderFile(
       path.join(__dirname, "../templates/loader.ejs"),
       {
-        CONSENT: true,
+        XT: Date.now(),
         CONSENT_SERVER_HOST: HTTP_HOST,
         URL_SCHEME: req.protocol,
         BANNER: req.withBanner ? "-with-banner" : "",
@@ -117,6 +133,7 @@ const iframeHandler = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
   res.setHeader("Cache-Control", "no-store");
   res.render("iframe", {
+    XT: Date.now(), // TODO
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     BANNER: req.withBanner ? "-with-banner" : "",
@@ -134,6 +151,7 @@ const managerIframeHandler = async (req: Request, res: Response) => {
 
   try {
     const values = getCmpJsTemplateValues(req);
+    values.BANNER_NO_IFRAME = '';
     const cmpJs = await ejs.renderFile(
       path.join(__dirname, "../templates/mini-cmp.ejs"),
       values
@@ -180,25 +198,36 @@ const managerHandler = async (req: Request, res: Response) => {
 
   try {
     const values = getCmpJsTemplateValues(req);
+
+    let bannerJs: string | undefined = undefined;
+    let kbdJs: string | undefined = undefined;
+
+    // add showBanner if needed
+    if (req.withBanner) {
+      values.BANNER_NO_IFRAME = await ejs.renderFile(
+        path.join(__dirname, "../templates/show-banner-cmd.ejs"),
+        { BANNER_TIMEOUT }
+      );
+      bannerJs = await ejs.renderFile(
+        path.join(__dirname, "../templates/banner.ejs")
+      );
+      kbdJs = await ejs.renderFile(path.join(__dirname, "../templates/kbd.ejs"));
+    } else {
+      values.BANNER_NO_IFRAME = '';
+    }
     const cmpJs = await ejs.renderFile(
       path.join(__dirname, "../templates/mini-cmp.ejs"),
       values
     );
 
-    let bannerJs: string | undefined = undefined;
-    if (req.withBanner) {
-      bannerJs = await ejs.renderFile(
-        path.join(__dirname, ".../templates/banner.ejs")
-      );
-    }
-
-    const cmpJsMinified = minify(bannerJs ? [cmpJs, bannerJs] : cmpJs);
+    const cmpJsMinified = minify(bannerJs && kbdJs ? [bannerJs, kbdJs, cmpJs] : cmpJs);
     if (cmpJsMinified.error) {
       res.status(500).send(cmpJsMinified.error);
       return;
     }
     res.send(cmpJsMinified.code);
   } catch (e) {
+    logger.error(e);
     res.status(500).send(e);
   }
 };

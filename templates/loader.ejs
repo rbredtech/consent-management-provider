@@ -4,14 +4,11 @@
     _q[_q.length] = Array.prototype.slice.call(arguments);
   };
 
-  var has_consent=<%-CONSENT%>;
-  function getQuery(did) {
-    return (did ? '&did=' + did : '');
-  }
   function callQueue() {
+    if (!_q) return;
     for (var i=0; i<_q.length; i++) {
       var f=_q[i];
-      window.__tcfapi.apply(null, f.slice(1));
+      window.__tcfapi.apply(null, f.slice());
     }
     delete _q;
   }
@@ -61,7 +58,7 @@
 
     var iframe = document.createElement('iframe');
     _iframe = iframe; // global to this script context
-    iframe.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/iframe<%-BANNER%>.html' + getQuery());
+    iframe.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/iframe<%-BANNER%>.html');
     iframe.setAttribute('style', 'position:absolute; border:0; outline:0; top:0; left:0; width:100%; height:100%; z-index: 5599');
     iframe.setAttribute('frameborder', '0');
     document.getElementsByTagName('body')[0].appendChild(iframe);
@@ -99,17 +96,23 @@
     navigator.userAgent.indexOf('Presto') === -1) {
     setTimeout(loadiframe, 1);
   } else {
-    var did;
-    if (has_consent && window.localStorage && localStorage.getItem) {
-      var _did = localStorage.getItem('did');
-      if (_did) did = _did;
+    var xt = <%-XT%>;
+    var hasConsent;
+
+    if (window.localStorage && localStorage.getItem && localStorage.setItem) {
+      if (!localStorage.getItem('xt')) {
+        // no tech info yet, need to store
+        localStorage.setItem('xt', xt);
+      } else {
+        xt = localStorage.getItem('xt'); // prefer tech info from localStorage
+        hasConsent = localStorage.getItem('xconsent');
+      }
     }
     var a = document.createElement('script');
     a.setAttribute('type', 'text/javascript');
-    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager<%-BANNER%>.js?' + getQuery(did));
+    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager<%-BANNER%>.js?xt=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : ''));
     a.addEventListener('load', callQueue);
     document.getElementsByTagName('head')[0].appendChild(a);
-    if (!has_consent && window.localStorage && localStorage.removeItem) localStorage.removeItem('did');
   }
 } catch(e) {}}
 )();

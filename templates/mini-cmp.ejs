@@ -1,4 +1,10 @@
 window.__tcfapi = function(command, version, callback, parameter) {
+  var hasConsent = <%-TC_CONSENT%>;
+  if (window.localStorage && localStorage.getItem) {
+    var lc = localStorage.getItem('consent');
+    if (lc === "true") hasConsent = true;
+    if (lc === "false") hasConsent = false;
+  }
   var _listenerCnt = 1;
   var _listeners = {};
   switch (command) {
@@ -45,7 +51,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
         },
         vendor: {
           consents: {
-            4040: <%-TC_CONSENT%>
+            4040: hasConsent,
           }
         }
       }, true);
@@ -69,6 +75,12 @@ window.__tcfapi = function(command, version, callback, parameter) {
       var i = document.createElement('img');
       i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0);
       callback();
+      if (window.localStorage && localStorage.setItem) {
+        localStorage.setItem('consent', parameter);
+      }
+      break;
+    <%-BANNER_NO_IFRAME%>
+    default:
       break;
     }
 };

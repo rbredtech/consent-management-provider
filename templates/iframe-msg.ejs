@@ -4,6 +4,33 @@
       window.parent.postMessage(msg, "*");
     }
   }
+  function handlevk(key, id) {
+    switch (key) {
+      case "vkenter":
+        this.document.getElementById('agttcnstbnnr').style.display = 'none'; // every action hides banner
+        var btna = this.document.getElementById('consBtnAgree').style;
+        if (btna.border.indexOf('3px') >= 0) {
+          __tcfapi('setConsent', 2, function() {}, true); // gave consent
+        }
+        _message(id + ";" + btoa(JSON.stringify(1)) + (s ? ";1" : ""));
+        break;
+      case "vkleft":
+      case "vkright":
+        // toggle selected button
+        var btna = this.document.getElementById('consBtnAgree').style;
+        var btnd = this.document.getElementById('consBtnDismiss').style;
+        if (btna.border.indexOf('3px') < 0) {
+          btna.border = '3px solid #76b642';
+          btnd.border = '1px solid #76b642';
+        } else {
+          btna.border = '1px solid #76b642';
+          btnd.border = '3px solid #76b642';
+        }
+        break;
+      default:
+        break;
+    }
+  }
   if (window["addEventListener"]) {
     window.addEventListener(
       "message",
@@ -25,28 +52,8 @@
             addBanner(); // from banner.ejs
             setTimeout(hideBanner, <%-BANNER_TIMEOUT%>);
             break;
-          case "vkenter":
-            this.document.getElementById('agttcnstbnnr').style.display = 'none'; // every action hides banner
-            var btna = this.document.getElementById('consBtnAgree').style;
-            if (btna.border.indexOf('3px') >= 0) {
-              __tcfapi('setConsent', 2, function() {}, true); // gave consent
-            }
-            _message(id + ";" + btoa(JSON.stringify(1)) + (s ? ";1" : ""));
-            break;
-          case "vkleft":
-          case "vkright":
-            // toggle selected button
-            var btna = this.document.getElementById('consBtnAgree').style;
-            var btnd = this.document.getElementById('consBtnDismiss').style;
-            if (btna.border.indexOf('3px') < 0) {
-              btna.border = '3px solid #76b642';
-              btnd.border = '1px solid #76b642';
-            } else {
-              btna.border = '1px solid #76b642';
-              btnd.border = '3px solid #76b642';
-            }
-            break;
           default:
+            handlevk(m[1], id);
             break;
         }
       },
