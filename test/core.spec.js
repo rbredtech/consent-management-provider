@@ -27,7 +27,7 @@ describe("Consent Management is loaded", () => {
 
         expect(apiResponse.cmpStatus)
             .toBe("disabled");
-        expect(apiResponse.vendor["consent"])
+        expect(apiResponse.vendor["consents"])
             .toBeUndefined()
     });
 });

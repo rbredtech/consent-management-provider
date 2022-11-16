@@ -77,7 +77,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
       i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0) + (channelId !== '' ? '&channelId=' + channelId : '');
       callback(parameter);
       if (window.localStorage && localStorage.setItem) {
-        localStorage.setItem('consent', parameter);
+        localStorage.setItem('xconsent', parameter);
       }
       break;
     <%-BANNER_NO_IFRAME%>
