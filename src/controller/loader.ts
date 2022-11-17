@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import path from "path";
 
 import { API_VERSION, HTTP_HOST, TECH_COOKIE_NAME } from "../config";
-import { minify } from "../util/minify";
 import { loadedCounterMetric } from "../util/metrics";
 
 export const loaderController = async (req: Request, res: Response) => {
@@ -35,13 +34,7 @@ export const loaderController = async (req: Request, res: Response) => {
       }
     );
 
-    const loaderJsMinified = minify(loaderJs);
-    if (loaderJsMinified.error) {
-      res.status(500).send(loaderJsMinified.error);
-      return;
-    }
-
-    res.send(loaderJsMinified.code);
+    res.send(loaderJs);
   } catch (e) {
     res.status(500).send(e);
   }

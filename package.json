@@ -1,6 +1,6 @@
 {
   "name": "consent-management-provider",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "A minimal consent manager aiming for compliance to IAB's Transperancy and Consent Framework (TCF v2) ",
   "main": "dist/app.js",
   "scripts": {
@@ -22,7 +22,6 @@
     "express": "^4.18.2",
     "nodemon": "^2.0.20",
     "prom-client": "^14.1.0",
-    "uglify-js": "^3.17.4",
     "winston": "^3.8.2"
   },
   "devDependencies": {

@@ -5,7 +5,6 @@ import path from "path";
 import { BANNER_TIMEOUT } from "../config";
 
 import { logger } from "../util/logger";
-import { minify } from "../util/minify";
 import { configuredCounterMetric } from "../util/metrics";
 
 import { getTemplateValues } from "./util/getTemplateValues";
@@ -42,14 +41,7 @@ export const managerController = async (req: Request, res: Response) => {
       values
     );
 
-    const cmpJsMinified = minify(
-      bannerJs && kbdJs ? [bannerJs, kbdJs, cmpJs] : cmpJs
-    );
-    if (cmpJsMinified.error) {
-      res.status(500).send(cmpJsMinified.error);
-      return;
-    }
-    res.send(cmpJsMinified.code);
+    res.send(bannerJs && kbdJs ? `${bannerJs}${kbdJs}${cmpJs}` : cmpJs);
   } catch (e) {
     logger.error(e);
     res.status(500).send(e);
