@@ -1,7 +1,7 @@
 import express from "express";
 import path from "path";
 
-import { HTTP_PORT } from "./config";
+import { API_VERSION, HTTP_PORT } from "./config";
 import router from "./router";
 import { logger } from "./util/logger";
 import { registry } from "./util/metrics";
@@ -10,7 +10,7 @@ const app = express();
 app.set("views", path.join(__dirname, "../templates"));
 app.set("view engine", "ejs");
 
-app.use(router);
+app.use(`/${API_VERSION}`, router);
 
 app.get("/metrics", async (_req, res) => {
   res

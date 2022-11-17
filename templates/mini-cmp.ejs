@@ -74,10 +74,10 @@ window.__tcfapi = function(command, version, callback, parameter) {
       break;
     case 'setConsent':
       var i = document.createElement('img');
-      i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0) + (channelId !== '' ? '&channelId=' + channelId : '');
+      i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0) + (channelId !== '' ? '&channelId=' + channelId : '');
       callback(parameter);
       if (window.localStorage && localStorage.setItem) {
-        localStorage.setItem('xconsent', parameter);
+        localStorage.setItem('<%-COOKIE_NAME%>', parameter);
       }
       break;
     <%-BANNER_NO_IFRAME%>
