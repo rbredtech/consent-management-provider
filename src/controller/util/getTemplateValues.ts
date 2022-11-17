@@ -6,7 +6,7 @@ import {
   TECH_COOKIE_MIN,
   TECH_COOKIE_NAME,
   CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
-  CMP_ENABLED,
+  CMP_ENABLED, API_VERSION,
 } from "../../config";
 
 import { logger } from "../../util/logger";
@@ -61,6 +61,8 @@ export const getTemplateValues = (req: Request): { [key: string]: any } => {
     logger.debug("enable consent status for this request");
 
   return {
+    API_VERSION,
+    COOKIE_NAME,
     XT: req.timestamp,
     TC_STRING: "tcstr",
     CMP_STATUS: cmpStatus,

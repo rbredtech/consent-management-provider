@@ -6,7 +6,7 @@ var browserRefreshClient = require("browser-refresh-client");
 var port = argv.port || 8080;
 
 dotenv.config();
-const { BROWSER_REFRESH_URL, HTTP_HOST } = process.env;
+const { BROWSER_REFRESH_URL, API_VERSION, HTTP_HOST } = process.env;
 
 var app = express();
 app.use(express.static("."));
@@ -15,7 +15,7 @@ app.set("view engine", "ejs");
 
 app.get("/*", (_req, res) => {
   res.setHeader("Content-Type", "application/vnd.hbbtv.xhtml+xml");
-  res.render("index", { CONSENT_SERVER_HOST: HTTP_HOST, BROWSER_REFRESH_URL });
+  res.render("index", { CONSENT_SERVER_HOST: HTTP_HOST, BROWSER_REFRESH_URL, API_VERSION });
 });
 
 var server = app.listen(port, function () {

@@ -2,6 +2,7 @@ import { EnvVar } from "../util/env";
 
 export const HTTP_PORT = new EnvVar("HTTP_PORT").getStringOrFail();
 export const HTTP_HOST = new EnvVar("HTTP_HOST").getStringOrFail();
+export const API_VERSION = new EnvVar("API_VERSION").getStringOrFail();
 export const COOKIE_DOMAIN = new EnvVar("COOKIE_DOMAIN").getStringOrFail();
 export const COOKIE_NAME = new EnvVar("COOKIE_NAME").getStringOrDefault(
   "xconsent"

@@ -65,7 +65,7 @@
 
     var iframe = document.createElement('iframe');
     _iframe = iframe; // global to this script context
-    iframe.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/iframe<%-BANNER%>.html');
+    iframe.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe<%-BANNER%>.html');
     iframe.setAttribute('style', 'position:absolute; border:0; outline:0; top:0; left:0; width:100%; height:100%; z-index: 5599');
     iframe.setAttribute('frameborder', '0');
     document.getElementsByTagName('body')[0].appendChild(iframe);
@@ -117,7 +117,7 @@
     }
     var a = document.createElement('script');
     a.setAttribute('type', 'text/javascript');
-    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/manager<%-BANNER%>.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
+    a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/manager<%-BANNER%>.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
     a.addEventListener('load', callQueue);
     document.getElementsByTagName('head')[0].appendChild(a);
   }

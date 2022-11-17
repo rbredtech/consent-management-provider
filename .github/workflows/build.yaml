@@ -70,6 +70,7 @@ jobs:
           HTTP_HOST: localhost:3000
           COOKIE_DOMAIN: localhost
           CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT: 100
+          API_VERSION: v2
       - name: Log in to the Container registry
         id: login
         uses: docker/login-action@v2
