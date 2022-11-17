@@ -4,9 +4,7 @@ import path from "path";
 
 import { BANNER_TIMEOUT } from "../config";
 
-import { minify } from "../util/minify";
 import { configuredCounterMetric } from "../util/metrics";
-
 import { getTemplateValues } from "./util/getTemplateValues";
 
 export const managerIframeController = async (req: Request, res: Response) => {
@@ -43,16 +41,7 @@ export const managerIframeController = async (req: Request, res: Response) => {
       );
     }
 
-    const combinedMinified = minify(
-      bannerJs ? [cmpJs, iframeMsgJs, bannerJs] : [cmpJs, iframeMsgJs]
-    );
-
-    if (combinedMinified.error) {
-      res.status(500).send(combinedMinified.error);
-      return;
-    }
-
-    res.send(combinedMinified.code);
+    res.send(bannerJs ? `${cmpJs}${iframeMsgJs}${bannerJs}` : `${cmpJs}${iframeMsgJs}`);
   } catch (e) {
     res.status(500).send(e);
   }
