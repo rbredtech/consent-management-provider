@@ -3,7 +3,7 @@ const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
 const API_VERSION = process.env.API_VERSION || "v2";
 
 async function get() {
-    const browser = await puppeteer.launch({dumpio: true, args: ['--disable-gpu']});
+    const browser = await puppeteer.launch({dumpio: false, args: ['--disable-gpu']});
     const page = await browser.newPage();
     page.on('request', request => console.log(request.url()));
     page.on('response', response => console.log(response.url(), response.status()));

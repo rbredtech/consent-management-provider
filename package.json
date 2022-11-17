@@ -10,7 +10,7 @@
     "start": "npm run prod",
     "build": "rm -rf ./dist/* && tsc",
     "prod": "node ./dist/app.js",
-    "test": "jest",
+    "test": "jest --verbose=true --silent",
     "ci": "start-server-and-test start http://localhost:3000/health test"
   },
   "author": "Alexander Futász <alexander.futasz@fokus.fraunhofer.de>",
