@@ -49,10 +49,8 @@ This image is then pushed to <https://github.com/rbredtech/consent-management-pr
 
 All API endpoints take an optional query parameter`channelId`, which is used to collect metrics about the opt-in/out ratio on a specific channel.
 
-- GET `/loader.js` - Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
-- GET `/loader-with-banner.js` - Alternative to Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status including support for consent banner display, see below for `__tcfapi('showBanner', ...)`.
-- GET `/set-consent?consent=1` - Issue a request to this URL if a user has given consent, alternatively use the API, see below for `__tcfapi('setConset', ...)`.
-- GET `/set-consent?consent=0` - A request to this URL revokes consent.
+- GET `/v2/loader.js` - Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
+- GET `/v2/loader-with-banner.js` - Alternative to Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status including support for consent banner display, see below for `__tcfapi('showBanner', ...)`.
 
 ### __tcfapi methods
 
@@ -111,12 +109,12 @@ type TCData = {
 
 ### Checking of consent status
 
-The `{HOST_URL}/loader.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
+The `{HOST_URL}/v2/loader.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
 
 Add the `loader.js` bundle to your application:
 
 ```html
-<script src="{HOST_URL}/loader.js?channelId=1234"></script>
+<script src="{HOST_URL}/v2/loader.js?channelId=1234"></script>
 ```
 
 The `channelId` query parameter is optional and is used to collect metrics about which channel opt-ins/outs come from.
@@ -143,7 +141,7 @@ __tcfapi('ping', 2, function(pingReturn) {
 
 ### Displaying consent banner
 
-By using the alternative script `/loader-with-banner.js` an additional API is available to invoke the display of a consent banner.
+By using the alternative script `/v2/loader-with-banner.js` an additional API is available to invoke the display of a consent banner.
 
 This functionality needs access to the key input handler to capture key events from the remote control. It is recommended that the
 existing key handler of the HbbTV application is unregistered and only registered again once the consent banner is no longer displayed.
@@ -156,11 +154,7 @@ __tcfapi('showBanner', 2, function() {
 
 ### Setting of consent status
 
-You can set the consent status for a user by issuing a GET requests to the `{HOST_URL}/set-consent?consent=1` endpoint. The query parameter `consent=1` indicates to the service that the user has given consent.
-
-Setting the query parameter to  `?consent=0` removes the consent for a user (e.g. if a user decided to opt-out after he has opted-in).
-
-There is also an API function available that works like:
+You can set the consent status for a user by executing to following API function:
 
 ```js
 __tcfapi('setConsent', 2, function() {
