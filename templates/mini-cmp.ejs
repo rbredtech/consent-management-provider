@@ -80,6 +80,14 @@ window.__tcfapi = function(command, version, callback, parameter) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
       }
       break;
+    case 'removeConsent':
+      var i = document.createElement('img');
+      i.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/remove-consent');
+      if (window.localStorage && localStorage.removeItem) {
+        localStorage.removeItem('<%-COOKIE_NAME%>');
+      }
+      callback();
+      break;
     <%-BANNER_NO_IFRAME%>
     default:
       break;
