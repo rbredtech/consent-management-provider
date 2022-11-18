@@ -85,13 +85,13 @@ jobs:
           API_VERSION: v2
         run: |
           npm start & npx wait-on http://localhost:3000/health
-          ./k6 run ./load_test/core.js --out json=results.json --vus 50 --iterations 1000
+          ./k6 run ./load_test/core.js --vus 50 --iterations 1000
 
       - name: Upload performance test results
         uses: actions/upload-artifact@v3
         with:
           name: k6-report
-          path: results.json
+          path: summary.json
 
       - name: Log in to the Container registry
         id: login
