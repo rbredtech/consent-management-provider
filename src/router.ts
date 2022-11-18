@@ -6,7 +6,7 @@ import {
   iframeController,
   loaderController,
   managerController,
-  managerIframeController,
+  managerIframeController, removeConsentController,
   setConsentController,
 } from "./controller";
 
@@ -38,5 +38,6 @@ router.get(
 );
 
 router.get("/set-consent", setConsentController);
+router.get("/remove-consent", removeConsentController);
 
 export default router;
