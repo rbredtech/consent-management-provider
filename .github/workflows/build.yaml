@@ -74,8 +74,18 @@ jobs:
 
       - name: Run local k6 test
         uses: grafana/k6-action@v0.2.0
+        env:
+          HTTP_HOST: localhost:3000
+          API_VERSION: v2
         with:
           filename: load_test/core.js
+          flags: --out json=results.json
+
+      - name: Upload performance test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: k6-report
+          path: results.json
 
       - name: Log in to the Container registry
         id: login
