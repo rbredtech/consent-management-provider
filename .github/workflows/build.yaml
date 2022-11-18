@@ -87,12 +87,6 @@ jobs:
           npm start & npx wait-on http://localhost:3000/health
           ./k6 run ./load_test/core.js --vus 50 --iterations 1000
 
-      - name: Upload performance test results
-        uses: actions/upload-artifact@v3
-        with:
-          name: k6-report
-          path: summary.json
-
       - name: Log in to the Container registry
         id: login
         uses: docker/login-action@v2
