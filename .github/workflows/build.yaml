@@ -72,14 +72,17 @@ jobs:
           CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT: 100
           API_VERSION: v2
 
+      - name: Install k6
+        run: |
+          curl https://github.com/loadimpact/k6/releases/download/v0.26.2/k6-v0.26.2-linux64.tar.gz -L | tar xvz --strip-components 1
+
       - name: Run local k6 test
-        uses: grafana/k6-action@v0.2.0
         env:
           HTTP_HOST: localhost:3000
           API_VERSION: v2
-        with:
-          filename: load_test/core.js
-          flags: --out json=results.json
+        run: |
+          npm start & npx wait-on http://localhost:3000/health
+          ./k6 run ./load_test/core.js --out json=results.json
 
       - name: Upload performance test results
         uses: actions/upload-artifact@v3
