@@ -57,6 +57,13 @@ export const getTemplateValues = (req: Request): { [key: string]: any } => {
     cmpStatus = "disabled";
   }
 
+  const userAgent = req.get("user-agent");
+  if (userAgent && userAgent.search(/vewd/i) > -1) {
+    // temporarily disable for vewd devices like "ok." until banner handler no
+    // longer freezes the whole app
+    cmpStatus = "disabled";
+  }
+
   if (cmpStatus === "loaded")
     logger.debug("enable consent status for this request");
 
