@@ -3,6 +3,8 @@ declare global {
     interface Request {
       timestamp: number;
       withBanner: boolean;
+      channelId: number | undefined;
+      channelName: string | undefined;
     }
   }
 

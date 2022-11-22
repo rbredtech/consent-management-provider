@@ -10,6 +10,10 @@ export const COOKIE_NAME = new EnvVar("COOKIE_NAME").getStringOrDefault(
 export const COOKIE_MAXAGE = new EnvVar("COOKIE_MAXAGE").getNumberOrDefault(
   1000 * 60 * 60 * 24 * 365 * 2 // 2 years
 );
+export const CHANNEL_ID_NAME = "channelId";
+export const GENERIC_CHANNEL_NAME = new EnvVar(
+    "GENERIC_CHANNEL_NAME"
+).getStringOrDefault("dieser Sender");
 export const TECH_COOKIE_NAME = new EnvVar(
   "TECH_COOKIE_NAME"
 ).getStringOrDefault("xt");

@@ -11,13 +11,13 @@ const consentCounterMetric = new Counter({
 const loadedCounterMetric = new Counter({
   name: "consent_management_loaded",
   help: "Consent Management is loaded",
-  labelNames: [],
+  labelNames: ["channel", "withBanner"] as const,
 });
 
 const configuredCounterMetric = new Counter({
   name: "consent_management_configured",
   help: "Consent Management is configured",
-  labelNames: ["type"] as const,
+  labelNames: ["type", "channel"] as const,
 });
 
 registry.registerMetric(consentCounterMetric);

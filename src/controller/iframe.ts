@@ -21,6 +21,6 @@ export const iframeController = (req: Request, res: Response) => {
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     BANNER: req.withBanner ? "-with-banner" : "",
-    CHANNEL_ID: req.query.channelId ? channelId : "",
+    CHANNEL_ID: req.channelId,
   });
 };
