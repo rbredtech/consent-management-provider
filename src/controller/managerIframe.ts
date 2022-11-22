@@ -37,7 +37,7 @@ export const managerIframeController = async (req: Request, res: Response) => {
     let bannerJs: string | undefined = undefined;
     if (req.withBanner) {
       bannerJs = await ejs.renderFile(
-        path.join(__dirname, "../../templates/banner.ejs")
+        path.join(__dirname, "../../templates/banner.ejs"), {CHANNEL_NAME: req.channelName}
       );
     }
 

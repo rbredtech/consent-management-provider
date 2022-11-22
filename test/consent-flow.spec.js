@@ -31,23 +31,23 @@ describe("Consent Management with technical cookie", () => {
             expect(apiResponse.vendor["consents"]["4040"])
                 .toBeUndefined()
         });
-    });
 
-    describe("When consent is given",() => {
-        beforeAll( async () => {
-            await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('setConsent', 1, resolve, true);}))`);
-            await pageHelper.initLoader(page);
-        });
+        describe("When consent is given",() => {
+            beforeAll( async () => {
+                await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('setConsent', 1, resolve, true);}))`);
+                await pageHelper.initLoader(page);
+            });
 
-        test("Storage status is enabled and consent is true", async () => {
-            const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 2, resolve)}))`);
+            test("Storage status is enabled and consent is true", async () => {
+                const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 2, resolve)}))`);
 
-            console.log(JSON.stringify(apiResponse));
-            expect(apiResponse.cmpStatus)
-                .toBe("loaded");
-            expect(apiResponse.vendor["consents"]).toBeDefined();
-            expect(apiResponse.vendor["consents"]["4040"])
-                .toBe(true)
+                console.log(JSON.stringify(apiResponse));
+                expect(apiResponse.cmpStatus)
+                    .toBe("loaded");
+                expect(apiResponse.vendor["consents"]).toBeDefined();
+                expect(apiResponse.vendor["consents"]["4040"])
+                    .toBe(true)
+            });
         });
     });
 });
