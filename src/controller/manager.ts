@@ -28,7 +28,7 @@ export const managerController = async (req: Request, res: Response) => {
         { BANNER_TIMEOUT }
       );
       bannerJs = await ejs.renderFile(
-        path.join(__dirname, "../../templates/banner.ejs")
+        path.join(__dirname, "../../templates/banner.ejs"), {CHANNEL_NAME: req.channelName}
       );
       kbdJs = await ejs.renderFile(
         path.join(__dirname, "../../templates/kbd.ejs")

@@ -11,9 +11,9 @@ async function get() {
     return page;
 }
 
-async function initLoader(page, channelId = undefined) {
-    const isLoaded = page.waitForResponse(response => response.url().includes('manager-iframe.js'));
-    await page.setContent(`<script type='text/javascript' src="http://${HTTP_HOST}/${API_VERSION}/loader.js${channelId !== undefined ? "?channelId=" + channelId : ""}"></script>`);
+async function initLoader(page, channelId = undefined, withBanner = false) {
+    const isLoaded = page.waitForResponse(response => response.url().includes('manager-iframe'));
+    await page.setContent(`<script type='text/javascript' src="http://${HTTP_HOST}/${API_VERSION}/loader${withBanner ? "-with-banner" : ""}.js${channelId !== undefined ? "?channelId=" + channelId : ""}"></script>`);
     return isLoaded;
 }
 
