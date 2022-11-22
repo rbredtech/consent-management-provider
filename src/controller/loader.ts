@@ -18,7 +18,7 @@ export const loaderController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
-  loadedCounterMetric.inc();
+  loadedCounterMetric.labels({channel: req.channelName, withBanner: req.withBanner ? "true" : "false"}).inc();
 
   try {
     const loaderJs = await ejs.renderFile(
@@ -30,7 +30,7 @@ export const loaderController = async (req: Request, res: Response) => {
         CONSENT_SERVER_HOST: HTTP_HOST,
         URL_SCHEME: req.protocol,
         BANNER: req.withBanner ? "-with-banner" : "",
-        CHANNEL_ID: req.query.channelId ? channelId : "",
+        CHANNEL_ID: req.channelId,
       }
     );
 
