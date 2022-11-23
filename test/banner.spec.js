@@ -6,7 +6,6 @@ const {
     expect
 } = require("@jest/globals");
 const pageHelper = require("./helper/page");
-const exp = require("constants");
 let page;
 
 beforeAll(async () => {

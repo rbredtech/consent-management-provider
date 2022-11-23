@@ -13,7 +13,7 @@ export const managerController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
-  configuredCounterMetric.labels({ type: "3rd-party" }).inc();
+  configuredCounterMetric.labels({ type: "3rd-party", channel: req.channelName }).inc();
 
   try {
     const values = getTemplateValues(req);
