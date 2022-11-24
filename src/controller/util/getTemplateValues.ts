@@ -49,6 +49,7 @@ export const getTemplateValues = (req: Request): { [key: string]: any } => {
 
   if (
     cmpStatus === "loaded" &&
+    tcConsent === undefined &&
     Math.floor(Math.random() * 101) > CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT
   ) {
     // request randomly choosen to be outside the configured sampling threshold,

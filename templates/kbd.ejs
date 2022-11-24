@@ -6,7 +6,7 @@ function handlevk(key, cb) {
       if (btna.border.indexOf("3px") >= 0) {
         __tcfapi("setConsent", 2, cb, true); // gave consent
       } else {
-        cb();
+        __tcfapi("setConsent", 2, cb, false); // decline consent
       }
       break;
     case "vkleft":

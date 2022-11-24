@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
+const HTTP_PROTOCOL = process.env.HTTP_PROTOCOL || "http";
 const API_VERSION = process.env.API_VERSION || "v2";
 
 async function get() {
@@ -13,8 +14,8 @@ async function get() {
 
 async function initLoader(page, channelId = undefined, withBanner = false) {
     const isLoaded = page.waitForResponse(response => response.url().includes('manager-iframe'));
-    await page.setContent(`<script type='text/javascript' src="http://${HTTP_HOST}/${API_VERSION}/loader${withBanner ? "-with-banner" : ""}.js${channelId !== undefined ? "?channelId=" + channelId : ""}"></script>`);
+    await page.setContent(`<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}/${API_VERSION}/loader${withBanner ? "-with-banner" : ""}.js${channelId !== undefined ? "?channelId=" + channelId : ""}"></script>`);
     return isLoaded;
 }
 
-module.exports = {get, initLoader, HTTP_HOST};
+module.exports = {get, initLoader, HTTP_HOST, HTTP_PROTOCOL};
