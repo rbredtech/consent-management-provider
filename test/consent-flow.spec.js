@@ -14,7 +14,7 @@ afterAll(async () => {
 
 describe("Consent Management with technical cookie", () => {
     beforeAll(async () => {
-        await page.goto(`${HTTP_PROTOCOLå}://${pageHelper.HTTP_HOST}/health`);
+        await page.goto(`${HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
         await page.evaluate(`localStorage.setItem("xt", "${Date.now() - 3600000 * 49}");`);
     });
 
