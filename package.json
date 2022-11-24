@@ -1,6 +1,6 @@
 {
   "name": "consent-management-provider",
-  "version": "2.1.11",
+  "version": "2.1.12",
   "description": "A minimal consent manager aiming for compliance to IAB's Transperancy and Consent Framework (TCF v2) ",
   "main": "dist/app.js",
   "scripts": {
@@ -9,6 +9,7 @@
     "watch": "concurrently \"nodemon -e ts -w ./src -x ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
     "start": "npm run prod",
     "build": "rm -rf ./dist/* && tsc",
+    "minify": "minify-all-js ./dist",
     "prod": "node ./dist/app.js",
     "test": "jest --verbose=true --silent",
     "ci": "start-server-and-test start http://localhost:3000/health test"
@@ -44,6 +45,7 @@
     "eslint-config-airbnb-typescript": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "jest": "^29.2.2",
+    "minify-all-js": "^0.1.9",
     "puppeteer": "^19.2.1",
     "start-server-and-test": "^1.14.0",
     "ts-node": "^10.9.1",
