@@ -1,5 +1,6 @@
 const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
 const pageHelper = require("./helper/page");
+const { HTTP_PROTOCOL } = require("./helper/page");
 let page;
 
 beforeAll(async () => {
@@ -13,7 +14,7 @@ afterAll(async () => {
 
 describe("Consent Management with technical cookie", () => {
     beforeAll(async () => {
-        await page.goto(`http://${pageHelper.HTTP_HOST}/health`);
+        await page.goto(`${HTTP_PROTOCOLå}://${pageHelper.HTTP_HOST}/health`);
         await page.evaluate(`localStorage.setItem("xt", "${Date.now() - 3600000 * 49}");`);
     });
 
