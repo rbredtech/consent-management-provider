@@ -62,6 +62,10 @@ jobs:
         id: build
         run: npm run build
 
+      - name: Minify code
+        id: minify
+        run: npm run minify
+
       - name: Test app
         id: test
         run: npm run ci
