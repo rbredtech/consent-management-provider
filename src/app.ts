@@ -7,6 +7,7 @@ import { logger } from "./util/logger";
 import { registry } from "./util/metrics";
 
 const app = express();
+app.set("trust proxy", 1);
 app.set("views", path.join(__dirname, "../templates"));
 app.set("view engine", "ejs");
 
