@@ -27,7 +27,7 @@ describe("Consent Management with vewd user agent", () => {
             const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 2, resolve)}))`);
 
             expect(apiResponse.cmpStatus)
-                .toBe("disabled");
+                .toBe("loaded");
             expect(apiResponse.vendor["consents"]).toBeDefined();
             expect(apiResponse.vendor["consents"]["4040"])
                 .toBeUndefined()
