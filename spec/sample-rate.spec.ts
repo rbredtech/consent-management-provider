@@ -39,7 +39,22 @@ describe("Consent Management API configured with 0% sample rate", () => {
         });
     });
 
-    describe("When called with consent decision", () => {
+    describe("When called with consent decision true", () => {
+        let response: Response;
+
+        beforeAll(async () => {
+            response = await request(app)
+                .get("/v2/manager.js?consent=true");
+        });
+
+        test("cmpStatus is loaded", () => {
+            expect(response.status).toBe(200);
+            expect(response.text).toContain("cmpStatus: 'loaded'");
+        });
+    });
+
+
+    describe("When called with consent decision false", () => {
         let response: Response;
 
         beforeAll(async () => {
