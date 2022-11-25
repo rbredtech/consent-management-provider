@@ -38,10 +38,10 @@ export const getTemplateValues = (req: Request): { [key: string]: any } => {
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
 
+  const technicalCookiePassed = CMP_ENABLED && req.timestamp && Date.now() - req.timestamp >= TECH_COOKIE_MIN;
+
   if (
-    CMP_ENABLED &&
-    req.timestamp &&
-    Date.now() - req.timestamp >= TECH_COOKIE_MIN
+    technicalCookiePassed || tcConsent !== undefined
   ) {
     // if the tech cookie is set and is old enough, the cmp is enabled
     cmpStatus = "loaded";
@@ -52,7 +52,7 @@ export const getTemplateValues = (req: Request): { [key: string]: any } => {
     tcConsent === undefined &&
     Math.floor(Math.random() * 101) > CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT
   ) {
-    // request randomly choosen to be outside the configured sampling threshold,
+    // request randomly chosen to be outside the configured sampling threshold,
     // so disable consent status
     cmpStatus = "disabled";
   }

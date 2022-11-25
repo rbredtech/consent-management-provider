@@ -5,13 +5,11 @@ process.env.HTTP_HOST = "localhost:3000";
 process.env.HTTP_PROTOCOL = "http";
 process.env.API_VERSION = "v2";
 process.env.COOKIE_DOMAIN = "localhost";
-process.env.CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT = "0";
 
 let request = require("supertest");
 const express = require("express");
 const path = require("path");
 import router from "../src/router";
-import { CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT } from "../src/config";
 
 let app: Express;
 
@@ -24,7 +22,7 @@ beforeAll(() => {
     app.use(`/${process.env.API_VERSION}`, router);
 });
 
-describe("Consent Management API configured with 0% sample rate", () => {
+describe("Consent Management API", () => {
     describe("When called initially", () => {
         let response: Response;
 
@@ -35,7 +33,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
 
         test("cmpStatus is disabled", () => {
             expect(response.status).toBe(200);
-            expect(response.text).toContain("cmpStatus: 'disabled'");
+            expect(response.text).toContain("eventStatus: 'tcloaded',\n        cmpStatus: 'disabled'");
         });
     });
 
@@ -49,10 +47,9 @@ describe("Consent Management API configured with 0% sample rate", () => {
 
         test("cmpStatus is loaded", () => {
             expect(response.status).toBe(200);
-            expect(response.text).toContain("cmpStatus: 'loaded'");
+            expect(response.text).toContain("eventStatus: 'tcloaded',\n        cmpStatus: 'loaded'");
         });
     });
-
 
     describe("When called with consent decision false", () => {
         let response: Response;
@@ -64,7 +61,22 @@ describe("Consent Management API configured with 0% sample rate", () => {
 
         test("cmpStatus is loaded", () => {
             expect(response.status).toBe(200);
-            expect(response.text).toContain("cmpStatus: 'loaded'");
+            expect(response.text).toContain("eventStatus: 'tcloaded',\n        cmpStatus: 'loaded'");
+        });
+    });
+
+
+    describe("When called with consent decision undefined", () => {
+        let responsea: Response;
+
+        beforeAll(async () => {
+            responsea = await request(app)
+                .get("/v2/manager.js?consent=undefined");
+        });
+
+        test("cmpStatus is loaded", () => {
+            expect(responsea.status).toBe(200);
+            expect(responsea.text).toContain("eventStatus: 'tcloaded',\n        cmpStatus: 'disabled'");
         });
     });
 });
