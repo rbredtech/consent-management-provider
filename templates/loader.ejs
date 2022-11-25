@@ -120,7 +120,7 @@
         // no tech info yet, need to store
         localStorage.setItem('<%-TECH_COOKIE_NAME%>', xt);
       } else {
-        xt = localStorage.getItem('x<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
+        xt = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
         hasConsent = localStorage.getItem('xconsent');
       }
     }
