@@ -147,7 +147,7 @@ This functionality needs access to the key input handler to capture key events f
 existing key handler of the HbbTV application is unregistered and only registered again once the consent banner is no longer displayed.
 
 ```js
-__tcfapi('showBanner', 2, function() {
+__tcfapi('showBanner', 2, function(consent) {
     // user has closed the banner by remote control or the banner timeout was reached
   });
 ```
