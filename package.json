@@ -1,6 +1,6 @@
 {
   "name": "consent-management-provider",
-  "version": "2.1.15",
+  "version": "2.1.16",
   "description": "A minimal consent manager aiming for compliance to IAB's Transperancy and Consent Framework (TCF v2) ",
   "main": "dist/app.js",
   "scripts": {
@@ -60,7 +60,7 @@
     "verbose": true,
     "preset": "ts-jest",
     "transform": {
-      "^.+\\.[tj]s$": "ts-jest"
+      "^.+\\.ts$": "ts-jest"
     }
   }
 }

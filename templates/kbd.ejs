@@ -50,8 +50,17 @@ function kbd(cb) {
   var keyset = app && app.privateData.keyset;
   keyset && keyset.setValue(keyset.NAVIGATION);
   document.onkeydown = function (event) {
-    if (event.keyCode === KeyEvent.VK_ENTER) handlevk("vkenter", cb);
-    if (event.keyCode === KeyEvent.VK_LEFT) handlevk("vkleft");
-    if (event.keyCode === KeyEvent.VK_RIGHT) handlevk("vkright");
+    if (event.keyCode === KeyEvent.VK_ENTER) {
+      handlevk("vkenter", cb);
+      event.preventDefault();
+    }
+    if (event.keyCode === KeyEvent.VK_LEFT) {
+      handlevk("vkleft");
+      event.preventDefault();
+    }
+    if (event.keyCode === KeyEvent.VK_RIGHT) {
+      handlevk("vkright");
+      event.preventDefault();
+    }
   };
 }
