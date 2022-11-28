@@ -25,8 +25,9 @@
     if (!_iframe.contentWindow) {
       return;
     }
+    var params = m.split(';');
     cbmap[++cbcnt] = [cb];
-    if (m === 'log') isLog = cbcnt;
+    if (params[1] === 'log') isLog = cbcnt;
     _iframe.contentWindow.postMessage(cbcnt + ';' + m, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
   }
 
@@ -96,7 +97,7 @@
               var pos = m[0] === 'err' ? 1 : 0;
               var id = m[pos];
               var cb = cbmap[id][pos];
-              if (isLog != id) delete cbmap[id];
+              if (isLog+"" !== id) delete cbmap[id];
               var r = JSON.parse(atob(m[++pos]));
               var s = m[++pos] ? true : undefined;
               if (cb) cb(r, s);

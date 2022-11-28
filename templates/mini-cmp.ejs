@@ -8,6 +8,16 @@ window.__tcfapi = function(command, version, callback, parameter) {
   }
   var _listenerCnt = 1;
   var _listeners = {};
+
+  var logEvents = {
+    TC_DATA: "TCData",
+    SET_CONSENT: "SetConsent"
+  };
+
+  function log() {
+    if(this._log) this._log(Array.prototype.slice.call(arguments));
+  }
+
   switch (command) {
     case 'ping':
       callback({
@@ -56,6 +66,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
           }
         }
       }, true);
+      log('getTCData', '<%-CMP_STATUS%>', hasConsent);
       break;
     case 'addEventListener':
       _listeners[_listenerCnt] = callback;
@@ -74,19 +85,25 @@ window.__tcfapi = function(command, version, callback, parameter) {
       break;
     case 'setConsent':
       var i = document.createElement('img');
+      var localStorageAvailable = false;
       i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0) + (channelId !== '' ? '&channelId=' + channelId : '');
       callback(parameter);
       if (window.localStorage && localStorage.setItem) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
+        localStorageAvailable = true;
       }
+      i.addEventListener('load', log.bind(null, logEvents.SET_CONSENT, parameter, localStorageAvailable));
       break;
-    case 'removeConsent':
+    case 'removeConsentDecision':
       var i = document.createElement('img');
       i.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent');
       if (window.localStorage && localStorage.removeItem) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
       }
       callback();
+      break;
+    case 'log':
+      this._log = callback;
       break;
     <%-BANNER_NO_IFRAME%>
     default:
