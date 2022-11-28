@@ -30,42 +30,6 @@
     _iframe.contentWindow.postMessage(cbcnt + ';' + m, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
   }
 
-  function kbd(cb) {
-    var KeyEvent = window['KeyEvent'] || {};
-    KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
-    KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window['VK_RIGHT']  || 39;
-    KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER']  || 13;
-    var objects = document.getElementsByTagName('object');
-    var mgr;
-    for (var i=0; i < objects.length; i++) {
-      if (objects[i].type.toLowerCase() === 'application/oipfApplicationManager'.toLowerCase()) {
-        mgr = objects[i];
-        break;
-      }
-    }
-    if (!mgr) {
-      // error: oipfApplicationManager not found, cannot handle remote control input keys
-      return;
-    }
-    var app = mgr && mgr.getOwnerApplication && mgr.getOwnerApplication(document);
-    var keyset = app && app.privateData.keyset;
-    keyset && keyset.setValue(keyset.NAVIGATION);
-    document.onkeydown = function(event) {
-      if (event.keyCode === KeyEvent.VK_ENTER) {
-        message('vkenter', cb);
-        event.preventDefault();
-      }
-      if (event.keyCode === KeyEvent.VK_LEFT) {
-        message('vkleft');
-        event.preventDefault();
-      }
-      if (event.keyCode === KeyEvent.VK_RIGHT) {
-        message('vkright');
-        event.preventDefault();
-      }
-    }
-  }
-
   function loadiframe() {
     if (document.getElementsByTagName('body').length < 1) {
       setTimeout(loadiframe, 100);
@@ -80,13 +44,20 @@
     document.getElementsByTagName('body')[0].appendChild(iframe);
 
     iframe.addEventListener('load', function() {
-      window.__tcfapi = function(cmd, ver, cb, param) {
+      window.__tcfapi = function(cmd, ver, cb, parameter) {
         if (cmd === 'showBanner') {
           message('showbanner');
-          kbd(cb);
+          cbmap['sb'] = [cb];
           return;
         }
-        message('cmd;' + cmd + ';' + ver + ';' + param, function(r, s) {cb && cb(r, s)});
+        if (cmd === 'handleKey') {
+          message('handlekey;' + cmd + ';' + ver + ';' + (parameter.keyCode ? parameter.keyCode : parameter));
+          if (parameter.preventDefault && parameter.keyCode && (parameter.keyCode === 13 || parameter.keyCode === 37 || parameter.keyCode === 39)) {
+            parameter.preventDefault();
+          }
+          return;
+        }
+        message('cmd;' + cmd + ';' + ver + ';' + parameter, function(r, s) {cb && cb(r, s)});
       };
       if (window.addEventListener) {
         window.addEventListener('message', function(ev) {
@@ -109,7 +80,7 @@
   }
 
   if (window.navigator && navigator.userAgent && navigator.userAgent.indexOf &&
-    navigator.userAgent.indexOf('Presto') === -1) {
+    navigator.userAgent.indexOf('Presto') !== -1) {
     setTimeout(loadiframe, 1);
   } else {
     var xt = <%-XT%>;

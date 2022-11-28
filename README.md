@@ -62,9 +62,10 @@ __tcfapi(method, version, callback?, parameter?)
 
 | Method | Description     | Parameter | Callback                   |
 |--------|-----------------|------------|----------------------------|
-| ping   |Get API metadata |  | (status: TCStatus) => void |
+| ping   |Wait until API is available. Optional. |  | (status: TCStatus) => void |
 | getTCData | Retrieve consent decision | | (data: TCData) => void     |
 | showBanner | displays a consent banner to the user (only available if loader-with-banner.js was included) | |                            |
+| handleKey | Allows for key handling of banner. Call for every key event after app called showBanner method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the app. | Key event from "keydown" | |
 | setConsent | Alter consent decision | consent: boolean | (consent: boolean) => void |
 | addEventListener | Subscribe on internal event log for debugging purposes | |
 | removeEventListener | Unsubscribe from internal event log | |
@@ -111,6 +112,12 @@ type TCData = {
 
 The `{HOST_URL}/v2/loader.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
 
+The app needs to check `cmpStatus` and `consent` for the response of the `tcData` method.
+
+If `cmpStatus` is not set as `loaded` it means the consent check is currently not available on this device and cookieless tracking should be used.
+
+If `cmpStatus` is `loaded` consent checking is available. If `consent` for the pre defined vendor id is `undefined` then consent has not yet been set on this device and the app should show a banner asking for consent. There is two options to proceed. The app can either display its own banner and use `setConsent` method to set the consent result retrieved by banner. Or the app can use the `showBanner` and `handleKey` methods to use the included banner that will overlay over the app.
+
 Add the `loader.js` bundle to your application:
 
 ```html
@@ -121,35 +128,49 @@ The `channelId` query parameter is optional and is used to collect metrics about
 Having added the `loader.js` javascript file to the application, you can check for the user's consent status through the API endpoints provided by the `__tcfapi` object:
 
 ```js
-const CMP_VENDOR_ID = 4040; // custom Red Tech vendor ID
-__tcfapi('ping', 2, function(pingReturn) {
-  if (pingReturn.cmpStatus !== 'loaded') {
-      // periodically check again until cmpStatus is loaded
-      return;
+var CMP_VENDOR_ID = 4040; // custom Red Tech vendor ID
+__tcfapi('getTCData', 2, function(tcData, success) {
+  var isCmpEnabled = success && tcData.cmpStatus === 'loaded';
+  if (!isCmpEnabled) {
+    // do nothing, consent checking is unavailable
+    // start cookieless tracking
+    return;
   }
 
-  __tcfapi('getTCData', 2, function(tcData, success) {
-      const consent = tcData.vendor.consents[CMP_VENDOR_ID];
-      if (consent) {
-        // user gave consent
-      } else {
-        // user did not give consent
-      }
-  }, [CMP_VENDOR_ID]);
-});
+  var consent = tcData.vendor.consents[CMP_VENDOR_ID];
+  // init tracking now, based on current consent which may be true, false or undefined
+  // e.g. loadTvpingTracking(consent)
+
+  // further handling if consent undefined
+  if (consent === undefined) {
+    // new device, no consent information exists yet => show banner to ask for consent
+  }
+}, [CMP_VENDOR_ID]);
 ```
 
 ### Displaying consent banner
 
 By using the alternative script `/v2/loader-with-banner.js` an additional API is available to invoke the display of a consent banner.
 
-This functionality needs access to the key input handler to capture key events from the remote control. It is recommended that the
-existing key handler of the HbbTV application is unregistered and only registered again once the consent banner is no longer displayed.
+This functionality relies on the app to forward any key events from the key handler of the application by using the `handleKey` method while the banner is being displayed.
 
 ```js
+// use only in case consent from tcData method is undefined
+var isShowingBanner = true;
 __tcfapi('showBanner', 2, function(consent) {
-    // user has closed the banner by remote control or the banner timeout was reached
-  });
+  // user has closed the banner by remote control or the banner timeout was reached
+  isShowingBanner = false;
+});
+
+// example for extending existing key handler of app to allow for control of
+// buttons of the banner
+function keyHandler(event) {
+  if (isShowingBanner) {
+    // pass on key events to library while consent banner is displayed
+    __tcfapi('handleKey', 2, function() {}, event);
+    return;
+  }
+}
 ```
 
 ### Setting of consent status
@@ -158,6 +179,6 @@ You can set the consent status for a user by executing to following API function
 
 ```js
 __tcfapi('setConsent', 2, function() {
-    // call returned successfully
-  }, true); // set to false to revoke content
+  // call returned successfully
+}, true); // set to false to revoke content
 ```
