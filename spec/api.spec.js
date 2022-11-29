@@ -17,7 +17,7 @@ afterAll(async () => {
         .close();
 }, 20000);
 
-describe("Consent Management is loaded", () => {
+describe("Consent Management API", () => {
     let first;
     beforeAll(async () => {
         const loaderLoaded = page.waitForResponse(response => response.url()
@@ -28,7 +28,7 @@ describe("Consent Management is loaded", () => {
         first = await Promise.race([managerLoaded, apiResponse])
     });
 
-    test("Manager is loaded before API is available", () => {
+    test("Is available", () => {
         expect(first.url())
             .toContain("manager-iframe.js");
     });
@@ -42,8 +42,14 @@ describe("Consent Management is loaded", () => {
                     callbackQueue.push(params);
                 };
 
-                window.__tcfapi('log', 1, add);
+                window.__tcfapi('onLogEvent', 1, add);
             });
+        });
+
+        test("Load event is logged", async () => {
+            const queue = await page.evaluate(() => { return window.callbackQueue; });
+            expect(queue).toHaveLength(2);
+            expect(queue[1]).toEqual({"event": "loaded", "parameters": {"type": "iframe"}, "success": true, ts: expect.any(Number)})
         });
 
         describe("And API method is called", () => {
@@ -54,8 +60,8 @@ describe("Consent Management is loaded", () => {
 
            test("Activity is logged", async () => {
               const queue = await page.evaluate(() => { return window.callbackQueue; });
-              expect(queue).toHaveLength(1);
-              expect(queue[0]).toEqual(['getTCData', 'disabled', null])
+              expect(queue).toHaveLength(3);
+              expect(queue[2]).toEqual({"event": "TCData", "parameters": {"status": "disabled"}, "success": true, ts: expect.any(Number)})
            });
 
             describe("And API method is called again", () => {
@@ -66,8 +72,8 @@ describe("Consent Management is loaded", () => {
 
                 test("Activity is logged", async () => {
                     const queue = await page.evaluate(() => { return window.callbackQueue; });
-                    expect(queue).toHaveLength(2);
-                    expect(queue[1]).toEqual(['getTCData', 'disabled', null])
+                    expect(queue).toHaveLength(4);
+                    expect(queue[3]).toEqual({"event": "TCData", "parameters": {"status": "disabled"}, "success": true, ts: expect.any(Number)})
                 });
             });
         });
