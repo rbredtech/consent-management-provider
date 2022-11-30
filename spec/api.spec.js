@@ -11,17 +11,20 @@ afterAll(async () => {
     await page.browser().close();
 }, 20000);
 
-describe("Consent Management is loaded", () => {
-    let first;
+describe("API is called right after loading", () => {
+    let apiResponse;
     beforeAll( async () => {
-        const loaderLoaded = page.waitForResponse(response => response.url().includes('loader.js'));
-        const managerLoaded = pageHelper.initLoader(page);
-        await loaderLoaded;
-        const apiResponse = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
-        first = await Promise.race([managerLoaded, apiResponse])
+        const pageLoaded = page.waitForNavigation({waitUntil: 'load'});
+        pageHelper.initLoader(page);
+        await pageLoaded.then(() => {
+            apiResponse = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
+        });
     });
 
-    test("Manager is loaded before API is available", ()=> {
-       expect(first.url()).toContain("manager-iframe.js");
+    test("Callback is eventually called", async () => {
+        expect(await apiResponse)
+            .toBeDefined();
+        expect(await apiResponse).toHaveProperty('vendor')
+        expect(await apiResponse).toHaveProperty('cmpStatus')
     });
 });
