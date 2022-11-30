@@ -80,7 +80,7 @@
   }
 
   if (window.navigator && navigator.userAgent && navigator.userAgent.indexOf &&
-    navigator.userAgent.indexOf('Presto') !== -1) {
+    navigator.userAgent.indexOf('Presto') === -1) {
     setTimeout(loadiframe, 1);
   } else {
     var xt = <%-XT%>;

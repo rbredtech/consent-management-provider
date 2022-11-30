@@ -13,7 +13,7 @@ async function get() {
 }
 
 async function initLoader(page, channelId = undefined, withBanner = false) {
-    const isLoaded = page.waitForResponse(response => response.url().includes('manager-iframe'));
+    const isLoaded = page.waitForResponse(response => response.url().includes('manager'));
     await page.setContent(`<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}/${API_VERSION}/loader${withBanner ? "-with-banner" : ""}.js${channelId !== undefined ? "?channelId=" + channelId : ""}"></script>`);
     return isLoaded;
 }
