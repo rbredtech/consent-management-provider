@@ -65,15 +65,18 @@ describe("Consent Management API", () => {
            });
 
             describe("And API method is called again", () => {
+                let consentCookieLoaded;
+
                 beforeAll(async () => {
-                    const apiResponse = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
-                    await apiResponse;
+                    consentCookieLoaded = page.waitForResponse(response => response.url().includes('set-consent'));
+                    await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('setConsent', 1, resolve, false)}))`);
+                    await consentCookieLoaded;
                 });
 
                 test("Activity is logged", async () => {
                     const queue = await page.evaluate(() => { return window.callbackQueue; });
                     expect(queue).toHaveLength(4);
-                    expect(queue[3]).toEqual({"event": "TCData", "parameters": {"status": "disabled"}, "success": true, ts: expect.any(Number)})
+                    expect(queue[3]).toEqual({"event": "setConsent", "parameters": {"consent": "false", "localStorageAvailable": true}, "success": true, ts: expect.any(Number)})
                 });
             });
         });
