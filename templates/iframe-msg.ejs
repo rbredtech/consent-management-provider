@@ -4,21 +4,25 @@
       window.parent.postMessage(msg, "*");
     }
   }
-  function handlevk(key, id) {
-    switch (key) {
-      case "vkenter":
+  function handlevk(keyCode) {
+    var KeyEvent = window["KeyEvent"] || {};
+    KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window["VK_LEFT"] || 37;
+    KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window["VK_RIGHT"] || 39;
+    KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window["VK_ENTER"] || 13;
+    switch (keyCode) {
+      case KeyEvent.VK_ENTER:
         this.document.getElementById('agttcnstbnnr').style.display = 'none'; // every action hides banner
         var btna = this.document.getElementById('consBtnAgree').style;
         if (btna.border.indexOf('3px') >= 0) {
           __tcfapi("setConsent", 2, function() {}, true); // gave consent
-          _message(id + ";" + btoa(JSON.stringify(true)) + (s ? ";1" : ""));
+          _message("sb;" + btoa(JSON.stringify(true)) + (s ? ";1" : ""));
         } else {
           __tcfapi("setConsent", 2, function() {}, false); // decline consent
-          _message(id + ";" + btoa(JSON.stringify(false)) + (s ? ";1" : ""));
+          _message("sb;" + btoa(JSON.stringify(false)) + (s ? ";1" : ""));
         }
         break;
-      case "vkleft":
-      case "vkright":
+      case KeyEvent.VK_LEFT:
+      case KeyEvent.VK_RIGHT:
         // toggle selected button
         var btna = this.document.getElementById('consBtnAgree').style;
         var btnd = this.document.getElementById('consBtnDismiss').style;
@@ -55,8 +59,10 @@
             addBanner(); // from banner.ejs
             setTimeout(hideBanner, <%-BANNER_TIMEOUT%>);
             break;
+          case "handlekey":
+            handlevk(JSON.parse(m[4]), id);
+            break;
           default:
-            handlevk(m[1], id);
             break;
         }
       },
