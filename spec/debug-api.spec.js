@@ -22,7 +22,7 @@ afterAll(async () => {
 describe("Debug API", () => {
 
     beforeAll(async () => {
-        const pageLoaded = page.waitForNavigation({waitUntil: 'load'});
+        const pageLoaded = page.waitForNavigation({waitUntil: 'networkidle0'});
         await pageHelper.initLoader(page);
         await pageLoaded;
     });
@@ -41,6 +41,7 @@ describe("Debug API", () => {
                     resolve();
                 });
             });
+            await wait(100);
         });
 
         describe("And getTCData API method is called", () => {
