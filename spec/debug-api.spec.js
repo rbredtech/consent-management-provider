@@ -26,20 +26,18 @@ describe("Debug API", () => {
 
     describe("When debug listener is subscribed", () => {
         beforeAll(async () => {
-            const onLogEvent = await page.evaluate(() => {
+            await page.evaluate(() => {
                 return new Promise(resolve => {
                     window.callbackQueue = [];
 
                     function add(params) {
                         callbackQueue.push(params);
-                        resolve();
                     };
 
                     window.__tcfapi('onLogEvent', 2, add);
+                    resolve();
                 });
             });
-
-            await onLogEvent;
         });
 
         test("Load event is logged", async () => {
