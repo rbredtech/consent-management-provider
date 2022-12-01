@@ -8,6 +8,17 @@ window.__tcfapi = function(command, version, callback, parameter) {
   }
   var _listenerCnt = 1;
   var _listeners = {};
+
+  var logEvents = {
+    TC_DATA: "TCData",
+    SET_CONSENT: "setConsent",
+    REMOVE_CONSENT_DECISION: "removeConsentDecision"
+  };
+
+  function log(event, success, parameters) {
+    if(this._logCallback) this._logCallback({event: event, success: success, parameters: parameters, ts: Date.now()});
+  }
+
   switch (command) {
     case 'ping':
       callback({
@@ -56,6 +67,7 @@ window.__tcfapi = function(command, version, callback, parameter) {
           }
         }
       }, true);
+      log(logEvents.TC_DATA, true, {status: '<%-CMP_STATUS%>', consent: hasConsent});
       break;
     case 'addEventListener':
       _listeners[_listenerCnt] = callback;
@@ -74,19 +86,36 @@ window.__tcfapi = function(command, version, callback, parameter) {
       break;
     case 'setConsent':
       var i = document.createElement('img');
+      var localStorageAvailable = false;
       i.src = '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consent=' + (String(parameter) === "true" ? 1 : 0) + (channelId !== '' ? '&channelId=' + channelId : '');
       callback(parameter);
       if (window.localStorage && localStorage.setItem) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
+        localStorageAvailable = true;
       }
+      i.addEventListener('load', log.bind(null, logEvents.SET_CONSENT, true, {consent: parameter, localStorageAvailable: localStorageAvailable}));
+      i.addEventListener('error', log.bind(null, logEvents.SET_CONSENT, false, {}));
       break;
-    case 'removeConsent':
+    case 'removeConsentDecision':
       var i = document.createElement('img');
+      var localStorageAvailable = false;
       i.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent');
       if (window.localStorage && localStorage.removeItem) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
+        localStorageAvailable = true;
       }
+      i.addEventListener('load', log.bind(null, logEvents.REMOVE_CONSENT_DECISION, true, {localStorageAvailable: localStorageAvailable}));
+      i.addEventListener('error', log.bind(null, logEvents.REMOVE_CONSENT_DECISION, false, {}));
       callback();
+      break;
+    case 'onLogEvent':
+      this._logCallback = callback;
+      break;
+    case 'log':
+      if (parameter) {
+        var logParameters = JSON.parse(atob(parameter));
+        if(logParameters && logParameters.event) log(logParameters.event, true, logParameters.parameters);
+      }
       break;
     <%-BANNER_NO_IFRAME%>
     default:

@@ -3,6 +3,8 @@ import { Request, Response } from "express";
 import { COOKIE_DOMAIN, COOKIE_NAME, COOKIE_MAXAGE } from "../config";
 import { consentCounterMetric } from "../util/metrics";
 
+const img = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNiYAAAAAkAAxkR2eQAAAAASUVORK5CYII=', 'base64');
+
 export const setConsentController = (req: Request, res: Response) => {
   const channelId = Number(req.query.channelId);
 
@@ -33,5 +35,7 @@ export const setConsentController = (req: Request, res: Response) => {
     }
   );
   res.setHeader("Cache-Control", "no-store");
-  res.sendStatus(200);
+  res.setHeader("Content-Type", "image/png");
+  res.setHeader("Content-Length", img.length);
+  res.send(img);
 };

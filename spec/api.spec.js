@@ -1,30 +1,39 @@
-const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
+const {
+    describe,
+    beforeAll,
+    afterAll,
+    test,
+    expect
+} = require("@jest/globals");
 const pageHelper = require("./helper/page");
+const { wait } = require("../helper/util");
 let page;
 
 beforeAll(async () => {
     page = await pageHelper.get();
 }, 20000);
 
-
 afterAll(async () => {
-    await page.browser().close();
+    await page.browser()
+        .close();
 }, 20000);
 
-describe("API is called right after loading", () => {
-    let apiResponse;
-    beforeAll( async () => {
-        const pageLoaded = page.waitForNavigation({waitUntil: 'load'});
-        pageHelper.initLoader(page);
-        await pageLoaded.then(() => {
-            apiResponse = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
-        });
-    });
+describe("Consent Management API", () => {
 
-    test("Callback is eventually called", async () => {
-        expect(await apiResponse)
-            .toBeDefined();
-        expect(await apiResponse).toHaveProperty('vendor')
-        expect(await apiResponse).toHaveProperty('cmpStatus')
+    describe("When instantly called after loading", () => {
+        let first;
+        beforeAll(async () => {
+            const loaderLoaded = page.waitForResponse(response => response.url()
+                .includes('loader.js'));
+            const managerLoaded = pageHelper.initLoader(page);
+            await loaderLoaded;
+            const apiResponse = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
+            first = await Promise.race([managerLoaded, apiResponse])
+        });
+
+        test("Is available", () => {
+            expect(first.url())
+                .toContain("manager-iframe.js");
+        });
     });
 });

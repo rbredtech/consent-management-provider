@@ -1,11 +1,34 @@
 (function(){try {
   var _q = [];
+  var _logEntries = [];
 
   window.__tcfapi = function(command, version, callback, parameter) {
     _q[_q.length] = Array.prototype.slice.call(arguments);
   };
 
+  window.__tcfapi('onLogEvent', 2, function() {
+    _logEntries[_logEntries.length] = Array.prototype.slice.call(arguments);
+  });
+
+
   var channelId='<%-CHANNEL_ID%>';
+
+  function logQueue() {
+    if (!_logEntries || !_logEntries.length || logCallbackIndex < 0) return;
+
+    for (var i=0; i<_logEntries.length; i++) {
+      var f=_logEntries[i];
+      if(cbmap[logCallbackIndex]) {
+      cbmap[logCallbackIndex][0](f[0]);
+      }
+    }
+    delete _logEntries;
+  }
+
+  function onAPILoaded(type) {
+    callQueue();
+    log('loaded', true, {type: type});
+  }
 
   function callQueue() {
     if (!_q) return;
@@ -18,16 +41,24 @@
 
   var cbcnt = 0;
   var cbmap = {};
-  var isLog = 0;
+  var logCallbackIndex = -1;
   var _iframe;
 
   function message(m, cb) {
     if (!_iframe.contentWindow) {
       return;
     }
+    var params = m.split(';');
     cbmap[++cbcnt] = [cb];
-    if (m === 'log') isLog = cbcnt;
+    if (params[1] === 'onLogEvent') {
+      logCallbackIndex = cbcnt;
+      logQueue();
+    }
     _iframe.contentWindow.postMessage(cbcnt + ';' + m, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
+  }
+
+  function log(event, success, parameters) {
+    window.__tcfapi('log', 2, function() {},  btoa(JSON.stringify({event: event, parameters: parameters})));
   }
 
   function loadiframe() {
@@ -67,7 +98,7 @@
               var pos = m[0] === 'err' ? 1 : 0;
               var id = m[pos];
               var cb = cbmap[id][pos];
-              if (isLog != id) delete cbmap[id];
+              if (logCallbackIndex+"" !== id) delete cbmap[id];
               var r = JSON.parse(atob(m[++pos]));
               var s = m[++pos] ? true : undefined;
               if (cb) cb(r, s);
@@ -75,8 +106,9 @@
           } catch (e) {}
         }, false);
       }
-      callQueue();
+      onAPILoaded('iframe');
     });
+    iframe.addEventListener('error', log.bind(null, 'loaded', false, {type: 'iframe'}));
   }
 
   if (window.navigator && navigator.userAgent && navigator.userAgent.indexOf &&
@@ -98,7 +130,8 @@
     var a = document.createElement('script');
     a.setAttribute('type', 'text/javascript');
     a.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/manager<%-BANNER%>.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
-    a.addEventListener('load', callQueue);
+    a.addEventListener('load', onAPILoaded.bind(null, '3rdparty'));
+    a.addEventListener('error', log.bind(null, 'loaded', false, {type: '3rdparty'}));
     document.getElementsByTagName('head')[0].appendChild(a);
   }
 } catch(e) {}}
