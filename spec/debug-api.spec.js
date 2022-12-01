@@ -40,23 +40,23 @@ describe("Debug API", () => {
             });
         });
 
-        test("Load event is logged", async () => {
-            const queue = await page.evaluate(() => {
-                return window.callbackQueue;
-            });
-            expect(queue).toHaveLength(1);
-            expect(queue[0]).toEqual({
-                    "event": "loaded",
-                    "parameters": { "type": "iframe" },
-                    "success": true,
-                    ts: expect.any(Number)
-            });
-        });
-
         describe("And API method is called", () => {
             beforeAll(async () => {
                 const apiResponse = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
                 await apiResponse;
+            });
+
+            test("Load event is logged", async () => {
+                const queue = await page.evaluate(() => {
+                    return window.callbackQueue;
+                });
+                expect(queue).toHaveLength(2);
+                expect(queue[0]).toEqual({
+                    "event": "loaded",
+                    "parameters": { "type": "iframe" },
+                    "success": true,
+                    ts: expect.any(Number)
+                });
             });
 
             test("Activity is logged", async () => {
