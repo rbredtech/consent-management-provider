@@ -6,6 +6,7 @@ const {
     afterAll
 } = require("@jest/globals");
 const pageHelper = require("./helper/page");
+const { wait } = require("../helper/util");
 
 let page;
 
@@ -40,7 +41,7 @@ describe("Debug API", () => {
             });
         });
 
-        describe("And API method is called", () => {
+        describe("And getTCData API method is called", () => {
             beforeAll(async () => {
                 const apiResponse = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
                 await apiResponse;
@@ -59,7 +60,7 @@ describe("Debug API", () => {
                 });
             });
 
-            test("Activity is logged", async () => {
+            test("Activity for getTCData is logged", async () => {
                 const queue = await page.evaluate(() => {return window.callbackQueue;});
                 expect(queue).toHaveLength(2);
                 expect(queue[1]).toEqual({
@@ -70,16 +71,17 @@ describe("Debug API", () => {
                 });
             });
 
-            describe("And API method is called again", () => {
+            describe("And setConsent API method is called again", () => {
                 let consentCookieLoaded;
 
                 beforeAll(async () => {
                     consentCookieLoaded = page.waitForResponse(response => response.url().includes('set-consent'));
                     await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('setConsent', 1, resolve, false)}))`);
                     await consentCookieLoaded;
+                    await wait(100);
                 });
 
-                test("Activity is logged", async () => {
+                test("Activity for setConsent is logged", async () => {
                     const queue = await page.evaluate(() => {return window.callbackQueue;});
                     expect(queue).toHaveLength(3);
                     expect(queue[2]).toEqual({
