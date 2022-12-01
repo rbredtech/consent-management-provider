@@ -22,7 +22,9 @@ afterAll(async () => {
 describe("Debug API", () => {
 
     beforeAll(async () => {
+        const pageLoaded = page.waitForNavigation({waitUntil: 'load'});
         await pageHelper.initLoader(page);
+        await pageLoaded;
     });
 
     describe("When debug listener is subscribed", () => {
