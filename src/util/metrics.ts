@@ -17,7 +17,7 @@ const loadedCounterMetric = new Counter({
 const configuredCounterMetric = new Counter({
   name: "consent_management_configured",
   help: "Consent Management is configured",
-  labelNames: ["type", "channel"] as const,
+  labelNames: ["type", "channel", "consent"] as const,
 });
 
 const technicalAgeMetric = new Histogram({
