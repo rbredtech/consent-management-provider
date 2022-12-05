@@ -17,10 +17,10 @@ afterAll(async () => {
         .close();
 }, 20000);
 
-describe("Consent Management with banner", () => {
+describe("Consent Management with banner on a P7 channel", () => {
     let iframe;
     beforeAll(async () => {
-        await pageHelper.initLoader(page, 0, true);
+        await pageHelper.initLoader(page, 3300, true);
         iframe = (await page.frames()).find(frame => frame.url()
             .indexOf("iframe") > -1);
     });
@@ -47,14 +47,9 @@ describe("Consent Management with banner", () => {
                 .toBeDefined();
         });
 
-        test("Channel specific information should be present", async () => {
+        test("Channel specific information should NOT be present", async () => {
             expect(await iframe.$eval("div#agttcnstbnnr", node => node.innerText))
-                .toContain("deren Mitglied");
-        });
-
-        test("Channel Name is replaced in legal text", async () => {
-            expect(await iframe.$eval("div#agttcnstbnnr", node => node.innerText))
-                .toContain("ServusTV");
+                .not.toContain("deren Mitglied");
         });
     });
 });

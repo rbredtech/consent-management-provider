@@ -20,10 +20,8 @@ export const managerIframeController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
-  configuredCounterMetric.labels({ type: "iframe" }).inc();
-
   try {
-    const values = getTemplateValues(req);
+    const values = getTemplateValues(req, "iframe");
     values.BANNER_NO_IFRAME = "";
     const cmpJs = await ejs.renderFile(
       path.join(__dirname, "../../templates/mini-cmp.ejs"),
@@ -37,7 +35,7 @@ export const managerIframeController = async (req: Request, res: Response) => {
     let bannerJs: string | undefined = undefined;
     if (req.withBanner) {
       bannerJs = await ejs.renderFile(
-        path.join(__dirname, "../../templates/banner.ejs"), {CHANNEL_NAME: req.channelName}
+        path.join(__dirname, "../../templates/banner.ejs"), {CHANNEL_NAME: req.channelName, IS_PRO7: req.isp7}
       );
     }
 
