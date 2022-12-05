@@ -5,7 +5,7 @@ import path from "path";
 import { BANNER_TIMEOUT } from "../config";
 
 import { logger } from "../util/logger";
-import { configuredCounterMetric } from "../util/metrics";
+import { configuredCounterMetric, technicalAgeMetric } from "../util/metrics";
 
 import { getTemplateValues } from "./util/getTemplateValues";
 
@@ -13,10 +13,8 @@ export const managerController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
-  configuredCounterMetric.labels({ type: "3rd-party", channel: req.channelName }).inc();
-
   try {
-    const values = getTemplateValues(req);
+    const values = getTemplateValues(req, "3rd-party");
 
     let bannerJs: string | undefined = undefined;
     let kbdJs: string | undefined = undefined;
@@ -28,7 +26,7 @@ export const managerController = async (req: Request, res: Response) => {
         { BANNER_TIMEOUT }
       );
       bannerJs = await ejs.renderFile(
-        path.join(__dirname, "../../templates/banner.ejs"), {CHANNEL_NAME: req.channelName}
+        path.join(__dirname, "../../templates/banner.ejs"), {CHANNEL_NAME: req.channelName, IS_PRO7: req.isp7}
       );
       kbdJs = await ejs.renderFile(
         path.join(__dirname, "../../templates/kbd.ejs")

@@ -9,8 +9,9 @@ import {
 } from "../../config";
 
 import { logger } from "../../util/logger";
+import { configuredCounterMetric, technicalAgeMetric } from "../../util/metrics";
 
-export const getTemplateValues = (req: Request): { [key: string]: any } => {
+export const getTemplateValues = (req: Request, type: string = "3rd-party"): { [key: string]: any } => {
   let cookie: ConsentCookie | undefined;
   if (req.cookies[COOKIE_NAME]) {
     try {
@@ -37,6 +38,9 @@ export const getTemplateValues = (req: Request): { [key: string]: any } => {
   }
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
+
+  configuredCounterMetric.labels({ type, channel: req.channelName }).inc();
+  technicalAgeMetric.labels({ type, channel: req.channelName }).observe(Date.now() - req.timestamp);
 
   const technicalCookiePassed = CMP_ENABLED && req.timestamp && Date.now() - req.timestamp >= TECH_COOKIE_MIN;
 

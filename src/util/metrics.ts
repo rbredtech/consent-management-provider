@@ -1,4 +1,4 @@
-import { Counter, Registry } from "prom-client";
+import { Counter, Registry, Histogram } from "prom-client";
 
 const registry = new Registry();
 
@@ -20,6 +20,12 @@ const configuredCounterMetric = new Counter({
   labelNames: ["type", "channel"] as const,
 });
 
+const technicalAgeMetric = new Histogram({
+  name: "consent_management_technical_age",
+  help: "Technical Cookie age in milliseconds",
+  labelNames: ["type", "channel"] as const,
+});
+
 registry.registerMetric(consentCounterMetric);
 registry.registerMetric(loadedCounterMetric);
 registry.registerMetric(configuredCounterMetric);
@@ -29,4 +35,5 @@ export {
   consentCounterMetric,
   loadedCounterMetric,
   configuredCounterMetric,
+  technicalAgeMetric
 };

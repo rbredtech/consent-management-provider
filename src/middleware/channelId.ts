@@ -109,6 +109,10 @@ function channelName(channelId: number): string {
   return channel ? channel.name : GENERIC_CHANNEL_NAME;
 }
 
+function isP7(channelId: number): boolean {
+  return channelId >= 3300 && channelId < 3500;
+}
+
 export function channelMiddleware(
   req: Request,
   _res: Response,
@@ -119,6 +123,7 @@ export function channelMiddleware(
       : undefined;
   req.channelId = channelId;
   req.channelName = channelId !== undefined ? channelName(channelId) : GENERIC_CHANNEL_NAME;
+  req.isp7 = channelId !== undefined ? isP7(channelId) : false;
   logger.debug(`Channel: ${JSON.stringify(req.query)} ::: ${channelId} - ${req.channelName}`);
   next();
 }

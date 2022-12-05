@@ -5,6 +5,7 @@ declare global {
       withBanner: boolean;
       channelId: number | undefined;
       channelName: string | undefined;
+      isp7: boolean;
     }
   }
 
