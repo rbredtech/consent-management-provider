@@ -18,7 +18,7 @@ function addBanner() {
   document.body.insertAdjacentHTML("beforeend", inner);
 }
 
-function isBannerShown() {
+function isBannerVisible() {
   return document.getElementById("agttcnstbnnr") && document.getElementById("agttcnstbnnr").style.display != "none";
 }
 
@@ -27,6 +27,28 @@ function showBanner() {
     addBanner();
   }
   document.getElementById("agttcnstbnnr").style.display = "block";
+}
+
+function isConsentOptInButtonSelected() {
+  var btna = this.document.getElementById('consBtnAgree').style;
+  if (btna.border.indexOf('3px') >= 0) {
+    return true;
+  } else {
+    return false
+  }
+}
+
+function toggleConsentButtons() {
+  // toggle selected button
+  var btna = this.document.getElementById('consBtnAgree').style;
+  var btnd = this.document.getElementById('consBtnDismiss').style;
+  if (btna.border.indexOf('3px') < 0) {
+    btna.border = '3px solid #76b642';
+    btnd.border = '1px solid #76b642';
+  } else {
+    btna.border = '1px solid #76b642';
+    btnd.border = '3px solid #76b642';
+  }
 }
 
 function hideBanner() {

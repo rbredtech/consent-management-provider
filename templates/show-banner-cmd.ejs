@@ -1,11 +1,14 @@
 case "showBanner":
-kbd(callback);
-showBanner(); // from banner.ejs
-setTimeout(hideBanner, <%-BANNER_TIMEOUT%>);
-break;
+  kbd(callback);
+  showBanner(); // from banner.ejs
+  setTimeout(hideBanner, <%-BANNER_TIMEOUT%>);
+  break;
 case "handleKey":
-handlevk(parameter.keyCode ? parameter.keyCode : parameter);
-if (parameter.preventDefault && parameter.keyCode && (parameter.keyCode === 13 || parameter.keyCode === 37 || parameter.keyCode === 39)) {
-  parameter.preventDefault();
-}
+  handlevk(parameter.keyCode ? parameter.keyCode : parameter);
+  if (parameter.preventDefault && parameter.keyCode && (parameter.keyCode === 13 || parameter.keyCode === 37 || parameter.keyCode === 39)) {
+    parameter.preventDefault();
+  }
 break;
+case "isBannerVisible":
+  callback(isBannerVisible());
+  break;

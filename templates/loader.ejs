@@ -88,6 +88,10 @@
           }
           return;
         }
+        if (cmd === 'isBannerVisible') {
+          message('is_banner_visible', function(r, s) {cb && cb(r, s)});
+          return;
+        }
         message('cmd;' + cmd + ';' + ver + ';' + parameter, function(r, s) {cb && cb(r, s)});
       };
       if (window.addEventListener) {

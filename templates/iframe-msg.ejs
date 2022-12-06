@@ -5,34 +5,23 @@
     }
   }
   function handlevk(keyCode) {
+    if (!isBannerVisible()) {
+      return;
+    }
     var KeyEvent = window["KeyEvent"] || {};
     KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window["VK_LEFT"] || 37;
     KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window["VK_RIGHT"] || 39;
     KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window["VK_ENTER"] || 13;
     switch (keyCode) {
       case KeyEvent.VK_ENTER:
-        this.document.getElementById('agttcnstbnnr').style.display = 'none'; // every action hides banner
-        var btna = this.document.getElementById('consBtnAgree').style;
-        if (btna.border.indexOf('3px') >= 0) {
-          __tcfapi("setConsent", 2, function() {}, true); // gave consent
-          _message("sb;" + btoa(JSON.stringify(true)) + (s ? ";1" : ""));
-        } else {
-          __tcfapi("setConsent", 2, function() {}, false); // decline consent
-          _message("sb;" + btoa(JSON.stringify(false)) + (s ? ";1" : ""));
-        }
+        var hasConsent = isConsentOptInButtonSelected();
+        hideBanner();
+        __tcfapi("setConsent", 2, function() {}, hasConsent); // gave consent
+        _message("sb;" + btoa(JSON.stringify(hasConsent)) + (s ? ";1" : ""));
         break;
       case KeyEvent.VK_LEFT:
       case KeyEvent.VK_RIGHT:
-        // toggle selected button
-        var btna = this.document.getElementById('consBtnAgree').style;
-        var btnd = this.document.getElementById('consBtnDismiss').style;
-        if (btna.border.indexOf('3px') < 0) {
-          btna.border = '3px solid #76b642';
-          btnd.border = '1px solid #76b642';
-        } else {
-          btna.border = '1px solid #76b642';
-          btnd.border = '3px solid #76b642';
-        }
+        toggleConsentButtons();
         break;
       default:
         break;
@@ -54,6 +43,9 @@
               },
               m[4]
             );
+            break;
+          case "is_banner_visible":
+            _message(id + ";" + btoa(JSON.stringify(isBannerVisible())) + (s ? ";1" : ""));
             break;
           case "showbanner":
             showBanner(); // from banner.ejs
