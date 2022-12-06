@@ -56,5 +56,45 @@ describe("Consent Management with banner", () => {
             expect(await iframe.$eval("div#agttcnstbnnr", node => node.innerText))
                 .toContain("ServusTV");
         });
+
+        describe("When OK button is hit", () => {
+            let consentSent;
+
+            beforeAll(async () => {
+               consentSent = page.waitForRequest(request => request.url().includes('set-consent'));
+               await page.evaluate(() => {
+                   window.__tcfapi('handleKey', 2, console.log, 13);
+               });
+            });
+
+            test("Consent is sent", async () => {
+                expect((await consentSent).url())
+                    .toContain("set-consent?consent=1");
+            });
+
+            describe("When banner is requested again", () => {
+                beforeAll(async () => {
+                    await page.evaluate(`window.__tcfapi('showBanner', 2, console.log)`);
+                });
+
+                describe("And Dismiss is selected", () => {
+                    let consentSent;
+
+                    beforeAll(async () => {
+                        consentSent = page.waitForRequest(request => request.url()
+                            .includes('set-consent'));
+                        await page.evaluate(() => {
+                            window.__tcfapi('handleKey', 2, console.log, 37);
+                            window.__tcfapi('handleKey', 2, console.log, 13);
+                        });
+                    });
+
+                    test("Consent revoke is sent", async () => {
+                        expect((await consentSent).url())
+                            .toContain("set-consent?consent=0");
+                    });
+                });
+            });
+        });
     });
 });
