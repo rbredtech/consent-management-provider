@@ -1,5 +1,5 @@
 var inner = '<div id="agttcnstbnnr"' +
-  'style="position:absolute; left:20px; right:20px; bottom:20px; font-family:Arial; font-size:16px; font-weight:400; line-height:24px; color:#505050; background-color:#ffffff; border-radius:8px; border: 4px solid #76b642">' +
+  'style="position:absolute; left:20px; right:20px; bottom:20px; display:none; font-family:Arial; font-size:16px; font-weight:400; line-height:24px; color:#505050; background-color:#ffffff; border-radius:8px; border: 4px solid #76b642">' +
   '<div style="margin: 30px 70px 0;"><span ' +
       'style="font-size: 24px;line-height: 24px;font-weight: 500;color:#76b642">Datenschutzeinwilligung zur ' +
       'Reichweitenmessung</span><br></br>' +
@@ -15,9 +15,20 @@ var inner = '<div id="agttcnstbnnr"' +
 '</div>';
 
 function addBanner() {
-document.body.insertAdjacentHTML("beforeend", inner);
+  document.body.insertAdjacentHTML("beforeend", inner);
+}
+
+function isBannerShown() {
+  return document.getElementById("agttcnstbnnr") && document.getElementById("agttcnstbnnr").style.display != "none";
+}
+
+function showBanner() {
+  if (!document.getElementById("agttcnstbnnr")) {
+    addBanner();
+  }
+  document.getElementById("agttcnstbnnr").style.display = "block";
 }
 
 function hideBanner() {
-document.getElementById("agttcnstbnnr").style.display = "none";
+  document.getElementById("agttcnstbnnr").style.display = "none";
 }
