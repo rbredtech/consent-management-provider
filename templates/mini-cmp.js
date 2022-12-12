@@ -1,6 +1,6 @@
 window.__tcfapi = function(command, version, callback, parameter) {
-  var channelId='<%-CHANNEL_ID%>';
-  var hasConsent = <%-TC_CONSENT%>;
+  var channelId = '<%-CHANNEL_ID%>';
+  var hasConsent = '<%-TC_CONSENT%>' === 'true';
   if (window.localStorage && localStorage.getItem) {
     var lc = localStorage.getItem('consent');
     if (lc === "true") hasConsent = true;
@@ -16,7 +16,9 @@ window.__tcfapi = function(command, version, callback, parameter) {
   };
 
   function log(event, success, parameters) {
-    if(this._logCallback) this._logCallback({event: event, success: success, parameters: parameters, ts: Date.now()});
+    if(this._logCallback) {
+      this._logCallback({event: event, success: success, parameters: parameters, ts: Date.now()});
+    }
   }
 
   switch (command) {
@@ -117,7 +119,17 @@ window.__tcfapi = function(command, version, callback, parameter) {
         if(logParameters && logParameters.event) log(logParameters.event, true, logParameters.parameters);
       }
       break;
-    <%-BANNER_NO_IFRAME%>
+    case "showBanner":
+      kbd(callback);
+      showBanner(); // from banner.js
+      setTimeout(hideBanner, parseInt('<%-BANNER_TIMEOUT%>'));
+      break;
+    case "handleKey":
+      handlevk(parameter.keyCode ? parameter.keyCode : parameter);
+      if (parameter.preventDefault && parameter.keyCode && (parameter.keyCode === 13 || parameter.keyCode === 37 || parameter.keyCode === 39)) {
+        parameter.preventDefault();
+      }
+      break;
     default:
       break;
     }

@@ -8,17 +8,17 @@
   <script type='text/javascript'>
     //<![CDATA[
     try {
-      var xt = <%-XT%>;
+      var xt = '<%-XT%>';
       var channelId = '<%-CHANNEL_ID%>';
-      var hasConsent;
+      var hasConsent = null;
 
       if (window.localStorage && localStorage.getItem && localStorage.setItem) {
         if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
           // no tech info yet, need to store
-          localStorage.setItem('<%-TECH_COOKIE_NAME%>', xt);
+          localStorage.setItem('<%-TECH_COOKIE_NAME%>', parseInt(xt));
         } else {
           xt = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
-          hasConsent = localStorage.getItem('xconsent');
+          hasConsent = localStorage.getItem('<%-COOKIE_NAME%>');
         }
       }
 

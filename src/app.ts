@@ -1,5 +1,6 @@
 import express from "express";
 import path from "path";
+import { renderFile } from "ejs";
 
 import { API_VERSION, HTTP_PORT } from "./config";
 import router from "./router";
@@ -9,6 +10,8 @@ import { registry } from "./util/metrics";
 const app = express();
 app.set("trust proxy", 1);
 app.set("views", path.join(__dirname, "../templates"));
+app.engine("html", renderFile);
+app.engine("js", renderFile);
 app.set("view engine", "ejs");
 
 app.use(`/${API_VERSION}`, router);

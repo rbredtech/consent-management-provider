@@ -1,4 +1,5 @@
 import { Express } from "express";
+import { renderFile } from "ejs";
 
 process.env.HTTP_PORT = "3000"
 process.env.HTTP_HOST = "localhost:3000";
@@ -18,6 +19,8 @@ let app: Express;
 beforeAll(() => {
     app = express();
     app.set("trust proxy", 1);
+    app.engine("html", renderFile);
+    app.engine("js", renderFile);
     app.set("views", path.join(__dirname, "../templates"));
     app.set("view engine", "ejs");
 

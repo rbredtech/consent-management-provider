@@ -4,6 +4,7 @@
       window.parent.postMessage(msg, "*");
     }
   }
+
   function handlevk(keyCode) {
     var KeyEvent = window["KeyEvent"] || {};
     KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window["VK_LEFT"] || 37;
@@ -11,9 +12,15 @@
     KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window["VK_ENTER"] || 13;
     switch (keyCode) {
       case KeyEvent.VK_ENTER:
-        this.document.getElementById('agttcnstbnnr').style.display = 'none'; // every action hides banner
-        var btna = this.document.getElementById('consBtnAgree').style;
-        if (btna.border.indexOf('3px') >= 0) {
+        var consentBanner = document.getElementById("agttcnstbnnr");
+        var consBtnAgree = document.getElementById("consBtnAgree");
+
+        if (!consentBanner || !consBtnAgree) {
+          return;
+        }
+
+        consentBanner.style.display = 'none'; // every action hides banner
+        if (consBtnAgree.classList.contains("selected")) {
           __tcfapi("setConsent", 2, function() {}, true); // gave consent
           _message("sb;" + btoa(JSON.stringify(true)) + (s ? ";1" : ""));
         } else {
@@ -24,20 +31,32 @@
       case KeyEvent.VK_LEFT:
       case KeyEvent.VK_RIGHT:
         // toggle selected button
-        var btna = this.document.getElementById('consBtnAgree').style;
-        var btnd = this.document.getElementById('consBtnDismiss').style;
-        if (btna.border.indexOf('3px') < 0) {
-          btna.border = '3px solid #76b642';
-          btnd.border = '1px solid #76b642';
+        var consBtnAgree = document.getElementById("consBtnAgree");
+        var consBtnDismiss = document.getElementById("consBtnDismiss");
+
+        if (!consBtnAgree || !consBtnDismiss) {
+          return;
+        }
+
+        if (!consBtnAgree.classList.contains("selected")) {
+          consBtnAgree.classList.add("selected");
+          consBtnAgree.style.border = "3px solid #76b642";
+
+          consBtnDismiss.classList.remove("selected");
+          consBtnDismiss.style.border = "1px solid #76b642";
         } else {
-          btna.border = '1px solid #76b642';
-          btnd.border = '3px solid #76b642';
+          consBtnAgree.classList.remove("selected");
+          consBtnAgree.style.border = "1px solid #76b642";
+
+          consBtnDismiss.classList.add("selected");
+          consBtnDismiss.style.border = "3px solid #76b642";
         }
         break;
       default:
         break;
     }
   }
+
   if (window["addEventListener"]) {
     window.addEventListener(
       "message",
@@ -56,8 +75,8 @@
             );
             break;
           case "showbanner":
-            showBanner(); // from banner.ejs
-            setTimeout(hideBanner, <%-BANNER_TIMEOUT%>);
+            showBanner(); // from banner.js
+            setTimeout(hideBanner, parseInt('<%-BANNER_TIMEOUT%>'));
             break;
           case "handlekey":
             handlevk(JSON.parse(m[4]), id);

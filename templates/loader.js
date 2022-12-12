@@ -115,7 +115,7 @@
     navigator.userAgent.indexOf('Presto') === -1) {
     setTimeout(loadiframe, 1);
   } else {
-    var xt = <%-XT%>;
+    var xt = '<%-XT%>';
     var hasConsent;
 
     if (window.localStorage && localStorage.getItem && localStorage.setItem) {
@@ -124,7 +124,7 @@
         localStorage.setItem('<%-TECH_COOKIE_NAME%>', xt);
       } else {
         xt = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
-        hasConsent = localStorage.getItem('xconsent');
+        hasConsent = localStorage.getItem('<%-COOKIE_NAME%>');
       }
     }
     var a = document.createElement('script');
