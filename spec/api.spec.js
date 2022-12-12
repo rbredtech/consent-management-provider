@@ -6,7 +6,7 @@ const {
     expect
 } = require("@jest/globals");
 const pageHelper = require("./helper/page");
-const { wait } = require("../helper/util");
+
 let page;
 
 beforeAll(async () => {

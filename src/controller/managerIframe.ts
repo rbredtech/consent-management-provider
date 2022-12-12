@@ -2,8 +2,6 @@ import { renderFile } from "ejs";
 import { Request, Response } from "express";
 import path from "path";
 
-import { BANNER_TIMEOUT } from "../config";
-
 import { getTemplateValues } from "./util/getTemplateValues";
 
 export const managerIframeController = async (req: Request, res: Response) => {
@@ -24,12 +22,12 @@ export const managerIframeController = async (req: Request, res: Response) => {
 
     const cmpJs = await renderFile(
       path.join(__dirname, "../../templates/mini-cmp.js"),
-      { ...values, BANNER_TIMEOUT }
+      values
     );
 
     const iframeMsgJs = await renderFile(
       path.join(__dirname, "../../templates/iframe-msg.js"),
-      { BANNER_TIMEOUT }
+      { BANNER_TIMEOUT: values.BANNER_TIMEOUT }
     );
 
     let bannerJs: string | undefined = undefined;

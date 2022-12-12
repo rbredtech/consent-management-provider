@@ -8,10 +8,12 @@ process.env.API_VERSION = "v2";
 process.env.COOKIE_DOMAIN = "localhost";
 process.env.CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT = "0";
 process.env.TECH_COOKIE_MIN = "120";
+process.env.BANNER_TIMEOUT = "120000";
 
 let request = require("supertest");
 const express = require("express");
 const path = require("path");
+
 import router from "../src/router";
 
 let app: Express;
@@ -19,9 +21,9 @@ let app: Express;
 beforeAll(() => {
     app = express();
     app.set("trust proxy", 1);
+    app.set("views", path.join(__dirname, "../templates"));
     app.engine("html", renderFile);
     app.engine("js", renderFile);
-    app.set("views", path.join(__dirname, "../templates"));
     app.set("view engine", "ejs");
 
     app.use(`/${process.env.API_VERSION}`, router);
@@ -41,7 +43,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
         });
 
         test("consent is undefined", () => {
-            expect(response.text).toContain("var hasConsent = undefined;");
+            expect(response.text).toContain("var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'");
         })
     });
 
@@ -58,7 +60,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
         });
 
         test("consent is true", () => {
-            expect(response.text).toContain("var hasConsent = true;");
+            expect(response.text).toContain("var hasConsent = 'true' === 'undefined' ? undefined : 'true' === 'true'");
         })
     });
 
@@ -75,7 +77,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
         });
 
         test("consent is false", () => {
-            expect(response.text).toContain("var hasConsent = false;");
+            expect(response.text).toContain("var hasConsent = 'false' === 'undefined' ? undefined : 'false' === 'true'");
         })
     });
 
@@ -92,7 +94,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
         });
 
         test("consent is undefined", () => {
-            expect(response.text).toContain("var hasConsent = undefined;");
+            expect(response.text).toContain("var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'");
         })
     });
 
@@ -109,7 +111,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
         });
 
         test("consent is undefined", () => {
-            expect(response.text).toContain("var hasConsent = undefined;");
+            expect(response.text).toContain("var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'");
         })
     });
 
@@ -126,7 +128,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
         });
 
         test("consent is undefined", () => {
-            expect(response.text).toContain("var hasConsent = undefined;");
+            expect(response.text).toContain("var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'");
         })
     });
 });

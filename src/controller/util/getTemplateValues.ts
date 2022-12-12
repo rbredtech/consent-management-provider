@@ -5,7 +5,9 @@ import {
   COOKIE_NAME,
   TECH_COOKIE_MIN,
   CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
-  CMP_ENABLED, API_VERSION,
+  CMP_ENABLED,
+  API_VERSION,
+  BANNER_TIMEOUT,
 } from "../../config";
 
 import { logger } from "../../util/logger";
@@ -74,5 +76,6 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party"): { [
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     CHANNEL_ID: req.query.channelId ? req.query.channelId.toString() : "",
+    BANNER_TIMEOUT,
   };
 };
