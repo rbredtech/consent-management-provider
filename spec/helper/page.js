@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+
 const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
 const HTTP_PROTOCOL = process.env.HTTP_PROTOCOL || "http";
 const API_VERSION = process.env.API_VERSION || "v2";

@@ -1,6 +1,6 @@
 window.__tcfapi = function(command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
-  var hasConsent = '<%-TC_CONSENT%>' === 'true';
+  var hasConsent = '<%-TC_CONSENT%>' === 'undefined' ? undefined : '<%-TC_CONSENT%>' === 'true';
   if (window.localStorage && localStorage.getItem) {
     var lc = localStorage.getItem('consent');
     if (lc === "true") hasConsent = true;
