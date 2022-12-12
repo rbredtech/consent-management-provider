@@ -7,7 +7,7 @@ var inner = '<div id="agttcnstbnnr"' +
       'Geräte ID, IP-Adresse, System- bzw. Browserinformationen, Geräteinformationen (verwendet HbbTV-Version, TV-Hersteller, Übertragungsweg via Satellit oder Kabel, Geräteauflösung). ' +
       'Nähere Informationen zum Datenschutz finden Sie in der HbbTV Applikation des Senders, wo Sie den Status Ihrer Einwilligung verwalten bzw. ändern können.</span></div>' +
   '<div style="color: #76b642; margin: 30px 70px 40px;">' +
-    '<span id="consBtnAgree" class="agtt-sel"' +
+    '<span id="consBtnAgree" class="selected"' +
       'style="margin-right: 10px; padding: 10px; border: 3px solid #76b642; border-radius: 8px">Zustimmen</span>' +
     '<span id="consBtnDismiss"' +
       'style="margin-right: 10px;padding: 10px;border: 1px solid #76b642; border-radius: 8px">Ablehnen</span>' +

@@ -1,8 +1,6 @@
-import ejs from "ejs";
 import { Request, Response } from "express";
-import path from "path";
 
-import { API_VERSION, HTTP_HOST, TECH_COOKIE_NAME } from "../config";
+import { API_VERSION, HTTP_HOST, TECH_COOKIE_NAME, COOKIE_NAME } from "../config";
 import { loadedCounterMetric } from "../util/metrics";
 
 export const loaderController = async (req: Request, res: Response) => {
@@ -21,20 +19,16 @@ export const loaderController = async (req: Request, res: Response) => {
   loadedCounterMetric.labels({channel: req.channelName, withBanner: req.withBanner ? "true" : "false"}).inc();
 
   try {
-    const loaderJs = await ejs.renderFile(
-      path.join(__dirname, "../../templates/loader.ejs"),
-      {
-        XT: Date.now(),
-        TECH_COOKIE_NAME,
-        API_VERSION,
-        CONSENT_SERVER_HOST: HTTP_HOST,
-        URL_SCHEME: req.protocol,
-        BANNER: req.withBanner ? "-with-banner" : "",
-        CHANNEL_ID: req.channelId,
-      }
-    );
-
-    res.send(loaderJs);
+    res.render("loader.js", {
+      XT: Date.now(),
+      TECH_COOKIE_NAME,
+      COOKIE_NAME,
+      API_VERSION,
+      CONSENT_SERVER_HOST: HTTP_HOST,
+      URL_SCHEME: req.protocol,
+      BANNER: req.withBanner ? "-with-banner" : "",
+      CHANNEL_ID: req.channelId,
+    });
   } catch (e) {
     res.status(500).send(e);
   }

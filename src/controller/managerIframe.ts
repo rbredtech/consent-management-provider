@@ -1,10 +1,9 @@
-import ejs from "ejs";
+import { renderFile } from "ejs";
 import { Request, Response } from "express";
 import path from "path";
 
 import { BANNER_TIMEOUT } from "../config";
 
-import { configuredCounterMetric } from "../util/metrics";
 import { getTemplateValues } from "./util/getTemplateValues";
 
 export const managerIframeController = async (req: Request, res: Response) => {
@@ -22,20 +21,21 @@ export const managerIframeController = async (req: Request, res: Response) => {
 
   try {
     const values = getTemplateValues(req, "iframe");
-    values.BANNER_NO_IFRAME = "";
-    const cmpJs = await ejs.renderFile(
-      path.join(__dirname, "../../templates/mini-cmp.ejs"),
-      values
+
+    const cmpJs = await renderFile(
+      path.join(__dirname, "../../templates/mini-cmp.js"),
+      { ...values, BANNER_TIMEOUT }
     );
-    const iframeMsgJs = await ejs.renderFile(
-      path.join(__dirname, "../../templates/iframe-msg.ejs"),
+
+    const iframeMsgJs = await renderFile(
+      path.join(__dirname, "../../templates/iframe-msg.js"),
       { BANNER_TIMEOUT }
     );
 
     let bannerJs: string | undefined = undefined;
     if (req.withBanner) {
-      bannerJs = await ejs.renderFile(
-        path.join(__dirname, "../../templates/banner.ejs"), {CHANNEL_NAME: req.channelName, IS_PRO7: req.isp7}
+      bannerJs = await renderFile(
+        path.join(__dirname, "../../templates/banner.js"), {CHANNEL_NAME: req.channelName, IS_PRO7: req.isp7}
       );
     }
 

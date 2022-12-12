@@ -6,12 +6,5 @@
   ],
   "extends": [
     "airbnb-typescript/base"
-  ],
-  "parserOptions": {
-    "extraFileExtensions": [".ejs"]
-  },
-  "overrides": [{
-    "files": ["src/*"],
-    "excludedFiles": "./assets/*"
-  }]
+  ]
 }
