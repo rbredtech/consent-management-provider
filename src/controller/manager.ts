@@ -25,7 +25,7 @@ export const managerController = async (req: Request, res: Response) => {
       kbdJs = await renderFile(path.join(__dirname, "../templates/kbd.js"));
     }
 
-    const cmpJs = await renderFile(path.join(__dirname, "../templates/mini-cmp.js"), values);
+    const cmpJs = await renderFile(path.join(__dirname, "../templates/manager.js"), values);
 
     res.send(bannerJs && kbdJs ? `${bannerJs}${kbdJs}${cmpJs}` : cmpJs);
   } catch (e) {
