@@ -29,7 +29,6 @@
         "no-delete-var": "off",
         "no-empty": "off",
         "no-constant-condition": "off",
-        "no-redeclare": "off",
         "prettier/prettier": ["error", { "singleQuote": true }]
       }
     }
