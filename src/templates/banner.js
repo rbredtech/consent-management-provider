@@ -1,6 +1,6 @@
 var inner =
   '<div id="agttcnstbnnr"' +
-  'style="position:absolute; left:20px; right:20px; bottom:20px; display:none; font-family:Arial; font-size:16px; font-weight:400; line-height:24px; color:#505050; background-color:#ffffff; border-radius:8px; border: 4px solid #76b642">' +
+  'style="position:absolute; left:20px; right:20px; bottom:20px; display:none; font-family:sans-serif; font-size:16px; font-weight:400; line-height:24px; color:#505050; background-color:#ffffff; border-radius:8px; border: 4px solid #76b642">' +
   '<div style="margin: 30px 70px 0;"><span ' +
   'style="font-size: 24px;line-height: 24px;font-weight: 500;color:#76b642">Datenschutzeinwilligung zur ' +
   'Reichweitenmessung</span><br></br>' +
