@@ -140,7 +140,10 @@ window.__tcfapi = function (command, version, callback, parameter) {
     case 'showBanner':
       kbd(callback);
       showBanner(); // from banner.js
-      setTimeout(hideBanner, parseInt('<%-BANNER_TIMEOUT%>'));
+      setTimeout(function () {
+        hideBanner();
+        callback();
+      }, parseInt('<%-BANNER_TIMEOUT%>'));
       break;
     case 'handleKey':
       handlevk(parameter.keyCode ? parameter.keyCode : parameter);
