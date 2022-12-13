@@ -21,6 +21,9 @@ window.__tcfapi = function (command, version, callback, parameter) {
     }
   }
 
+  var image;
+  var localStorageAvailable;
+
   switch (command) {
     case 'ping':
       callback({
@@ -90,9 +93,9 @@ window.__tcfapi = function (command, version, callback, parameter) {
       }, 1);
       break;
     case 'setConsent':
-      var i = document.createElement('img');
-      var localStorageAvailable = false;
-      i.src =
+      image = document.createElement('img');
+      localStorageAvailable = false;
+      image.src =
         '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consent=' +
         (String(parameter) === 'true' ? 1 : 0) +
         (channelId !== '' ? '&channelId=' + channelId : '');
@@ -101,28 +104,28 @@ window.__tcfapi = function (command, version, callback, parameter) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
         localStorageAvailable = true;
       }
-      i.addEventListener(
+      image.addEventListener(
         'load',
         log.bind(null, logEvents.SET_CONSENT, true, {
           consent: parameter,
           localStorageAvailable: localStorageAvailable,
         }),
       );
-      i.addEventListener('error', log.bind(null, logEvents.SET_CONSENT, false, {}));
+      image.addEventListener('error', log.bind(null, logEvents.SET_CONSENT, false, {}));
       break;
     case 'removeConsentDecision':
-      var i = document.createElement('img');
-      var localStorageAvailable = false;
-      i.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent');
+      image = document.createElement('img');
+      localStorageAvailable = false;
+      image.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent');
       if (window.localStorage && localStorage.removeItem) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
         localStorageAvailable = true;
       }
-      i.addEventListener(
+      image.addEventListener(
         'load',
         log.bind(null, logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable }),
       );
-      i.addEventListener('error', log.bind(null, logEvents.REMOVE_CONSENT_DECISION, false, {}));
+      image.addEventListener('error', log.bind(null, logEvents.REMOVE_CONSENT_DECISION, false, {}));
       callback();
       break;
     case 'onLogEvent':
