@@ -16,7 +16,6 @@ var inner =
   '</div>';
 
 function addBanner() {
-  console.log(inner);
   document.body.insertAdjacentHTML('beforeend', inner);
 }
 
