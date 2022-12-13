@@ -21,7 +21,7 @@ let app: Express;
 beforeAll(() => {
   app = express();
   app.set("trust proxy", 1);
-  app.set("views", path.join(__dirname, "../templates"));
+  app.set("views", path.join(__dirname, "../src/templates"));
   app.engine("html", renderFile);
   app.engine("js", renderFile);
   app.set("view engine", "ejs");

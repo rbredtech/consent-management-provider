@@ -18,15 +18,15 @@ export const managerIframeController = async (req: Request, res: Response) => {
   try {
     const values = getTemplateValues(req, "iframe");
 
-    const cmpJs = await renderFile(path.join(__dirname, "../../templates/mini-cmp.js"), values);
+    const cmpJs = await renderFile(path.join(__dirname, "../templates/mini-cmp.js"), values);
 
-    const iframeMsgJs = await renderFile(path.join(__dirname, "../../templates/iframe-msg.js"), {
+    const iframeMsgJs = await renderFile(path.join(__dirname, "../templates/iframe-msg.js"), {
       BANNER_TIMEOUT: values.BANNER_TIMEOUT,
     });
 
     let bannerJs: string | undefined = undefined;
     if (req.withBanner) {
-      bannerJs = await renderFile(path.join(__dirname, "../../templates/banner.js"), {
+      bannerJs = await renderFile(path.join(__dirname, "../templates/banner.js"), {
         CHANNEL_NAME: req.channelName,
         IS_PRO7: req.isp7,
       });
