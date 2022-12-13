@@ -30,10 +30,4 @@ registry.registerMetric(consentCounterMetric);
 registry.registerMetric(loadedCounterMetric);
 registry.registerMetric(configuredCounterMetric);
 
-export {
-  registry,
-  consentCounterMetric,
-  loadedCounterMetric,
-  configuredCounterMetric,
-  technicalAgeMetric
-};
+export { registry, consentCounterMetric, loadedCounterMetric, configuredCounterMetric, technicalAgeMetric };

@@ -7,16 +7,14 @@ export const loaderController = async (req: Request, res: Response) => {
   const channelId = Number(req.query.channelId);
 
   if (req.query.channelId && isNaN(channelId)) {
-    res
-      .status(500)
-      .send({ error: "query parameter channelId must be numeric" });
+    res.status(500).send({ error: "query parameter channelId must be numeric" });
     return;
   }
 
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
-  loadedCounterMetric.labels({channel: req.channelName, withBanner: req.withBanner ? "true" : "false"}).inc();
+  loadedCounterMetric.labels({ channel: req.channelName, withBanner: req.withBanner ? "true" : "false" }).inc();
 
   try {
     res.render("loader.js", {

@@ -6,7 +6,8 @@ import {
   iframeController,
   loaderController,
   managerController,
-  managerIframeController, removeConsentController,
+  managerIframeController,
+  removeConsentController,
   setConsentController,
 } from "./controller";
 
@@ -33,11 +34,7 @@ router.get(["/manager.js", "/mini-cmp.js"], managerController);
 router.get("/manager-with-banner.js", withBannerMiddleware, managerController);
 
 router.get("/manager-iframe.js", managerIframeController);
-router.get(
-  "/manager-iframe-with-banner.js",
-  withBannerMiddleware,
-  managerIframeController
-);
+router.get("/manager-iframe-with-banner.js", withBannerMiddleware, managerIframeController);
 
 router.get("/set-consent", setConsentController);
 router.get("/remove-consent", removeConsentController);
