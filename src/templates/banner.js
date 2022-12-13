@@ -31,5 +31,7 @@ function showBanner() {
 }
 
 function hideBanner() {
-  document.getElementById('agttcnstbnnr').style.display = 'none';
+  if (document.getElementById('agttcnstbnnr')) {
+    document.getElementById('agttcnstbnnr').style.display = 'none';
+  }
 }
