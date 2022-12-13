@@ -58,6 +58,10 @@ jobs:
         id: install
         run: npm install
 
+      - name: Lint
+        id: lint
+        run: npm run lint
+
       - name: Build app
         id: build
         run: npm run build
