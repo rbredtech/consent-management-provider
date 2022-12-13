@@ -9,7 +9,7 @@ import { registry } from "./util/metrics";
 
 const app = express();
 app.set("trust proxy", 1);
-app.set("views", path.join(__dirname, "../templates"));
+app.set("views", path.join(__dirname, "./templates"));
 app.engine("html", renderFile);
 app.engine("js", renderFile);
 app.set("view engine", "ejs");

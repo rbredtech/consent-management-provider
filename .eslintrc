@@ -21,7 +21,7 @@
       }
     },
     {
-      "files": ["templates/*"],
+      "files": ["src/templates/*"],
       "rules": {
         "no-undef": "off",
         "no-unused-vars": "off",
