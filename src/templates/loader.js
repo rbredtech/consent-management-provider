@@ -128,6 +128,8 @@
       iframe.addEventListener('error', log.bind(null, 'loaded', false, { type: 'iframe' }));
     }
 
+    console.log(window.navigator.userAgent);
+
     if (
       window.navigator &&
       navigator.userAgent &&
