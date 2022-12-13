@@ -3,31 +3,39 @@ const pageHelper = require("./helper/page");
 let page;
 
 beforeAll(async () => {
-    page = await pageHelper.get();
+  page = await pageHelper.get();
 }, 20000);
 
-
 afterAll(async () => {
-    await page.browser().close();
+  await page.browser().close();
 }, 20000);
 
 describe("Consent Management is loaded", () => {
-    beforeAll( async () => {
-        await pageHelper.initLoader(page);
+  beforeAll(async () => {
+    await pageHelper.initLoader(page);
+  });
+
+  test("Ping API call returns basic configuration", async () => {
+    const result = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('ping', 1, resolve)}))`);
+
+    return expect(result).resolves.toEqual({
+      apiVersion: "2.0",
+      cmpId: 4040,
+      cmpLoaded: true,
+      cmpStatus: "loaded",
+      cmpVersion: 1,
+      displayStatus: "hidden",
+      gdprApplies: true,
+      gvlVersion: 1,
+      tcfPolicyVersion: 2,
     });
+  });
 
-    test("Ping API call returns basic configuration", async () => {
-        const result = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('ping', 1, resolve)}))`);
+  test("Storage status is disabled", async () => {
+    const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
 
-        return expect(result).resolves.toEqual({"apiVersion": "2.0", "cmpId": 4040, "cmpLoaded": true, "cmpStatus": "loaded", "cmpVersion": 1, "displayStatus": "hidden", "gdprApplies": true, "gvlVersion": 1, "tcfPolicyVersion": 2});
-    });
-
-    test("Storage status is disabled", async () => {
-        const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
-
-        expect(apiResponse.cmpStatus)
-            .toBe("disabled");
-        expect(apiResponse.vendor["consents"]).toBeDefined()
-        expect(apiResponse.vendor["consents"]["4040"]).toBeUndefined()
-    });
+    expect(apiResponse.cmpStatus).toBe("disabled");
+    expect(apiResponse.vendor["consents"]).toBeDefined();
+    expect(apiResponse.vendor["consents"]["4040"]).toBeUndefined();
+  });
 });

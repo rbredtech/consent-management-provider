@@ -5,19 +5,13 @@ import { logger } from "../util/logger";
 
 export type TechCookie = number | undefined;
 
-export function techCookieMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export function techCookieMiddleware(req: Request, res: Response, next: NextFunction) {
   const techCookie: TechCookie = req.query[TECH_COOKIE_NAME]
     ? Number(req.query[TECH_COOKIE_NAME])
     : req.cookies[TECH_COOKIE_NAME];
 
   if (techCookie && techCookie < Date.now()) {
-    logger.debug(
-      `got valid tech cookie: ${techCookie < Date.now()}, ${techCookie}`
-    );
+    logger.debug(`got valid tech cookie: ${techCookie < Date.now()}, ${techCookie}`);
     req.timestamp = techCookie;
     return next();
   }

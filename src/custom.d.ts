@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 declare global {
   namespace Express {
     interface Request {
@@ -7,10 +8,6 @@ declare global {
       channelName: string | undefined;
       isp7: boolean;
     }
-  }
-
-  interface ConsentCookie {
-    consent: boolean;
   }
 }
 

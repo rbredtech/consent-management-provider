@@ -13,20 +13,20 @@ import {
 import { logger } from "../../util/logger";
 import { configuredCounterMetric, technicalAgeMetric } from "../../util/metrics";
 
+export interface ConsentCookie {
+  consent: boolean;
+}
+
 export const getTemplateValues = (req: Request, type: string = "3rd-party"): { [key: string]: any } => {
   let cookie: ConsentCookie | undefined;
   if (req.cookies[COOKIE_NAME]) {
     try {
-      cookie = JSON.parse(
-        Buffer.from(req.cookies[COOKIE_NAME], "base64").toString()
-      );
+      cookie = JSON.parse(Buffer.from(req.cookies[COOKIE_NAME], "base64").toString());
     } catch (e) {
       logger.info(`Error parsing cookie ${COOKIE_NAME}`, e);
     }
   }
-  logger.debug(
-    `hasCookie=${cookie !== undefined}; hasConsent=${cookie?.consent}`
-  );
+  logger.debug(`hasCookie=${cookie !== undefined}; hasConsent=${cookie?.consent}`);
 
   let tcConsent: boolean | undefined;
   if (cookie) {
@@ -41,14 +41,14 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party"): { [
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
 
-  configuredCounterMetric.labels({ type, channel: req.channelName, consent: tcConsent === undefined ? "undefined" : tcConsent.toString()}).inc();
+  configuredCounterMetric
+    .labels({ type, channel: req.channelName, consent: tcConsent === undefined ? "undefined" : tcConsent.toString() })
+    .inc();
   technicalAgeMetric.labels({ type, channel: req.channelName }).observe(Date.now() - req.timestamp);
 
   const technicalCookiePassed = CMP_ENABLED && req.timestamp && Date.now() - req.timestamp >= TECH_COOKIE_MIN;
 
-  if (
-    technicalCookiePassed || tcConsent !== undefined
-  ) {
+  if (technicalCookiePassed || tcConsent !== undefined) {
     // if the tech cookie is set and is old enough, the cmp is enabled
     cmpStatus = "loaded";
   }
@@ -63,8 +63,7 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party"): { [
     cmpStatus = "disabled";
   }
 
-  if (cmpStatus === "loaded")
-    logger.debug("enable consent status for this request");
+  if (cmpStatus === "loaded") logger.debug("enable consent status for this request");
 
   return {
     API_VERSION,

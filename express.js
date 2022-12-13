@@ -20,11 +20,7 @@ app.get("/*", (_req, res) => {
 
 var server = app.listen(port, function () {
   if (!argv.silent) {
-    console.log(
-      `Consent Management Demo is available on http://localhost:${
-        server.address().port
-      }`
-    );
+    console.log(`Consent Management Demo is available on http://localhost:${server.address().port}`);
   }
 
   setTimeout(function () {

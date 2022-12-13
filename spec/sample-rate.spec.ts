@@ -1,7 +1,7 @@
 import { Express } from "express";
 import { renderFile } from "ejs";
 
-process.env.HTTP_PORT = "3000"
+process.env.HTTP_PORT = "3000";
 process.env.HTTP_HOST = "localhost:3000";
 process.env.HTTP_PROTOCOL = "http";
 process.env.API_VERSION = "v2";
@@ -19,116 +19,118 @@ import router from "../src/router";
 let app: Express;
 
 beforeAll(() => {
-    app = express();
-    app.set("trust proxy", 1);
-    app.set("views", path.join(__dirname, "../templates"));
-    app.engine("html", renderFile);
-    app.engine("js", renderFile);
-    app.set("view engine", "ejs");
+  app = express();
+  app.set("trust proxy", 1);
+  app.set("views", path.join(__dirname, "../templates"));
+  app.engine("html", renderFile);
+  app.engine("js", renderFile);
+  app.set("view engine", "ejs");
 
-    app.use(`/${process.env.API_VERSION}`, router);
+  app.use(`/${process.env.API_VERSION}`, router);
 });
 
 describe("Consent Management API configured with 0% sample rate", () => {
-    describe("When called initially", () => {
-        let response: Response;
+  describe("When called initially", () => {
+    let response: Response;
 
-        beforeAll(async () => {
-            response = await request(app)
-                .get("/v2/manager.js");
-        });
-
-        test("cmpStatus is disabled", () => {
-            expect(response.text).toContain("eventStatus: 'tcloaded',\n        cmpStatus: 'disabled'");
-        });
-
-        test("consent is undefined", () => {
-            expect(response.text).toContain("var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'");
-        })
+    beforeAll(async () => {
+      response = await request(app).get("/v2/manager.js");
     });
 
-    describe("When called with consent decision true", () => {
-        let response: Response;
-
-        beforeAll(async () => {
-            response = await request(app)
-                .get("/v2/manager.js?consent=true");
-        });
-
-        test("cmpStatus is loaded", () => {
-            expect(response.text).toContain("eventStatus: 'tcloaded',\n        cmpStatus: 'loaded'");
-        });
-
-        test("consent is true", () => {
-            expect(response.text).toContain("var hasConsent = 'true' === 'undefined' ? undefined : 'true' === 'true'");
-        })
+    test("cmpStatus is disabled", () => {
+      expect(response.text).toContain("eventStatus: 'tcloaded',\n          cmpStatus: 'disabled'");
     });
 
-    describe("When called with consent decision false", () => {
-        let response: Response;
+    test("consent is undefined", () => {
+      expect(response.text).toContain(
+        "var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'",
+      );
+    });
+  });
 
-        beforeAll(async () => {
-            response = await request(app)
-                .get("/v2/manager.js?consent=false");
-        });
+  describe("When called with consent decision true", () => {
+    let response: Response;
 
-        test("cmpStatus is loaded", () => {
-            expect(response.text).toContain("eventStatus: 'tcloaded',\n        cmpStatus: 'loaded'");
-        });
-
-        test("consent is false", () => {
-            expect(response.text).toContain("var hasConsent = 'false' === 'undefined' ? undefined : 'false' === 'true'");
-        })
+    beforeAll(async () => {
+      response = await request(app).get("/v2/manager.js?consent=true");
     });
 
-    describe("When called with consent decision undefined", () => {
-        let response: Response;
-
-        beforeAll(async () => {
-            response = await request(app)
-                .get("/v2/manager.js?consent=undefined");
-        });
-
-        test("cmpStatus is disabled", () => {
-            expect(response.text).toContain("eventStatus: 'tcloaded',\n        cmpStatus: 'disabled'");
-        });
-
-        test("consent is undefined", () => {
-            expect(response.text).toContain("var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'");
-        })
+    test("cmpStatus is loaded", () => {
+      expect(response.text).toContain("eventStatus: 'tcloaded',\n          cmpStatus: 'loaded'");
     });
 
-    describe("When called with recent technical cookie", () => {
-        let response: Response;
+    test("consent is true", () => {
+      expect(response.text).toContain("var hasConsent = 'true' === 'undefined' ? undefined : 'true' === 'true'");
+    });
+  });
 
-        beforeAll(async () => {
-            response = await request(app)
-                .get(`/v2/manager.js?xt=${Date.now()-100}`);
-        });
+  describe("When called with consent decision false", () => {
+    let response: Response;
 
-        test("cmpStatus is disabled", () => {
-            expect(response.text).toContain("eventStatus: 'tcloaded',\n        cmpStatus: 'disabled'");
-        });
-
-        test("consent is undefined", () => {
-            expect(response.text).toContain("var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'");
-        })
+    beforeAll(async () => {
+      response = await request(app).get("/v2/manager.js?consent=false");
     });
 
-    describe("When called with old enough technical cookie", () => {
-        let response: Response;
-
-        beforeAll(async () => {
-            response = await request(app)
-                .get(`/v2/manager.js?xt=${Date.now() - 1000000}`);
-        });
-
-        test("cmpStatus is disabled due to sample rate", () => {
-            expect(response.text).toContain("eventStatus: 'tcloaded',\n        cmpStatus: 'disabled'");
-        });
-
-        test("consent is undefined", () => {
-            expect(response.text).toContain("var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'");
-        })
+    test("cmpStatus is loaded", () => {
+      expect(response.text).toContain("eventStatus: 'tcloaded',\n          cmpStatus: 'loaded'");
     });
+
+    test("consent is false", () => {
+      expect(response.text).toContain("var hasConsent = 'false' === 'undefined' ? undefined : 'false' === 'true'");
+    });
+  });
+
+  describe("When called with consent decision undefined", () => {
+    let response: Response;
+
+    beforeAll(async () => {
+      response = await request(app).get("/v2/manager.js?consent=undefined");
+    });
+
+    test("cmpStatus is disabled", () => {
+      expect(response.text).toContain("eventStatus: 'tcloaded',\n          cmpStatus: 'disabled'");
+    });
+
+    test("consent is undefined", () => {
+      expect(response.text).toContain(
+        "var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'",
+      );
+    });
+  });
+
+  describe("When called with recent technical cookie", () => {
+    let response: Response;
+
+    beforeAll(async () => {
+      response = await request(app).get(`/v2/manager.js?xt=${Date.now() - 100}`);
+    });
+
+    test("cmpStatus is disabled", () => {
+      expect(response.text).toContain("eventStatus: 'tcloaded',\n          cmpStatus: 'disabled'");
+    });
+
+    test("consent is undefined", () => {
+      expect(response.text).toContain(
+        "var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'",
+      );
+    });
+  });
+
+  describe("When called with old enough technical cookie", () => {
+    let response: Response;
+
+    beforeAll(async () => {
+      response = await request(app).get(`/v2/manager.js?xt=${Date.now() - 1000000}`);
+    });
+
+    test("cmpStatus is disabled due to sample rate", () => {
+      expect(response.text).toContain("eventStatus: 'tcloaded',\n          cmpStatus: 'disabled'");
+    });
+
+    test("consent is undefined", () => {
+      expect(response.text).toContain(
+        "var hasConsent = 'undefined' === 'undefined' ? undefined : 'undefined' === 'true'",
+      );
+    });
+  });
 });

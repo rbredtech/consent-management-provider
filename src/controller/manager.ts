@@ -18,18 +18,14 @@ export const managerController = async (req: Request, res: Response) => {
 
     // add showBanner if needed
     if (req.withBanner) {
-      bannerJs = await renderFile(
-        path.join(__dirname, "../../templates/banner.js"), {CHANNEL_NAME: req.channelName, IS_PRO7: req.isp7}
-      );
-      kbdJs = await renderFile(
-        path.join(__dirname, "../../templates/kbd.js")
-      );
+      bannerJs = await renderFile(path.join(__dirname, "../../templates/banner.js"), {
+        CHANNEL_NAME: req.channelName,
+        IS_PRO7: req.isp7,
+      });
+      kbdJs = await renderFile(path.join(__dirname, "../../templates/kbd.js"));
     }
 
-    const cmpJs = await renderFile(
-      path.join(__dirname, "../../templates/mini-cmp.js"),
-      values
-    );
+    const cmpJs = await renderFile(path.join(__dirname, "../../templates/mini-cmp.js"), values);
 
     res.send(bannerJs && kbdJs ? `${bannerJs}${kbdJs}${cmpJs}` : cmpJs);
   } catch (e) {
