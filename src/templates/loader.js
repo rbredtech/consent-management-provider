@@ -85,9 +85,7 @@
           // showBanner and handleKey commands are not forwarded to the iframe as the
           // banner is loaded into the host document
           if (cmd !== 'showBanner' && cmd !== 'handleKey') {
-            message('cmd;' + cmd + ';' + ver + ';' + parameter, function (r, s) {
-              cb && cb(r, s);
-            });
+            message('cmd;' + cmd + ';' + ver + ';' + parameter);
           }
         };
 
