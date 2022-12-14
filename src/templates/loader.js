@@ -80,12 +80,14 @@
       iframe.addEventListener('load', function () {
         var tcfapi = window.__tcfapi.bind(this);
         window.__tcfapi = function (cmd, ver, cb, parameter) {
-          tcfapi(cmd, ver, cb, parameter);
-
           // showBanner and handleKey commands are not forwarded to the iframe as the
           // banner is loaded into the host document
           if (cmd !== 'showBanner' && cmd !== 'handleKey') {
-            message('cmd;' + cmd + ';' + ver + ';' + parameter);
+            message('cmd;' + cmd + ';' + ver + ';' + parameter, function (r, s) {
+              cb && cb(r, s);
+            });
+          } else {
+            tcfapi(cmd, ver, cb, parameter);
           }
         };
 

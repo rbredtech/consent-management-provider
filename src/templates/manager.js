@@ -113,6 +113,9 @@ window.__tcfapi = function (command, version, callback, parameter) {
         }),
       );
       image.addEventListener('error', log.bind(null, logEvents.SET_CONSENT, false, {}));
+      if ('<%-WITH_BANNER%>' === 'true') {
+        hideBanner();
+      }
       break;
     case 'removeConsentDecision':
       image = document.createElement('img');
