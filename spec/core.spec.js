@@ -12,6 +12,7 @@ afterAll(async () => {
 
 describe("Consent Management is loaded", () => {
   beforeAll(async () => {
+    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     await pageHelper.initLoader(page);
   });
 

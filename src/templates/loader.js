@@ -18,8 +18,8 @@
 
       for (var i = 0; i < _logEntries.length; i++) {
         var f = _logEntries[i];
-        if (cbmap[logCallbackIndex]) {
-          cbmap[logCallbackIndex][0](f[0]);
+        if (callbackMap[logCallbackIndex]) {
+          callbackMap[logCallbackIndex][0](f[0]);
         }
       }
       delete _logEntries;
@@ -39,39 +39,36 @@
       delete _q;
     }
 
-    var cbcnt = 0;
-    var cbmap = {};
+    var callbackCount = 0;
+    var callbackMap = {};
     var logCallbackIndex = -1;
     var _iframe;
 
-    function message(m, cb) {
+    function message(message, callback) {
       if (!_iframe.contentWindow) {
         return;
       }
-      var params = m.split(';');
-      cbmap[++cbcnt] = [cb];
+      var params = message.split(';');
+      callbackMap[++callbackCount] = [callback];
+
       if (params[1] === 'onLogEvent') {
-        logCallbackIndex = cbcnt;
+        logCallbackIndex = callbackCount;
         logQueue();
       }
-      _iframe.contentWindow.postMessage(cbcnt + ';' + m, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
+      _iframe.contentWindow.postMessage(callbackCount + ';' + message, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
     }
 
     function log(event, success, parameters) {
       window.__tcfapi('log', 2, function () {}, btoa(JSON.stringify({ event: event, parameters: parameters })));
     }
 
-    function loadiframe() {
-      if (document.getElementsByTagName('body').length < 1) {
-        setTimeout(loadiframe, 100);
-        return;
-      }
-
+    function createIframe() {
       var iframe = document.createElement('iframe');
       _iframe = iframe; // global to this script context
+
       iframe.setAttribute(
         'src',
-        '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe<%-BANNER%>.html' +
+        '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
           (channelId !== '' ? '?channelId=' + channelId : ''),
       );
       iframe.setAttribute(
@@ -79,30 +76,21 @@
         'position:absolute; border:0; outline:0; top:0; left:0; width:100%; height:100%; z-index: 5599',
       );
       iframe.setAttribute('frameborder', '0');
-      document.getElementsByTagName('body')[0].appendChild(iframe);
 
       iframe.addEventListener('load', function () {
+        var tcfapi = window.__tcfapi.bind(this);
         window.__tcfapi = function (cmd, ver, cb, parameter) {
-          if (cmd === 'showBanner') {
-            message('showbanner');
-            cbmap['sb'] = [cb];
-            return;
+          tcfapi(cmd, ver, cb, parameter);
+
+          // showBanner and handleKey commands are not forwarded to the iframe as the
+          // banner is loaded into the host document
+          if (cmd !== 'showBanner' && cmd !== 'handleKey') {
+            message('cmd;' + cmd + ';' + ver + ';' + parameter, function (r, s) {
+              cb && cb(r, s);
+            });
           }
-          if (cmd === 'handleKey') {
-            message('handlekey;' + cmd + ';' + ver + ';' + (parameter.keyCode ? parameter.keyCode : parameter));
-            if (
-              parameter.preventDefault &&
-              parameter.keyCode &&
-              (parameter.keyCode === 13 || parameter.keyCode === 37 || parameter.keyCode === 39)
-            ) {
-              parameter.preventDefault();
-            }
-            return;
-          }
-          message('cmd;' + cmd + ';' + ver + ';' + parameter, function (r, s) {
-            cb && cb(r, s);
-          });
         };
+
         if (window.addEventListener) {
           window.addEventListener(
             'message',
@@ -112,8 +100,8 @@
                   var m = ev.data.split(';');
                   var pos = m[0] === 'err' ? 1 : 0;
                   var id = m[pos];
-                  var cb = cbmap[id][pos];
-                  if (logCallbackIndex + '' !== id) delete cbmap[id];
+                  var cb = callbackMap[id][pos];
+                  if (logCallbackIndex + '' !== id) delete callbackMap[id];
                   var r = JSON.parse(atob(m[++pos]));
                   var s = m[++pos] ? true : undefined;
                   if (cb) cb(r, s);
@@ -123,21 +111,27 @@
             false,
           );
         }
+
         onAPILoaded('iframe');
       });
+
       iframe.addEventListener('error', log.bind(null, 'loaded', false, { type: 'iframe' }));
+
+      return iframe;
     }
 
-    console.log(window.navigator.userAgent);
+    function loadIframe() {
+      if (document.getElementsByTagName('body').length < 1) {
+        setTimeout(loadIframe, 100);
+        return;
+      }
 
-    if (
-      window.navigator &&
-      navigator.userAgent &&
-      navigator.userAgent.indexOf &&
-      navigator.userAgent.indexOf('Presto') === -1
-    ) {
-      setTimeout(loadiframe, 1);
-    } else {
+      var iframe = createIframe();
+
+      document.getElementsByTagName('body')[0].appendChild(iframe);
+    }
+
+    function createManagerScriptTag() {
       var xt = '<%-XT%>';
       var hasConsent;
 
@@ -150,18 +144,37 @@
           hasConsent = localStorage.getItem('<%-COOKIE_NAME%>');
         }
       }
-      var a = document.createElement('script');
-      a.setAttribute('type', 'text/javascript');
-      a.setAttribute(
+      var managerScriptTag = document.createElement('script');
+      managerScriptTag.setAttribute('type', 'text/javascript');
+      managerScriptTag.setAttribute(
         'src',
         '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/manager<%-BANNER%>.js?<%-TECH_COOKIE_NAME%>=' +
           xt +
           (hasConsent !== null ? '&consent=' + hasConsent : '') +
           (channelId !== '' ? '&channelId=' + channelId : ''),
       );
-      a.addEventListener('load', onAPILoaded.bind(null, '3rdparty'));
-      a.addEventListener('error', log.bind(null, 'loaded', false, { type: '3rdparty' }));
-      document.getElementsByTagName('head')[0].appendChild(a);
+
+      managerScriptTag.addEventListener('error', log.bind(null, 'loaded', false, { type: '3rdparty' }));
+      managerScriptTag.addEventListener('load', function () {
+        // if not an Opera (Presto) browser, we load the iframe into the
+        // host document
+        if (
+          window.navigator &&
+          navigator.userAgent &&
+          navigator.userAgent.indexOf &&
+          navigator.userAgent.indexOf('Presto') === -1
+        ) {
+          loadIframe();
+        } else {
+          onAPILoaded('3rdparty');
+        }
+      });
+
+      return managerScriptTag;
     }
+
+    // insert root manager script tag to host document
+    var managerScriptTag = createManagerScriptTag();
+    document.getElementsByTagName('head')[0].appendChild(managerScriptTag);
   } catch (e) {}
 })();

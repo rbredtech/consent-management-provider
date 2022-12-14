@@ -28,13 +28,11 @@ router.get("/loader.js", loaderController);
 router.get("/loader-with-banner.js", withBannerMiddleware, loaderController);
 
 router.get("/iframe.html", iframeController);
-router.get("/iframe-with-banner.html", withBannerMiddleware, iframeController);
 
 router.get(["/manager.js", "/mini-cmp.js"], managerController);
 router.get("/manager-with-banner.js", withBannerMiddleware, managerController);
 
 router.get("/manager-iframe.js", managerIframeController);
-router.get("/manager-iframe-with-banner.js", withBannerMiddleware, managerIframeController);
 
 router.get("/set-consent", setConsentController);
 router.get("/remove-consent", removeConsentController);

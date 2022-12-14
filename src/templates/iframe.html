@@ -23,7 +23,7 @@
       }
 
       var s = document.createElement('script');
-      s.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/manager-iframe<%-BANNER%>.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
+      s.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/manager-iframe.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
       s.setAttribute('type', 'text/javascript');
       document.getElementsByTagName('head')[0].appendChild(s);
     } catch (e) { }

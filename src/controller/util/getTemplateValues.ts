@@ -56,7 +56,7 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party"): { [
   if (
     cmpStatus === "loaded" &&
     tcConsent === undefined &&
-    Math.floor(Math.random() * 101) > CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT
+    Math.floor(Math.random() * 100 + 1) > CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT
   ) {
     // request randomly chosen to be outside the configured sampling threshold,
     // so disable consent status
@@ -75,6 +75,7 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party"): { [
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     CHANNEL_ID: req.query.channelId ? req.query.channelId.toString() : "",
+    WITH_BANNER: req.withBanner,
     BANNER_TIMEOUT,
   };
 };

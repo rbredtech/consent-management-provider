@@ -32,6 +32,7 @@ export const setConsentController = (req: Request, res: Response) => {
     maxAge: COOKIE_MAXAGE,
     domain: COOKIE_DOMAIN,
   });
+
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Content-Type", "image/png");
   res.setHeader("Content-Length", img.length);

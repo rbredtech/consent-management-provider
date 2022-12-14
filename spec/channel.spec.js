@@ -14,6 +14,7 @@ describe("Consent Management with ServusTv channelId", () => {
   let iframeResponse, managerResponse;
 
   beforeAll(async () => {
+    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     iframeResponse = page.waitForResponse((response) => response.url().includes("iframe"));
     managerResponse = page.waitForResponse((response) => response.url().includes("manager"));
     await pageHelper.initLoader(page, 0);
