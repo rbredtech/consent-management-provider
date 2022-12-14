@@ -33,6 +33,6 @@ var server = app.listen(port, function () {
   }, 1000);
 });
 
-browserRefreshClient.enableSpecialReload("*.js *.html").onFileModified(function () {
+browserRefreshClient.enableSpecialReload("templates/*.js templates/*.html").onFileModified(function () {
   browserRefreshClient.refreshPage();
 });
