@@ -142,7 +142,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
     case 'showBanner':
       if ('<%-WITH_BANNER%>' === 'true') {
         kbd(callback); // from kbd.js
-        showBanner(); // from banner.js
+        showBanner(parameter); // from banner.js
         hideBannerTimeout = setTimeout(function () {
           hideBanner(); // from banner.js
           callback(hasConsent);

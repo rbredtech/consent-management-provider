@@ -60,11 +60,11 @@ Including the loader script into the application will expose the `window.__tcfap
 __tcfapi(method, version, callback?, parameter?)
 ```
 
-| Method | Description     | Parameter | Callback                   |
-|--------|-----------------|------------|----------------------------|
+| Method | Description  | Parameter | Callback  |
+|--------|--------------|------------|----------|
 | ping   |Wait until API is available. Optional. |  | (status: TCStatus) => void |
-| getTCData | Retrieve consent decision | | (data: TCData) => void     |
-| showBanner | displays a consent banner to the user (only available if loader-with-banner.js was included) | |                            |
+| getTCData | Retrieve consent decision | | (data: TCData) => void |
+| showBanner | displays a consent banner to the user (only available if loader-with-banner.js was included) | elementId: string (optional, id of the dom-node the banner should be rendered in. if not given or element not found, body is used) | (consent: boolean) => void |
 | handleKey | Allows for key handling of banner. Call for every key event after app called showBanner method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the app. | Key event from "keydown" | |
 | setConsent | Alter consent decision | consent: boolean | (consent: boolean) => void |
 | addEventListener | Subscribe on internal event log for debugging purposes | |
