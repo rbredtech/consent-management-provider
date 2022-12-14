@@ -1,6 +1,6 @@
 (function () {
   function _message(msg) {
-    if (window['parent'] && window.parent['postMessage']) {
+    if (window.parent && window.parent.postMessage) {
       window.parent.postMessage(msg, '*');
     }
   }
@@ -10,20 +10,16 @@
       'message',
       function (event) {
         var message = event.data.split(';');
-        var id = message[0];
-        switch (message[1]) {
-          case 'cmd':
-            __tcfapi(
-              message[2],
-              message[3],
-              function (r, s) {
-                _message(id + ';' + btoa(JSON.stringify(r)) + (s ? ';1' : ''));
-              },
-              message[4],
-            );
-            break;
-          default:
-            break;
+        if (message[1] === 'cmd') {
+          var id = message[0];
+          __tcfapi(
+            message[2],
+            message[3],
+            function (r, s) {
+              _message(id + ';' + btoa(JSON.stringify(r)) + (s ? ';1' : ''));
+            },
+            message[4],
+          );
         }
       },
       false,
