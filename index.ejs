@@ -6,11 +6,66 @@
   </meta>
   <title>Consent Management Test</title>
   <script type="text/javascript"
-    src="<%-HTTP_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/loader-with-banner.js?channelId=3100"></script>
+    src="<%-HTTP_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/loader-with-banner.js?channelId=9999"></script>
+  <script>
+    var isShowingBanner = false;
+
+    window['KeyEvent'] = window['KeyEvent'] || {};
+    KeyEvent['VK_BLUE'] = KeyEvent.VK_BLUE || window['VK_BLUE'] || 406;
+
+    function showAgttConsentBanner() {
+      isShowingBanner = true;
+      __tcfapi('showBanner', 2, function (consentDecision) {
+        if (consentDecision === true) {
+          // consent has been accepted
+        } else if (consentDecision == false) {
+          // consent has been declined
+        } else {
+          // pop-up banner has been closed
+        }
+        isShowingBanner = false;
+      });
+    }
+
+    // example for extending existing key handler of app to allow for control of buttons of the banner
+    function keyHandler(event) {
+      if (isShowingBanner) {
+        // pass on key events to library while consent banner is displayed
+        __tcfapi('handleKey', 2, function () {
+        }, event);
+        return;
+      } else {
+        switch (event.keyCode) {
+          case KeyEvent.VK_BLUE:
+            showAgttConsentBanner();
+          default:
+            console.log(event.keyCode);
+        }
+      }
+    }
+
+    document.addEventListener('keydown', keyHandler);
+
+    var CMP_VENDOR_ID = 4040;
+    window.__tcfapi('getTCData', 2, function (tcData) {
+      if (tcData.cmpStatus === 'loaded') {
+        var consent = tcData.vendor.consents[CMP_VENDOR_ID];
+        if (consent === undefined) {
+          showAgttConsentBanner()
+        }
+      }
+    }, [CMP_VENDOR_ID]);
+  </script>
 </head>
 
 <body>
-  <script src="<%-BROWSER_REFRESH_URL%>"></script>
+  <script src="<%- BROWSER_REFRESH_URL %>"></script>
+  <object id="video" type="video/broadcast" fullscreen="true" width="1280" height="720"
+    style="position:absolute; top: 0px; left: 0px; width: 1280px; height: 720px;"></object>
+  <div style="visibility: hidden; width: 0; height: 0; position: absolute;">
+    <object id='oipfAppMngr' type='application/oipfApplicationManager'></object>
+    <object id='oipfCfg' type='application/oipfConfiguration'></object>
+  </div>
 </body>
 
 </html>
