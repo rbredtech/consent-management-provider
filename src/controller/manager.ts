@@ -14,7 +14,6 @@ export const managerController = async (req: Request, res: Response) => {
     const values = getTemplateValues(req, "3rd-party");
 
     let bannerJs: string | undefined = undefined;
-    let kbdJs: string | undefined = undefined;
 
     // add showBanner if needed
     if (req.withBanner) {
@@ -22,12 +21,11 @@ export const managerController = async (req: Request, res: Response) => {
         CHANNEL_NAME: req.channelName,
         IS_PRO7: req.isp7,
       });
-      kbdJs = await renderFile(path.join(__dirname, "../templates/kbd.js"));
     }
 
     const cmpJs = await renderFile(path.join(__dirname, "../templates/manager.js"), values);
 
-    res.send(bannerJs && kbdJs ? `${bannerJs}${kbdJs}${cmpJs}` : cmpJs);
+    res.send(bannerJs ? `${bannerJs}${cmpJs}` : cmpJs);
   } catch (e) {
     logger.error(e);
     res.status(500).send(e);
