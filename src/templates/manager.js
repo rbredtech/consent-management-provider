@@ -141,7 +141,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       break;
     case 'showBanner':
       if ('<%-WITH_BANNER%>' === 'true') {
-        kbd(callback); // from kbd.js
+        setShowBannerCallback(callback); // from banner.js
         showBanner(parameter); // from banner.js
         hideBannerTimeout = setTimeout(function () {
           hideBanner(); // from banner.js
@@ -151,7 +151,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       break;
     case 'handleKey':
       if ('<%-WITH_BANNER%>' === 'true') {
-        handlevk(parameter.keyCode ? parameter.keyCode : parameter); // from kbd.js
+        handleVK(parameter.keyCode ? parameter.keyCode : parameter); // from banner.js
         if (
           parameter.preventDefault &&
           parameter.keyCode &&

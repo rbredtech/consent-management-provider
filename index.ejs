@@ -31,8 +31,7 @@
     function keyHandler(event) {
       if (isShowingBanner) {
         // pass on key events to library while consent banner is displayed
-        __tcfapi('handleKey', 2, function () {
-        }, event);
+        __tcfapi('handleKey', 2, undefined, event);
         return;
       } else {
         switch (event.keyCode) {
@@ -44,7 +43,7 @@
       }
     }
 
-    document.addEventListener('keydown', keyHandler);
+    window.addEventListener('keydown', keyHandler);
 
     var CMP_VENDOR_ID = 4040;
     window.__tcfapi('getTCData', 2, function (tcData) {
@@ -60,7 +59,7 @@
 
 <body>
   <div id="cmp"></div>
-  <script src="<%- BROWSER_REFRESH_URL %>"></script>
+  <script src="<%-BROWSER_REFRESH_URL%>"></script>
   <object id="video" type="video/broadcast" fullscreen="true" width="1280" height="720"
     style="position:absolute; top: 0px; left: 0px; width: 1280px; height: 720px;"></object>
   <div style="visibility: hidden; width: 0; height: 0; position: absolute;">
