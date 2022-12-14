@@ -20,7 +20,6 @@ export const iframeController = (req: Request, res: Response) => {
     API_VERSION,
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
-    BANNER: req.withBanner ? "-with-banner" : "",
     CHANNEL_ID: req.channelId,
   });
 };

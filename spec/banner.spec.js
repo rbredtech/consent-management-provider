@@ -11,15 +11,14 @@ afterAll(async () => {
 }, 20000);
 
 describe("Consent Management with banner", () => {
-  let iframe;
   beforeAll(async () => {
+    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     await pageHelper.initLoader(page, 0, true);
-    iframe = (await page.frames()).find((frame) => frame.url().indexOf("iframe") > -1);
   });
 
   test("Banner pop-up is NOT displayed", () => {
     expect(
-      iframe.waitForSelector("div#agttcnstbnnr", {
+      page.waitForSelector("div#agttcnstbnnr", {
         visible: true,
         timeout: 10,
       }),
@@ -33,7 +32,7 @@ describe("Consent Management with banner", () => {
 
     test("Banner pop-up is displayed", async () => {
       expect(
-        await iframe.waitForSelector("div#agttcnstbnnr", {
+        await page.waitForSelector("div#agttcnstbnnr", {
           visible: true,
           timeout: 1000,
         }),
@@ -41,11 +40,11 @@ describe("Consent Management with banner", () => {
     });
 
     test("Channel specific information should be present", async () => {
-      expect(await iframe.$eval("div#agttcnstbnnr", (node) => node.innerText)).toContain("deren Mitglied");
+      expect(await page.$eval("div#agttcnstbnnr", (node) => node.innerText)).toContain("deren Mitglied");
     });
 
     test("Channel Name is replaced in legal text", async () => {
-      expect(await iframe.$eval("div#agttcnstbnnr", (node) => node.innerText)).toContain("ServusTV");
+      expect(await page.$eval("div#agttcnstbnnr", (node) => node.innerText)).toContain("ServusTV");
     });
 
     describe("When OK button is hit", () => {

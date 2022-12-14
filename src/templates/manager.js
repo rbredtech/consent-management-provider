@@ -23,6 +23,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
 
   var image;
   var localStorageAvailable;
+  var hideBannerTimeout;
 
   switch (command) {
     case 'ping':
@@ -138,21 +139,29 @@ window.__tcfapi = function (command, version, callback, parameter) {
       }
       break;
     case 'showBanner':
-      kbd(callback);
-      showBanner(); // from banner.js
-      setTimeout(function () {
-        hideBanner();
-        callback();
-      }, parseInt('<%-BANNER_TIMEOUT%>'));
+      if ('<%-WITH_BANNER%>' === 'true') {
+        kbd(callback); // from kbd.js
+        showBanner(); // from banner.js
+        hideBannerTimeout = setTimeout(function () {
+          hideBanner(); // from banner.js
+          callback(hasConsent);
+        }, parseInt('<%-BANNER_TIMEOUT%>'));
+      }
       break;
     case 'handleKey':
-      handlevk(parameter.keyCode ? parameter.keyCode : parameter);
-      if (
-        parameter.preventDefault &&
-        parameter.keyCode &&
-        (parameter.keyCode === 13 || parameter.keyCode === 37 || parameter.keyCode === 39)
-      ) {
-        parameter.preventDefault();
+      if ('<%-WITH_BANNER%>' === 'true') {
+        handlevk(parameter.keyCode ? parameter.keyCode : parameter); // from kbd.js
+        if (
+          parameter.preventDefault &&
+          parameter.keyCode &&
+          (parameter.keyCode === 13 || parameter.keyCode === 37 || parameter.keyCode === 39)
+        ) {
+          parameter.preventDefault();
+
+          if (parameter.keyCode === 13) {
+            clearTimeout(hideBannerTimeout);
+          }
+        }
       }
       break;
     default:

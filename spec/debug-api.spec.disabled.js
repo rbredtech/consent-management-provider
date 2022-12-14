@@ -14,35 +14,31 @@ afterAll(async () => {
 
 describe("Debug API", () => {
   beforeAll(async () => {
-    const pageLoaded = page.waitForNavigation({ waitUntil: "networkidle0" });
+    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     await pageHelper.initLoader(page);
-    await pageLoaded;
   });
 
-  describe("When debug listener is subscribed", () => {
+  describe("when debug listener is subscribed", () => {
     beforeAll(async () => {
       await page.evaluate(() => {
         return new Promise((resolve) => {
           window.callbackQueue = [];
-
-          function add(params) {
+          window.__tcfapi("onLogEvent", 2, function (params) {
             window.callbackQueue.push(params);
-          }
-
-          window.__tcfapi("onLogEvent", 2, add);
+          });
           resolve();
         });
       });
       await wait(100);
     });
 
-    describe("And getTCData API method is called", () => {
+    describe("and getTCData API method is called", () => {
       beforeAll(async () => {
         const apiResponse = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
         await apiResponse;
       });
 
-      test("Load event is logged", async () => {
+      test("load event is logged", async () => {
         const queue = await page.evaluate(() => {
           return window.callbackQueue;
         });
@@ -55,7 +51,7 @@ describe("Debug API", () => {
         });
       });
 
-      test("Activity for getTCData is logged", async () => {
+      test("activity for getTCData is logged", async () => {
         const queue = await page.evaluate(() => {
           return window.callbackQueue;
         });
@@ -68,7 +64,7 @@ describe("Debug API", () => {
         });
       });
 
-      describe("And setConsent API method is called again", () => {
+      describe("and setConsent API method is called again", () => {
         let consentCookieLoaded;
 
         beforeAll(async () => {
@@ -78,7 +74,7 @@ describe("Debug API", () => {
           await wait(100);
         });
 
-        test("Activity for setConsent is logged", async () => {
+        test("activity for setConsent is logged", async () => {
           const queue = await page.evaluate(() => {
             return window.callbackQueue;
           });
