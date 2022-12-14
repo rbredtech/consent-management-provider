@@ -18,10 +18,13 @@
       __tcfapi('showBanner', 2, function (consentDecision) {
         if (consentDecision === true) {
           // consent has been accepted
+          console.log("Consent accepted");
         } else if (consentDecision == false) {
           // consent has been declined
+          console.log("Consent declined");
         } else {
-          // pop-up banner has been closed
+          // pop-up banner has been closed because of timeout
+          console.log("Consent banner timeout reached")
         }
         isShowingBanner = false;
       }, 'cmp');
