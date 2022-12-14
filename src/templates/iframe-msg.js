@@ -11,14 +11,20 @@
       function (event) {
         var message = event.data.split(';');
         if (message[1] === 'cmd') {
+          var cmdParams = message[4];
+          try {
+            cmdParams = JSON.parse(cmdParams);
+          } catch {}
+          var cmd = message[2];
+          var version = message[3];
           var id = message[0];
           __tcfapi(
-            message[2],
-            message[3],
+            cmd,
+            version,
             function (r, s) {
               _message(id + ';' + btoa(JSON.stringify(r)) + (s ? ';1' : ''));
             },
-            message[4],
+            cmdParams,
           );
         }
       },

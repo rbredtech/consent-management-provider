@@ -60,10 +60,6 @@ function handleVK(keyCode) {
   }
 }
 
-function setShowBannerCallback(cb) {
-  showBannerCB = cb;
-}
-
 function addBanner(id) {
   if (id && document.getElementById(id)) {
     document.getElementById(id).insertAdjacentHTML('beforeend', inner);
@@ -76,7 +72,9 @@ function isBannerShown() {
   return document.getElementById('agttcnstbnnr') && document.getElementById('agttcnstbnnr').style.display != 'none';
 }
 
-function showBanner(id) {
+function showBanner(id, cb) {
+  showBannerCB = cb;
+
   if (!document.getElementById('agttcnstbnnr')) {
     addBanner(id);
   }

@@ -82,36 +82,32 @@
           // showBanner and handleKey commands are not forwarded to the iframe as the
           // banner is loaded into the host document
           if (command !== 'showBanner' && command !== 'handleKey') {
-            message('cmd;' + command + ';' + version + ';' + parameter, function (r, s) {
-              callback && callback(r, s);
-            });
+            message('cmd;' + command + ';' + version + ';' + parameter, callback);
           } else {
             tcfapi(command, version, callback, parameter);
           }
         };
 
-        if (window.addEventListener) {
-          window.addEventListener(
-            'message',
-            function (ev) {
-              try {
-                if (ev.origin === '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>' && ev.data) {
-                  var message = ev.data.split(';');
-                  var position = message[0] === 'err' ? 1 : 0;
-                  var id = message[position];
-                  var callback = callbackMap[id][position];
-                  if (logCallbackIndex + '' !== id) delete callbackMap[id];
-                  var r = JSON.parse(atob(message[++position]));
-                  var s = message[++position] ? true : undefined;
-                  if (callback) {
-                    callback(r, s);
-                  }
+        window.addEventListener(
+          'message',
+          function (ev) {
+            try {
+              if (ev.origin === '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>' && ev.data) {
+                var message = ev.data.split(';');
+                var position = message[0] === 'err' ? 1 : 0;
+                var id = message[position];
+                var callback = callbackMap[id][position];
+                if (logCallbackIndex + '' !== id) delete callbackMap[id];
+                var r = JSON.parse(atob(message[++position]));
+                var s = message[++position] ? true : undefined;
+                if (callback) {
+                  callback(r, s);
                 }
-              } catch (e) {}
-            },
-            false,
-          );
-        }
+              }
+            } catch (e) {}
+          },
+          false,
+        );
 
         onAPILoaded('iframe');
       });
