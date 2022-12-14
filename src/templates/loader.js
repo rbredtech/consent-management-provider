@@ -64,7 +64,6 @@
 
     function createIframe() {
       var iframe = document.createElement('iframe');
-      _iframe = iframe; // global to this script context
 
       iframe.setAttribute(
         'src',
@@ -79,15 +78,15 @@
 
       iframe.addEventListener('load', function () {
         var tcfapi = window.__tcfapi.bind(this);
-        window.__tcfapi = function (cmd, ver, cb, parameter) {
+        window.__tcfapi = function (command, version, callback, parameter) {
           // showBanner and handleKey commands are not forwarded to the iframe as the
           // banner is loaded into the host document
-          if (cmd !== 'showBanner' && cmd !== 'handleKey') {
-            message('cmd;' + cmd + ';' + ver + ';' + parameter, function (r, s) {
-              cb && cb(r, s);
+          if (command !== 'showBanner' && command !== 'handleKey') {
+            message('cmd;' + command + ';' + version + ';' + parameter, function (r, s) {
+              callback && callback(r, s);
             });
           } else {
-            tcfapi(cmd, ver, cb, parameter);
+            tcfapi(command, version, callback, parameter);
           }
         };
 
@@ -97,14 +96,16 @@
             function (ev) {
               try {
                 if (ev.origin === '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>' && ev.data) {
-                  var m = ev.data.split(';');
-                  var pos = m[0] === 'err' ? 1 : 0;
-                  var id = m[pos];
-                  var cb = callbackMap[id][pos];
+                  var message = ev.data.split(';');
+                  var position = message[0] === 'err' ? 1 : 0;
+                  var id = message[position];
+                  var callback = callbackMap[id][position];
                   if (logCallbackIndex + '' !== id) delete callbackMap[id];
-                  var r = JSON.parse(atob(m[++pos]));
-                  var s = m[++pos] ? true : undefined;
-                  if (cb) cb(r, s);
+                  var r = JSON.parse(atob(message[++position]));
+                  var s = message[++position] ? true : undefined;
+                  if (callback) {
+                    callback(r, s);
+                  }
                 }
               } catch (e) {}
             },
@@ -127,6 +128,7 @@
       }
 
       var iframe = createIframe();
+      _iframe = iframe;
 
       document.getElementsByTagName('body')[0].appendChild(iframe);
     }
