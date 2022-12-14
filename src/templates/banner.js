@@ -13,7 +13,11 @@ var inner =
   '</div>' +
   '</div>';
 
-function addBanner() {
+function addBanner(id) {
+  if (id && document.getElementById(id)) {
+    document.getElementById(id).insertAdjacentHTML('beforeend', inner);
+    return;
+  }
   document.body.insertAdjacentHTML('beforeend', inner);
 }
 
@@ -21,9 +25,9 @@ function isBannerShown() {
   return document.getElementById('agttcnstbnnr') && document.getElementById('agttcnstbnnr').style.display != 'none';
 }
 
-function showBanner() {
+function showBanner(id) {
   if (!document.getElementById('agttcnstbnnr')) {
-    addBanner();
+    addBanner(id);
   }
   document.getElementById('agttcnstbnnr').style.display = 'block';
 }
