@@ -2,9 +2,9 @@ window.__tcfapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
   var hasConsent = '<%-TC_CONSENT%>' === 'undefined' ? undefined : '<%-TC_CONSENT%>' === 'true';
   if (window.localStorage && localStorage.getItem) {
-    var lc = localStorage.getItem('consent');
-    if (lc === 'true') hasConsent = true;
-    if (lc === 'false') hasConsent = false;
+    var localStorageConsent = localStorage.getItem('<%-COOKIE_NAME%>');
+    if (localStorageConsent === 'true') hasConsent = true;
+    if (localStorageConsent === 'false') hasConsent = false;
   }
   var _listenerCnt = 1;
   var _listeners = {};
@@ -56,16 +56,12 @@ window.__tcfapi = function (command, version, callback, parameter) {
           purposeOneTreatment: true,
           purpose: {
             consents: {
-              1: true,
-              7: true,
-              8: true,
+              4040: hasConsent,
             },
           },
           legitimateInterests: {
             consents: {
-              1: true,
-              7: true,
-              8: true,
+              4040: hasConsent,
             },
           },
           vendor: {
@@ -138,7 +134,9 @@ window.__tcfapi = function (command, version, callback, parameter) {
     case 'log':
       if (parameter) {
         var logParameters = JSON.parse(atob(parameter));
-        if (logParameters && logParameters.event) log(logParameters.event, true, logParameters.parameters);
+        if (logParameters && logParameters.event) {
+          log(logParameters.event, true, logParameters.parameters);
+        }
       }
       break;
     case 'showBanner':
@@ -160,7 +158,6 @@ window.__tcfapi = function (command, version, callback, parameter) {
           (parameter.keyCode === 13 || parameter.keyCode === 37 || parameter.keyCode === 39)
         ) {
           parameter.preventDefault();
-
           if (parameter.keyCode === 13) {
             clearTimeout(hideBannerTimeout);
           }
