@@ -110,7 +110,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       );
       image.addEventListener('error', log.bind(null, logEvents.SET_CONSENT, false, {}));
       if ('<%-WITH_BANNER%>' === 'true') {
-        hideBanner();
+        hideConsentBanner();
       }
       break;
     case 'removeConsentDecision':
@@ -141,9 +141,9 @@ window.__tcfapi = function (command, version, callback, parameter) {
       break;
     case 'showBanner':
       if ('<%-WITH_BANNER%>' === 'true') {
-        showBanner(parameter, callback); // from banner.js
+        showConsentBanner(parameter, callback); // from banner.js
         hideBannerTimeout = setTimeout(function () {
-          hideBanner(); // from banner.js
+          hideConsentBanner(); // from banner.js
           callback(hasConsent);
         }, parseInt('<%-BANNER_TIMEOUT%>'));
       }
