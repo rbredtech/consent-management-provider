@@ -17,17 +17,14 @@
       isShowingBanner = true;
       __tcfapi('showBanner', 2, function (consentDecision) {
         if (consentDecision === true) {
-          // consent has been accepted
           console.log("Consent accepted");
         } else if (consentDecision == false) {
-          // consent has been declined
           console.log("Consent declined");
         } else {
-          // pop-up banner has been closed because of timeout
-          console.log("Consent banner timeout reached")
+          console.log("Consent not set")
         }
         isShowingBanner = false;
-      }, 'cmp');
+      }, 'cmp'); // mount banner to dom-node with id 'cmp'
     }
 
     // example for extending existing key handler of app to allow for control of buttons of the banner
