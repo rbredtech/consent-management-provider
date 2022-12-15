@@ -12,7 +12,7 @@ var inner =
   '</div>' +
   '</div>';
 
-var showBannerCB;
+var setConsentCallback;
 
 function setSelected(element) {
   element.classList.add('selected');
@@ -39,9 +39,9 @@ function handleLeftRight(consBtnAgree, consBtnDismiss) {
 function handleEnter(consentBanner) {
   consentBanner.style.display = 'none';
   if (consBtnAgree.classList.contains('selected')) {
-    __tcfapi('setConsent', 2, showBannerCB, true);
+    __tcfapi('setConsent', 2, setConsentCallback, true);
   } else {
-    __tcfapi('setConsent', 2, showBannerCB, false);
+    __tcfapi('setConsent', 2, setConsentCallback, false);
   }
 }
 
@@ -72,29 +72,25 @@ function handleVK(keyCode) {
   }
 }
 
-function addBanner(id) {
-  if (id && document.getElementById(id)) {
-    document.getElementById(id).insertAdjacentHTML('beforeend', inner);
-    return;
-  }
-  document.body.insertAdjacentHTML('beforeend', inner);
-}
-
-function isBannerShown() {
-  return document.getElementById('agttcnstbnnr') && document.getElementById('agttcnstbnnr').style.display != 'none';
-}
-
-function showBanner(id, cb) {
-  showBannerCB = cb;
+function showConsentBanner(id, cb) {
+  setConsentCallback = cb;
 
   if (!document.getElementById('agttcnstbnnr')) {
-    addBanner(id);
+    if (id && document.getElementById(id)) {
+      document.getElementById(id).insertAdjacentHTML('beforeend', inner);
+    } else {
+      document.body.insertAdjacentHTML('beforeend', inner);
+    }
   }
   document.getElementById('agttcnstbnnr').style.display = 'block';
 }
 
-function hideBanner() {
+function hideConsentBanner() {
   if (document.getElementById('agttcnstbnnr')) {
     document.getElementById('agttcnstbnnr').style.display = 'none';
   }
+}
+
+function isConsentBannerShown() {
+  return document.getElementById('agttcnstbnnr') && document.getElementById('agttcnstbnnr').style.display != 'none';
 }
