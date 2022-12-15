@@ -23,7 +23,8 @@ Install dependencies with `npm install`.
 
 To run during development use
 
-- `npm run dev` (loads with wrapper to display UI and auto-refresh on template or service changes)
+- `npm run watch` (loads with wrapper to display UI and auto-refresh on template changes) or
+- `npm run dev` (loads with wrapper, no auto-refresh for templates).
 
 To run in production use `npm start` or `npm run prod` after running the `npm run build` command.
 
