@@ -150,14 +150,13 @@ window.__tcfapi = function (command, version, callback, parameter) {
       break;
     case 'handleKey':
       if ('<%-WITH_BANNER%>' === 'true') {
+        var KeyEvent = window['KeyEvent'] || {};
+        KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
         handleVK(parameter.keyCode ? parameter.keyCode : parameter); // from banner.js
-        if (
-          parameter.preventDefault &&
-          parameter.keyCode &&
-          (parameter.keyCode === 13 || parameter.keyCode === 37 || parameter.keyCode === 39)
-        ) {
+
+        if (parameter.preventDefault && parameter.keyCode) {
           parameter.preventDefault();
-          if (parameter.keyCode === 13) {
+          if (parameter.keyCode === KeyEvent.VK_ENTER) {
             clearTimeout(hideBannerTimeout);
           }
         }
