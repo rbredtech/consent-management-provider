@@ -18,7 +18,7 @@ export const managerIframeController = async (req: Request, res: Response) => {
   try {
     const values = getTemplateValues(req, "iframe");
 
-    const managerJs = await renderFile(path.join(__dirname, "../templates/manager.js"), values);
+    const managerJs = await renderFile(path.join(__dirname, "../templates/tcfapi.js"), values);
     const iframeMsgJs = await renderFile(path.join(__dirname, "../templates/iframe-msg.js"), {
       BANNER_TIMEOUT: values.BANNER_TIMEOUT,
     });
