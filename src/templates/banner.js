@@ -36,7 +36,7 @@ function handleLeftRight(consBtnAgree, consBtnDismiss) {
   }
 }
 
-function handleEnter(consentBanner) {
+function handleEnter(consentBanner, consBtnAgree) {
   consentBanner.style.display = 'none';
   if (consBtnAgree.classList.contains('selected')) {
     __tcfapi('setConsent', 2, setConsentCallback, true);
@@ -61,7 +61,7 @@ function handleVK(keyCode) {
 
   switch (keyCode) {
     case KeyEvent.VK_ENTER:
-      handleEnter(consentBanner);
+      handleEnter(consentBanner, consBtnAgree);
       break;
     case KeyEvent.VK_LEFT:
     case KeyEvent.VK_RIGHT:

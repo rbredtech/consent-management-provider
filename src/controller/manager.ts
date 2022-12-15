@@ -23,7 +23,7 @@ export const managerController = async (req: Request, res: Response) => {
       });
     }
 
-    const cmpJs = await renderFile(path.join(__dirname, "../templates/manager.js"), values);
+    const cmpJs = await renderFile(path.join(__dirname, "../templates/tcfapi.js"), values);
 
     res.send(bannerJs ? `${bannerJs}${cmpJs}` : cmpJs);
   } catch (e) {
