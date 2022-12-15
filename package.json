@@ -5,8 +5,7 @@
   "main": "dist/app.js",
   "scripts": {
     "open": "browser-refresh express --port 8080",
-    "dev": "concurrently \"ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
-    "watch": "concurrently \"nodemon -e ts -w ./src -x ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
+    "dev": "concurrently \"nodemon -e ts --watch './src' --ignore './src/templates/*.js' --ignore './src/templates/*.html' -x ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
     "start": "npm run prod",
     "build": "rm -rf ./dist/* && gulp",
     "prod": "node ./dist/app.js",
