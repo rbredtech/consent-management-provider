@@ -7,16 +7,16 @@ const API_VERSION = process.env.API_VERSION || "v2";
 async function get() {
   const browser = await puppeteer.launch({ dumpio: false, args: ["--disable-gpu"] });
   const page = await browser.newPage();
-  //page.on("request", (request) => console.log(request.url()));
-  //page.on("response", (response) => console.log(response.url(), response.status()));
+  page.on("request", (request) => console.log(request.url()));
+  page.on("response", (response) => console.log(response.url(), response.status()));
 
   return page;
 }
 
 async function initLoader(page, channelId = undefined, withBanner = false) {
-  const isLoaded = page.waitForResponse((response) => response.url().includes("manager"));
+  const isLoaded = page.waitForResponse((response) => response.url().includes("tcfapi.js"));
   await page.setContent(
-    `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}/${API_VERSION}/loader.js${
+    `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}/${API_VERSION}/cmp.js${
       channelId !== undefined ? "?channelId=" + channelId : ""
     }"></script>${
       withBanner

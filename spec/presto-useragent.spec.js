@@ -18,15 +18,15 @@ describe("Consent Management with Presto user agent", () => {
   });
 
   describe("Is loaded", () => {
-    let managerJsLoaded;
+    let tcfapiJsLoaded;
 
     beforeAll(async () => {
-      managerJsLoaded = page.waitForResponse((response) => response.url().includes("manager.js"));
+      tcfapiJsLoaded = page.waitForResponse((response) => response.url().includes("tcfapi.js"));
       await pageHelper.initLoader(page);
     });
 
     test("Loads 3rd party version of API", async () => {
-      expect(await managerJsLoaded).toBeDefined();
+      expect(await tcfapiJsLoaded).toBeDefined();
     });
 
     test("Storage status is enabled and consent is false", async () => {

@@ -34,7 +34,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
     let response: Response;
 
     beforeAll(async () => {
-      response = await request(app).get("/v2/manager.js");
+      response = await request(app).get("/v2/tcfapi.js");
     });
 
     test("cmpStatus is disabled", () => {
@@ -52,7 +52,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
     let response: Response;
 
     beforeAll(async () => {
-      response = await request(app).get("/v2/manager.js?consent=true");
+      response = await request(app).get("/v2/tcfapi.js?consent=true");
     });
 
     test("cmpStatus is loaded", () => {
@@ -68,7 +68,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
     let response: Response;
 
     beforeAll(async () => {
-      response = await request(app).get("/v2/manager.js?consent=false");
+      response = await request(app).get("/v2/tcfapi.js?consent=false");
     });
 
     test("cmpStatus is loaded", () => {
@@ -84,7 +84,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
     let response: Response;
 
     beforeAll(async () => {
-      response = await request(app).get("/v2/manager.js?consent=undefined");
+      response = await request(app).get("/v2/tcfapi.js?consent=undefined");
     });
 
     test("cmpStatus is disabled", () => {
@@ -102,7 +102,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
     let response: Response;
 
     beforeAll(async () => {
-      response = await request(app).get(`/v2/manager.js?xt=${Date.now() - 100}`);
+      response = await request(app).get(`/v2/tcfapi.js?xt=${Date.now() - 100}`);
     });
 
     test("cmpStatus is disabled", () => {
@@ -120,7 +120,7 @@ describe("Consent Management API configured with 0% sample rate", () => {
     let response: Response;
 
     beforeAll(async () => {
-      response = await request(app).get(`/v2/manager.js?xt=${Date.now() - 1000000}`);
+      response = await request(app).get(`/v2/tcfapi.js?xt=${Date.now() - 1000000}`);
     });
 
     test("cmpStatus is disabled due to sample rate", () => {

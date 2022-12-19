@@ -49,7 +49,7 @@ This image is then pushed to <https://github.com/rbredtech/consent-management-pr
 
 All API endpoints take an optional query parameter`channelId`, which is used to collect metrics about the opt-in/out ratio on a specific channel.
 
-- GET `/v2/loader.js` - Returns the javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
+- GET `/v2/cmp.js` - Returns the javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
 - GET `/v2/banner.js` - Returns the javascript bundle providing the `__cbapi()` API for controlling the consent banner.
 
 ### __tcfapi methods
@@ -117,7 +117,7 @@ type TCData = {
 
 ### Checking of consent status
 
-The `{HOST_URL}/v2/loader.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
+The `{HOST_URL}/v2/cmp.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
 
 The app needs to check `cmpStatus` and `consent` for the response of the `tcData` method.
 
@@ -125,14 +125,14 @@ If `cmpStatus` is not set as `loaded` it means the consent check is currently no
 
 If `cmpStatus` is `loaded` consent checking is available. If `consent` for the pre defined vendor id is `undefined` then consent has not yet been set on this device and the app should show a banner asking for consent. There is two options to proceed. The app can either display its own banner and use `setConsent` method to set the consent result retrieved by banner. Or the app can use the `showBanner` and `handleKey` methods to use the included banner that will overlay over the app.
 
-Add the `loader.js` bundle to your application:
+Add the `cmp.js` bundle to your application:
 
 ```html
-<script src="{HOST_URL}/v2/loader.js?channelId=1234"></script>
+<script src="{HOST_URL}/v2/cmp.js?channelId=1234"></script>
 ```
 
 The `channelId` query parameter is optional and is used to collect metrics about which channel opt-ins/outs come from.
-Having added the `loader.js` javascript file to the application, you can check for the user's consent status through the API endpoints provided by the `__tcfapi` object:
+Having added the `cmp.js` javascript file to the application, you can check for the user's consent status through the API endpoints provided by the `__tcfapi` object:
 
 ```js
 var CMP_VENDOR_ID = 4040; // custom Red Tech vendor ID
@@ -157,7 +157,7 @@ __tcfapi('getTCData', 2, function(tcData, success) {
 
 ### Displaying consent banner
 
-By loading `/v2/banner.js` (besides `/v2/loader.js`) an additional API is available to invoke the display of a consent banner.
+By loading `/v2/banner.js` (besides `/v2/cmp.js`) an additional API is available to invoke the display of a consent banner.
 
 ```html
 <script src="{HOST_URL}/v2/banner.js?channelId=1234"></script>

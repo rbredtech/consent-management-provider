@@ -3,13 +3,13 @@ import cors from "cors";
 import { Router } from "express";
 
 import {
-  iframeController,
-  loaderController,
-  managerController,
-  managerIframeController,
-  removeConsentController,
-  setConsentController,
+  cmpController,
   bannerController,
+  iframeController,
+  tcfapiController,
+  tcfapiIframeController,
+  setConsentController,
+  removeConsentController,
 } from "./controller";
 
 import { loggerMiddleware, techCookieMiddleware, channelMiddleware } from "./middleware";
@@ -22,12 +22,12 @@ router.use(loggerMiddleware);
 router.use(techCookieMiddleware);
 router.use(channelMiddleware);
 
-router.get("/loader.js", loaderController);
-router.get("/banner.js", bannerController);
+router.get("/cmp.js", cmpController);
+router.get("/tcfapi.js", tcfapiController);
+router.get("/tcfapi-iframe.js", tcfapiIframeController);
 router.get("/iframe.html", iframeController);
-router.get(["/manager.js", "/mini-cmp.js"], managerController);
-router.get("/manager-iframe.js", managerIframeController);
 router.get("/set-consent", setConsentController);
 router.get("/remove-consent", removeConsentController);
+router.get("/banner.js", bannerController);
 
 export default router;

@@ -4,7 +4,7 @@ import path from "path";
 
 import { getTemplateValues } from "./util/getTemplateValues";
 
-export const managerIframeController = async (req: Request, res: Response) => {
+export const tcfapiIframeController = async (req: Request, res: Response) => {
   const channelId = Number(req.query.channelId);
 
   if (req.query.channelId && isNaN(channelId)) {

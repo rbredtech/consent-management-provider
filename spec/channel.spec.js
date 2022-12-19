@@ -11,12 +11,12 @@ afterAll(async () => {
 }, 20000);
 
 describe("Consent Management with ServusTv channelId", () => {
-  let iframeResponse, managerResponse;
+  let iframeResponse, tcfapiResponse;
 
   beforeAll(async () => {
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    iframeResponse = page.waitForResponse((response) => response.url().includes("iframe"));
-    managerResponse = page.waitForResponse((response) => response.url().includes("manager"));
+    iframeResponse = page.waitForResponse((response) => response.url().includes("iframe.html"));
+    tcfapiResponse = page.waitForResponse((response) => response.url().includes("tcfapi.js"));
     await pageHelper.initLoader(page, 0);
   });
 
@@ -24,8 +24,8 @@ describe("Consent Management with ServusTv channelId", () => {
     expect((await iframeResponse).url()).toContain("channelId=0");
   });
 
-  test("Passing through channelId for manager request", async () => {
-    expect((await managerResponse).url()).toContain("channelId=0");
+  test("Passing through channelId for tcfapi request", async () => {
+    expect((await tcfapiResponse).url()).toContain("channelId=0");
   });
 
   describe("When consent is set", () => {
