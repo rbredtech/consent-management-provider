@@ -140,18 +140,18 @@
         }
       }
 
-      var managerScriptTag = document.createElement('script');
-      managerScriptTag.setAttribute('type', 'text/javascript');
-      managerScriptTag.setAttribute(
+      var tcfapiScriptTag = document.createElement('script');
+      tcfapiScriptTag.setAttribute('type', 'text/javascript');
+      tcfapiScriptTag.setAttribute(
         'src',
-        '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/manager.js?<%-TECH_COOKIE_NAME%>=' +
+        '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi.js?<%-TECH_COOKIE_NAME%>=' +
           xt +
           (hasConsent !== null ? '&consent=' + hasConsent : '') +
           (channelId !== '' ? '&channelId=' + channelId : ''),
       );
 
-      managerScriptTag.addEventListener('error', log.bind(null, 'loaded', false, { type: '3rdparty' }));
-      managerScriptTag.addEventListener('load', function () {
+      tcfapiScriptTag.addEventListener('error', log.bind(null, 'loaded', false, { type: '3rdparty' }));
+      tcfapiScriptTag.addEventListener('load', function () {
         // if not an Opera (Presto) browser, we load the iframe into the host document
         if (
           window.navigator &&
@@ -165,11 +165,11 @@
         }
       });
 
-      return managerScriptTag;
+      return tcfapiScriptTag;
     }
 
-    // insert root manager script tag to host document
-    var managerScriptTag = createManagerScriptTag();
-    document.getElementsByTagName('head')[0].appendChild(managerScriptTag);
+    // insert root tcfapi script tag to host document
+    var tcfapiScriptTag = createManagerScriptTag();
+    document.getElementsByTagName('head')[0].appendChild(tcfapiScriptTag);
   } catch (e) {}
 })();

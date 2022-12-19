@@ -9,7 +9,7 @@ export const options = {
 };
 
 export default function() {
-    let res = http.get(`http://${__ENV.HTTP_HOST}/${__ENV.API_VERSION}/loader.js`);
+    let res = http.get(`http://${__ENV.HTTP_HOST}/${__ENV.API_VERSION}/cmp.js`);
     check(res, { 'success': (r) => r.status === 200 });
     sleep(0.3);
 }

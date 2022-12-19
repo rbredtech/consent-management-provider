@@ -4,7 +4,7 @@ import { logger } from "../util/logger";
 
 import { getTemplateValues } from "./util/getTemplateValues";
 
-export const managerController = async (req: Request, res: Response) => {
+export const tcfapiController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 

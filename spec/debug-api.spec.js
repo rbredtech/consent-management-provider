@@ -82,7 +82,7 @@ describe("Debug API", () => {
           expect(queue[2]).toEqual({
             event: "setConsent",
             parameters: {
-              consent: "false",
+              consent: false,
               localStorageAvailable: true,
             },
             success: true,

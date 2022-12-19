@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { API_VERSION, HTTP_HOST, TECH_COOKIE_NAME, COOKIE_NAME } from "../config";
 import { loadedCounterMetric } from "../util/metrics";
 
-export const loaderController = async (req: Request, res: Response) => {
+export const cmpController = async (req: Request, res: Response) => {
   const channelId = Number(req.query.channelId);
 
   if (req.query.channelId && isNaN(channelId)) {
@@ -17,7 +17,7 @@ export const loaderController = async (req: Request, res: Response) => {
   loadedCounterMetric.labels({ channel: req.channelName }).inc();
 
   try {
-    res.render("loader.js", {
+    res.render("cmp.js", {
       XT: Date.now(),
       TECH_COOKIE_NAME,
       COOKIE_NAME,
