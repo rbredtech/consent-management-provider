@@ -12,10 +12,10 @@ export const managerController = async (req: Request, res: Response) => {
 
   try {
     const values = getTemplateValues(req, "3rd-party");
+    const cmpJs = await renderFile(path.join(__dirname, "../templates/tcfapi.js"), values);
 
+    // add banner if needed
     let bannerJs: string | undefined = undefined;
-
-    // add showBanner if needed
     if (req.withBanner) {
       bannerJs = await renderFile(path.join(__dirname, "../templates/banner.js"), {
         CHANNEL_NAME: req.channelName,
@@ -23,9 +23,7 @@ export const managerController = async (req: Request, res: Response) => {
       });
     }
 
-    const cmpJs = await renderFile(path.join(__dirname, "../templates/tcfapi.js"), values);
-
-    res.send(bannerJs ? `${bannerJs}${cmpJs}` : cmpJs);
+    res.send(bannerJs ? `${cmpJs}${bannerJs}` : cmpJs);
   } catch (e) {
     logger.error(e);
     res.status(500).send(e);
