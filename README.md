@@ -113,7 +113,9 @@ type TCData = {
 | Method | Description  | Parameter | Callback  |
 |--------|--------------|------------|----------|
 | showBanner | displays a consent banner to the user | elementId: string (optional, id of the dom-node the banner should be rendered in. if not given or element not found, body is used) | (consent: boolean) => void |
-| handleKey | Allows for key handling of banner. Call for every key event after app called showBanner method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the app. | Key event from "keydown" | |
+| hideBanner | hides the consent banner | none | () => void |
+| isBannerVisible | Callback parameter shows if banner is currently shown | none | (visible: boolean) => void
+| handleKey | Allows for key handling of banner. Call for every key event after app called showBanner method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the app. | Key event from "keydown" | none |
 
 ### Checking of consent status
 
