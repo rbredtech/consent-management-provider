@@ -1,13 +1,19 @@
 window.__tcfapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
   var hasConsent = '<%-TC_CONSENT%>' === 'undefined' ? undefined : '<%-TC_CONSENT%>' === 'true';
+
   if (window.localStorage && localStorage.getItem) {
     var localStorageConsent = localStorage.getItem('<%-COOKIE_NAME%>');
-    if (localStorageConsent === 'true') hasConsent = true;
-    if (localStorageConsent === 'false') hasConsent = false;
+    if (localStorageConsent === 'true') {
+      hasConsent = true;
+    }
+    if (localStorageConsent === 'false') {
+      hasConsent = false;
+    }
   }
-  var _listenerCnt = 1;
-  var _listeners = {};
+
+  var listenerCount = 1;
+  var listeners = {};
 
   var logEvents = {
     TC_DATA: 'TCData',
@@ -23,70 +29,71 @@ window.__tcfapi = function (command, version, callback, parameter) {
 
   var image;
   var localStorageAvailable;
-  var hideBannerTimeout;
 
   switch (command) {
     case 'ping':
-      callback({
-        gdprApplies: true,
-        cmpLoaded: true,
-        cmpStatus: 'loaded',
-        displayStatus: 'hidden',
-        apiVersion: '2.0',
-        cmpVersion: 1,
-        cmpId: 4040,
-        gvlVersion: 1,
-        tcfPolicyVersion: 2,
-      });
+      !!callback &&
+        callback({
+          gdprApplies: true,
+          cmpLoaded: true,
+          cmpStatus: 'loaded',
+          displayStatus: 'hidden',
+          apiVersion: '2.0',
+          cmpVersion: 1,
+          cmpId: 4040,
+          gvlVersion: 1,
+          tcfPolicyVersion: 2,
+        });
       break;
     case 'getTCData':
-      callback(
-        {
-          tcString: '<%-TC_STRING%>',
-          tcfPolicyVersion: 2,
-          cmpId: 4040,
-          cmpVersion: 1,
-          gdprApplies: true,
-          eventStatus: 'tcloaded',
-          cmpStatus: '<%-CMP_STATUS%>',
-          listenerId: undefined,
-          isServiceSpecific: true,
-          useNonStandardStacks: false,
-          publisherCC: 'AT',
-          purposeOneTreatment: true,
-          purpose: {
-            consents: {
-              4040: hasConsent,
+      !!callback &&
+        callback(
+          {
+            tcString: '<%-TC_STRING%>',
+            tcfPolicyVersion: 2,
+            cmpId: 4040,
+            cmpVersion: 1,
+            gdprApplies: true,
+            eventStatus: 'tcloaded',
+            cmpStatus: '<%-CMP_STATUS%>',
+            listenerId: undefined,
+            isServiceSpecific: true,
+            useNonStandardStacks: false,
+            publisherCC: 'AT',
+            purposeOneTreatment: true,
+            purpose: {
+              consents: {
+                4040: hasConsent,
+              },
+            },
+            legitimateInterests: {
+              consents: {
+                4040: hasConsent,
+              },
+            },
+            vendor: {
+              consents: {
+                4040: hasConsent,
+              },
             },
           },
-          legitimateInterests: {
-            consents: {
-              4040: hasConsent,
-            },
-          },
-          vendor: {
-            consents: {
-              4040: hasConsent,
-            },
-          },
-        },
-        true,
-      );
+          true,
+        );
       log(logEvents.TC_DATA, true, { status: '<%-CMP_STATUS%>', consent: hasConsent });
       break;
     case 'addEventListener':
-      _listeners[_listenerCnt] = callback;
+      listeners[listenerCount] = callback;
       break;
     case 'removeEventListener':
-      var listener = _listeners[parameter];
+      var listener = listeners[parameter];
       if (!listener) {
         setTimeout(function () {
-          callback(false);
+          !!callback && callback(false);
         }, 1);
         return;
       }
       setTimeout(function () {
-        callback(true);
+        !!callback && callback(true);
       }, 1);
       break;
     case 'setConsent':
@@ -96,7 +103,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
         '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consent=' +
         (String(parameter) === 'true' ? 1 : 0) +
         (channelId !== '' ? '&channelId=' + channelId : '');
-      callback(parameter);
+      !!callback && callback(parameter);
       if (window.localStorage && localStorage.setItem) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
         localStorageAvailable = true;
@@ -109,9 +116,6 @@ window.__tcfapi = function (command, version, callback, parameter) {
         }),
       );
       image.addEventListener('error', log.bind(null, logEvents.SET_CONSENT, false, {}));
-      if ('<%-WITH_BANNER%>' === 'true') {
-        hideConsentBanner();
-      }
       break;
     case 'removeConsentDecision':
       image = document.createElement('img');
@@ -126,7 +130,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
         log.bind(null, logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable }),
       );
       image.addEventListener('error', log.bind(null, logEvents.REMOVE_CONSENT_DECISION, false, {}));
-      callback();
+      !!callback && callback();
       break;
     case 'onLogEvent':
       this._logCallback = callback;
@@ -136,29 +140,6 @@ window.__tcfapi = function (command, version, callback, parameter) {
         var logParameters = JSON.parse(atob(parameter));
         if (logParameters && logParameters.event) {
           log(logParameters.event, true, logParameters.parameters);
-        }
-      }
-      break;
-    case 'showBanner':
-      if ('<%-WITH_BANNER%>' === 'true') {
-        showConsentBanner(parameter, callback); // from banner.js
-        hideBannerTimeout = setTimeout(function () {
-          hideConsentBanner(); // from banner.js
-          callback(hasConsent);
-        }, parseInt('<%-BANNER_TIMEOUT%>'));
-      }
-      break;
-    case 'handleKey':
-      if ('<%-WITH_BANNER%>' === 'true') {
-        var KeyEvent = window['KeyEvent'] || {};
-        KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
-        handleVK(parameter.keyCode ? parameter.keyCode : parameter); // from banner.js
-
-        if (parameter.preventDefault && parameter.keyCode) {
-          parameter.preventDefault();
-          if (parameter.keyCode === KeyEvent.VK_ENTER) {
-            clearTimeout(hideBannerTimeout);
-          }
         }
       }
       break;

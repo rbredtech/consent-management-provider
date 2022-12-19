@@ -2,6 +2,8 @@ node_modules/
 dist/
 github/
 .git/
+spec/*.js
+spec/*.ts
 express.js
 package-lock.json
 README.md

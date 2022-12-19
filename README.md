@@ -49,8 +49,8 @@ This image is then pushed to <https://github.com/rbredtech/consent-management-pr
 
 All API endpoints take an optional query parameter`channelId`, which is used to collect metrics about the opt-in/out ratio on a specific channel.
 
-- GET `/v2/loader.js` - Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
-- GET `/v2/loader-with-banner.js` - Alternative to Returns a javascript bundle providing the `__tcfapi()` API for client side checking of consent status including support for consent banner display, see below for `__tcfapi('showBanner', ...)`.
+- GET `/v2/loader.js` - Returns the javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
+- GET `/v2/banner.js` - Returns the javascript bundle providing the `__cbapi()` API for controlling the consent banner.
 
 ### __tcfapi methods
 
@@ -108,6 +108,13 @@ type TCData = {
 }
 ```
 
+### __cbapi methods
+
+| Method | Description  | Parameter | Callback  |
+|--------|--------------|------------|----------|
+| showBanner | displays a consent banner to the user | elementId: string (optional, id of the dom-node the banner should be rendered in. if not given or element not found, body is used) | (consent: boolean) => void |
+| handleKey | Allows for key handling of banner. Call for every key event after app called showBanner method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the app. | Key event from "keydown" | |
+
 ### Checking of consent status
 
 The `{HOST_URL}/v2/loader.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
@@ -150,15 +157,28 @@ __tcfapi('getTCData', 2, function(tcData, success) {
 
 ### Displaying consent banner
 
-By using the alternative script `/v2/loader-with-banner.js` an additional API is available to invoke the display of a consent banner.
+By loading `/v2/banner.js` (besides `/v2/loader.js`) an additional API is available to invoke the display of a consent banner.
+
+```html
+<script src="{HOST_URL}/v2/banner.js?channelId=1234"></script>
+```
+
+This will expose `window.__cbapi()`, which allows for controlling the display of a consent banner. The `__cbapi` method has the same call signature as `__tcfapi`:
+
+```js
+__cbapi(method, version, callback?, parameter?)
+```
 
 This functionality relies on the app to forward any key events from the key handler of the application by using the `handleKey` method while the banner is being displayed.
 
 ```js
 // use only in case consent from tcData method is undefined
 var isShowingBanner = true;
-__tcfapi('showBanner', 2, function(consent) {
+__cbapi('showBanner', 2, function(consent) {
   // user has closed the banner by remote control or the banner timeout was reached
+  if (consentDecision === true || consentDecision === false) {
+    __tcfapi('setConsent', 2, undefined, consentDecision);
+  }
   isShowingBanner = false;
 });
 
@@ -167,7 +187,7 @@ __tcfapi('showBanner', 2, function(consent) {
 function keyHandler(event) {
   if (isShowingBanner) {
     // pass on key events to library while consent banner is displayed
-    __tcfapi('handleKey', 2, function() {}, event);
+    __cbapi('handleKey', 2, undefined, event);
     return;
   }
 }

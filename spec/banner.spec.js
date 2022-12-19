@@ -27,7 +27,14 @@ describe("Consent Management with banner", () => {
 
   describe("When showBanner API method is called", () => {
     beforeAll(async () => {
-      await page.evaluate(`window.__tcfapi('showBanner', 2, console.log)`);
+      await page.evaluate(function () {
+        window.__cbapi("showBanner", 2, function (consentDecision) {
+          console.log("showBannerCallback");
+          if (typeof consentDecision === "boolean") {
+            window.__tcfapi("setConsent", 2, undefined, consentDecision);
+          }
+        });
+      });
     });
 
     test("Banner pop-up is displayed", async () => {
@@ -52,8 +59,8 @@ describe("Consent Management with banner", () => {
 
       beforeAll(async () => {
         consentSent = page.waitForRequest((request) => request.url().includes("set-consent"));
-        await page.evaluate(() => {
-          window.__tcfapi("handleKey", 2, console.log, 13);
+        await page.evaluate(function () {
+          window.__cbapi("handleKey", 2, undefined, 13);
         });
       });
 
@@ -63,7 +70,13 @@ describe("Consent Management with banner", () => {
 
       describe("When banner is requested again", () => {
         beforeAll(async () => {
-          await page.evaluate(`window.__tcfapi('showBanner', 2, console.log)`);
+          await page.evaluate(function () {
+            window.__cbapi("showBanner", 2, function (consentDecision) {
+              if (typeof consentDecision === "boolean") {
+                window.__tcfapi("setConsent", 2, undefined, consentDecision);
+              }
+            });
+          });
         });
 
         describe("And Dismiss is selected", () => {
@@ -72,8 +85,8 @@ describe("Consent Management with banner", () => {
           beforeAll(async () => {
             consentSent = page.waitForRequest((request) => request.url().includes("set-consent"));
             await page.evaluate(() => {
-              window.__tcfapi("handleKey", 2, console.log, 37);
-              window.__tcfapi("handleKey", 2, console.log, 13);
+              window.__cbapi("handleKey", 2, console.log, 37);
+              window.__cbapi("handleKey", 2, console.log, 13);
             });
           });
 

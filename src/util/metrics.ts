@@ -11,7 +11,7 @@ const consentCounterMetric = new Counter({
 const loadedCounterMetric = new Counter({
   name: "consent_management_loaded",
   help: "Consent Management is loaded",
-  labelNames: ["channel", "withBanner"] as const,
+  labelNames: ["channel"] as const,
 });
 
 const configuredCounterMetric = new Counter({
