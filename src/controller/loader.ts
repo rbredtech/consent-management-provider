@@ -14,7 +14,7 @@ export const loaderController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
-  loadedCounterMetric.labels({ channel: req.channelName, withBanner: req.withBanner ? "true" : "false" }).inc();
+  loadedCounterMetric.labels({ channel: req.channelName }).inc();
 
   try {
     res.render("loader.js", {
@@ -24,7 +24,6 @@ export const loaderController = async (req: Request, res: Response) => {
       API_VERSION,
       CONSENT_SERVER_HOST: HTTP_HOST,
       URL_SCHEME: req.protocol,
-      BANNER: req.withBanner ? "-with-banner" : "",
       CHANNEL_ID: req.channelId,
     });
   } catch (e) {

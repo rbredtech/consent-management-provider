@@ -27,7 +27,7 @@ describe("Consent Management with banner on a P7 channel", () => {
 
   describe("When showBanner API method is called", () => {
     beforeAll(async () => {
-      await page.evaluate(`window.__tcfapi('showBanner', 2, console.log)`);
+      await page.evaluate(`window.__cbapi('showBanner', 2, console.log)`);
     });
 
     test("Banner pop-up is displayed", async () => {

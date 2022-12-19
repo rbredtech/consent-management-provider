@@ -1,4 +1,4 @@
-var inner =
+var bannerContent =
   '<div id="agttcnstbnnr" style="position:absolute; z-index:9999; left:20px; right:20px; bottom:20px; display:none; font-family:sans-serif; font-size:16px; font-weight:400; line-height:24px; color:#505050; background-color:#ffffff; border-radius:8px; border: 4px solid #76b642">' +
   '<div style="margin: 30px 70px 0;"><span style="display:block; font-size:24px; line-height:24px; font-weight:500; color:#76b642; margin-bottom:16px">Datenschutzeinwilligung zur Reichweitenmessung</span>' +
   '<span>Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT; Details siehe agtt.at/hbb-Messung)<% if(!IS_PRO7){ %>, deren Mitglied <b><%-CHANNEL_NAME%></b> ist<%}%>, möchte ' +
@@ -14,83 +14,123 @@ var inner =
 
 var setConsentCallback;
 
-function setSelected(element) {
-  element.classList.add('selected');
-  element.style.color = '#ffffff';
-  element.style.backgroundColor = '#76b642';
-}
+window.__cbapi = function (command, version, callback, parameter) {
+  function setSelected(element) {
+    element.classList.add('selected');
+    element.style.color = '#ffffff';
+    element.style.backgroundColor = '#76b642';
+  }
 
-function setNotSelected(element) {
-  element.classList.remove('selected');
-  element.style.color = '#76b642';
-  element.style.backgroundColor = '#ffffff';
-}
+  function setNotSelected(element) {
+    element.classList.remove('selected');
+    element.style.color = '#76b642';
+    element.style.backgroundColor = '#ffffff';
+  }
 
-function handleLeftRight(consBtnAgree, consBtnDismiss) {
-  if (!consBtnAgree.classList.contains('selected')) {
+  function handleLeftRight(consBtnAgree, consBtnDismiss) {
+    if (!consBtnAgree.classList.contains('selected')) {
+      setSelected(consBtnAgree);
+      setNotSelected(consBtnDismiss);
+    } else {
+      setSelected(consBtnDismiss);
+      setNotSelected(consBtnAgree);
+    }
+  }
+
+  function handleEnter(consentBanner, consBtnAgree, consBtnDismiss) {
+    consentBanner.style.display = 'none';
+    if (consBtnAgree.classList.contains('selected')) {
+      setConsentCallback(true);
+    } else {
+      setConsentCallback(false);
+    }
     setSelected(consBtnAgree);
     setNotSelected(consBtnDismiss);
-  } else {
-    setSelected(consBtnDismiss);
-    setNotSelected(consBtnAgree);
-  }
-}
-
-function handleEnter(consentBanner, consBtnAgree) {
-  consentBanner.style.display = 'none';
-  if (consBtnAgree.classList.contains('selected')) {
-    __tcfapi('setConsent', 2, setConsentCallback, true);
-  } else {
-    __tcfapi('setConsent', 2, setConsentCallback, false);
-  }
-}
-
-function handleVK(keyCode) {
-  var KeyEvent = window['KeyEvent'] || {};
-  KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
-  KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window['VK_RIGHT'] || 39;
-  KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
-
-  var consentBanner = document.getElementById('agttcnstbnnr');
-  var consBtnAgree = document.getElementById('consBtnAgree');
-  var consBtnDismiss = document.getElementById('consBtnDismiss');
-
-  if (!consentBanner || !consBtnAgree || !consBtnDismiss) {
-    return;
   }
 
-  switch (keyCode) {
-    case KeyEvent.VK_ENTER:
-      handleEnter(consentBanner, consBtnAgree);
+  function handleVK(keyCode) {
+    var KeyEvent = window['KeyEvent'] || {};
+    KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
+    KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window['VK_RIGHT'] || 39;
+    KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
+
+    var consentBanner = document.getElementById('agttcnstbnnr');
+    var consBtnAgree = document.getElementById('consBtnAgree');
+    var consBtnDismiss = document.getElementById('consBtnDismiss');
+
+    if (!consentBanner || !consBtnAgree || !consBtnDismiss) {
+      return;
+    }
+
+    switch (keyCode) {
+      case KeyEvent.VK_ENTER:
+        handleEnter(consentBanner, consBtnAgree, consBtnDismiss);
+        break;
+      case KeyEvent.VK_LEFT:
+      case KeyEvent.VK_RIGHT:
+        handleLeftRight(consBtnAgree, consBtnDismiss);
+        break;
+      default:
+        break;
+    }
+  }
+
+  var bannerRetries = 0;
+
+  function showConsentBanner(id, cb) {
+    if (bannerRetries >= 3) {
+      return;
+    }
+
+    if (!document.body) {
+      setTimeout(function () {
+        bannerRetries++;
+        showConsentBanner(id, cb);
+      }, 100);
+      return;
+    }
+
+    setConsentCallback = cb;
+
+    if (!document.getElementById('agttcnstbnnr')) {
+      if (id && document.getElementById(id)) {
+        document.getElementById(id).insertAdjacentHTML('beforeend', bannerContent);
+      } else {
+        document.body.insertAdjacentHTML('beforeend', bannerContent);
+      }
+    }
+
+    document.getElementById('agttcnstbnnr').style.display = 'block';
+  }
+
+  function hideConsentBanner() {
+    if (document.getElementById('agttcnstbnnr')) {
+      document.getElementById('agttcnstbnnr').style.display = 'none';
+    }
+  }
+
+  var hideBannerTimeout;
+
+  switch (command) {
+    case 'showBanner':
+      showConsentBanner(parameter, callback);
+      hideBannerTimeout = setTimeout(function () {
+        hideConsentBanner();
+        !!callback && callback();
+      }, parseInt('<%-BANNER_TIMEOUT%>'));
       break;
-    case KeyEvent.VK_LEFT:
-    case KeyEvent.VK_RIGHT:
-      handleLeftRight(consBtnAgree, consBtnDismiss);
+    case 'handleKey':
+      var KeyEvent = window['KeyEvent'] || {};
+      KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
+      handleVK(parameter.keyCode ? parameter.keyCode : parameter);
+      if (parameter.preventDefault && parameter.keyCode) {
+        parameter.preventDefault();
+        if (parameter.keyCode === KeyEvent.VK_ENTER) {
+          clearTimeout(hideBannerTimeout);
+        }
+      }
       break;
     default:
       break;
   }
-}
-
-function showConsentBanner(id, cb) {
-  setConsentCallback = cb;
-
-  if (!document.getElementById('agttcnstbnnr')) {
-    if (id && document.getElementById(id)) {
-      document.getElementById(id).insertAdjacentHTML('beforeend', inner);
-    } else {
-      document.body.insertAdjacentHTML('beforeend', inner);
-    }
-  }
-  document.getElementById('agttcnstbnnr').style.display = 'block';
-}
-
-function hideConsentBanner() {
-  if (document.getElementById('agttcnstbnnr')) {
-    document.getElementById('agttcnstbnnr').style.display = 'none';
-  }
-}
-
-function isConsentBannerShown() {
-  return document.getElementById('agttcnstbnnr') && document.getElementById('agttcnstbnnr').style.display != 'none';
-}
+};

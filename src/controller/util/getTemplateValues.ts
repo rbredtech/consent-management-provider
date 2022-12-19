@@ -17,7 +17,7 @@ export interface ConsentCookie {
   consent: boolean;
 }
 
-export const getTemplateValues = (req: Request, type: string = "3rd-party"): { [key: string]: any } => {
+export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
   let cookie: ConsentCookie | undefined;
   if (req.cookies[COOKIE_NAME]) {
     try {
@@ -75,7 +75,6 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party"): { [
     CONSENT_SERVER_HOST: HTTP_HOST,
     URL_SCHEME: req.protocol,
     CHANNEL_ID: req.query.channelId ? req.query.channelId.toString() : "",
-    WITH_BANNER: req.withBanner,
     BANNER_TIMEOUT,
   };
 };

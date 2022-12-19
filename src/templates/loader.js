@@ -1,28 +1,28 @@
 (function () {
   try {
-    var _q = [];
-    var _logEntries = [];
+    var queue = [];
+    var logEntries = [];
 
     window.__tcfapi = function (command, version, callback, parameter) {
-      _q[_q.length] = Array.prototype.slice.call(arguments);
+      queue[queue.length] = Array.prototype.slice.call(arguments);
     };
 
     window.__tcfapi('onLogEvent', 2, function () {
-      _logEntries[_logEntries.length] = Array.prototype.slice.call(arguments);
+      logEntries[logEntries.length] = Array.prototype.slice.call(arguments);
     });
 
     var channelId = '<%-CHANNEL_ID%>';
 
     function logQueue() {
-      if (!_logEntries || !_logEntries.length || logCallbackIndex < 0) return;
+      if (!logEntries || !logEntries.length || logCallbackIndex < 0) return;
 
-      for (var i = 0; i < _logEntries.length; i++) {
-        var f = _logEntries[i];
+      for (var i = 0; i < logEntries.length; i++) {
+        var f = logEntries[i];
         if (callbackMap[logCallbackIndex]) {
           callbackMap[logCallbackIndex][0](f[0]);
         }
       }
-      delete _logEntries;
+      delete logEntries;
     }
 
     function onAPILoaded(type) {
@@ -31,21 +31,21 @@
     }
 
     function callQueue() {
-      if (!_q) return;
-      for (var i = 0; i < _q.length; i++) {
-        var f = _q[i];
+      if (!queue) return;
+      for (var i = 0; i < queue.length; i++) {
+        var f = queue[i];
         window.__tcfapi.apply(null, f.slice());
       }
-      delete _q;
+      delete queue;
     }
 
     var callbackCount = 0;
     var callbackMap = {};
     var logCallbackIndex = -1;
-    var _iframe;
+    var iframe;
 
     function message(message, callback) {
-      if (!_iframe.contentWindow) {
+      if (!iframe.contentWindow) {
         return;
       }
       var params = message.split(';');
@@ -55,7 +55,7 @@
         logCallbackIndex = callbackCount;
         logQueue();
       }
-      _iframe.contentWindow.postMessage(callbackCount + ';' + message, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
+      iframe.contentWindow.postMessage(callbackCount + ';' + message, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
     }
 
     function log(event, success, parameters) {
@@ -74,15 +74,8 @@
       iframe.setAttribute('frameborder', '0');
 
       iframe.addEventListener('load', function () {
-        var tcfapi = window.__tcfapi.bind(this);
         window.__tcfapi = function (command, version, callback, parameter) {
-          // showBanner and handleKey commands are not forwarded to the iframe as the
-          // banner is loaded into the host document
-          if (command !== 'showBanner' && command !== 'handleKey') {
-            message('cmd;' + command + ';' + version + ';' + parameter, callback);
-          } else {
-            tcfapi(command, version, callback, parameter);
-          }
+          message('cmd;' + command + ';' + version + ';' + parameter, callback);
         };
 
         window.addEventListener(
@@ -114,15 +107,22 @@
       return iframe;
     }
 
+    var iframeRetries = 0;
+
     function loadIframe() {
-      if (document.getElementsByTagName('body').length < 1) {
-        setTimeout(loadIframe, 100);
+      if (iframeRetries >= 3) {
         return;
       }
 
-      var iframe = createIframe();
-      _iframe = iframe;
+      if (!document.body) {
+        setTimeout(function () {
+          iframeRetries++;
+          loadIframe();
+        }, 100);
+        return;
+      }
 
+      iframe = createIframe();
       document.getElementsByTagName('body')[0].appendChild(iframe);
     }
 
@@ -139,11 +139,12 @@
           hasConsent = localStorage.getItem('<%-COOKIE_NAME%>');
         }
       }
+
       var managerScriptTag = document.createElement('script');
       managerScriptTag.setAttribute('type', 'text/javascript');
       managerScriptTag.setAttribute(
         'src',
-        '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/manager<%-BANNER%>.js?<%-TECH_COOKIE_NAME%>=' +
+        '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/manager.js?<%-TECH_COOKIE_NAME%>=' +
           xt +
           (hasConsent !== null ? '&consent=' + hasConsent : '') +
           (channelId !== '' ? '&channelId=' + channelId : ''),
@@ -151,8 +152,7 @@
 
       managerScriptTag.addEventListener('error', log.bind(null, 'loaded', false, { type: '3rdparty' }));
       managerScriptTag.addEventListener('load', function () {
-        // if not an Opera (Presto) browser, we load the iframe into the
-        // host document
+        // if not an Opera (Presto) browser, we load the iframe into the host document
         if (
           window.navigator &&
           navigator.userAgent &&
