@@ -109,6 +109,10 @@ window.__cbapi = function (command, version, callback, parameter) {
     }
   }
 
+  function isConsentBannerVisible() {
+    return !!document.getElementById('agttcnstbnnr') && document.getElementById('agttcnstbnnr').style.display != 'none';
+  }
+
   var hideBannerTimeout;
 
   switch (command) {
@@ -118,6 +122,13 @@ window.__cbapi = function (command, version, callback, parameter) {
         hideConsentBanner();
         !!callback && callback();
       }, parseInt('<%-BANNER_TIMEOUT%>'));
+      break;
+    case 'hideBanner':
+      hideConsentBanner();
+      !!callback && callback();
+      break;
+    case 'isBannerVisible':
+      !!callback && callback(isConsentBannerVisible());
       break;
     case 'handleKey':
       var KeyEvent = window['KeyEvent'] || {};
