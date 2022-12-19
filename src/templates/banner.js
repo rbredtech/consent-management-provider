@@ -131,13 +131,15 @@ window.__cbapi = function (command, version, callback, parameter) {
       !!callback && callback(isConsentBannerVisible());
       break;
     case 'handleKey':
-      var KeyEvent = window['KeyEvent'] || {};
-      KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
-      handleVK(parameter.keyCode ? parameter.keyCode : parameter);
-      if (parameter.preventDefault && parameter.keyCode) {
-        parameter.preventDefault();
-        if (parameter.keyCode === KeyEvent.VK_ENTER) {
-          clearTimeout(hideBannerTimeout);
+      if (isConsentBannerVisible()) {
+        var KeyEvent = window['KeyEvent'] || {};
+        KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
+        handleVK(parameter.keyCode ? parameter.keyCode : parameter);
+        if (parameter.preventDefault && parameter.keyCode) {
+          parameter.preventDefault();
+          if (parameter.keyCode === KeyEvent.VK_ENTER) {
+            clearTimeout(hideBannerTimeout);
+          }
         }
       }
       break;
