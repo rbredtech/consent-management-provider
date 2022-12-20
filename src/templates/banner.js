@@ -17,31 +17,41 @@ var consBtnDismiss;
 var setConsentCallback;
 
 window.__cbapi = function (command, version, callback, parameter) {
-  function showConsentBanner(nodeId, callback, retriesLeft) {
-    if (retriesLeft < 0) {
-      return;
-    }
-
+  function mountConsentBanner(nodeId) {
     var bannerParentNode = document.body;
     if (nodeId) {
       bannerParentNode = document.getElementById(nodeId);
     }
 
     if (!bannerParentNode) {
+      return;
+    }
+
+    if (!document.getElementById('agttcnsntbnnr')) {
+      bannerParentNode.insertAdjacentHTML('beforeend', bannerContent);
+    }
+
+    return document.getElementById('agttcnstbnnr');
+  }
+
+  function showConsentBanner(nodeId, callback, retriesLeft) {
+    if (retriesLeft < 0) {
+      return;
+    }
+
+    var banner = mountConsentBanner(nodeId);
+
+    if (!banner) {
       setTimeout(showConsentBanner.bind(this, nodeId, callback, retriesLeft - 1), 100);
       return;
     }
 
     setConsentCallback = callback;
 
-    if (!document.getElementById('agttcnsntbnnr')) {
-      bannerParentNode.insertAdjacentHTML('beforeend', bannerContent);
-    }
-
     consBtnAgree = document.getElementById('consBtnAgree');
     consBtnDismiss = document.getElementById('consBtnDismiss');
 
-    document.getElementById('agttcnstbnnr').style.display = 'block';
+    banner.style.display = 'block';
   }
 
   function hideConsentBanner() {
