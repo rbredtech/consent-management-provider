@@ -16,11 +16,11 @@ describe("Consent Management with banner", () => {
     await pageHelper.initLoader(page, 0, true);
   });
 
-  test("Banner pop-up is NOT displayed", () => {
-    expect(
+  test("Banner pop-up is NOT displayed", async () => {
+    await expect(
       page.waitForSelector("div#agttcnstbnnr", {
         visible: true,
-        timeout: 10,
+        timeout: 1000,
       }),
     ).rejects.toBeDefined();
   });
@@ -29,7 +29,6 @@ describe("Consent Management with banner", () => {
     beforeAll(async () => {
       await page.evaluate(function () {
         window.__cbapi("showBanner", 2, function (consentDecision) {
-          console.log("showBannerCallback");
           if (typeof consentDecision === "boolean") {
             window.__tcfapi("setConsent", 2, undefined, consentDecision);
           }
@@ -38,20 +37,22 @@ describe("Consent Management with banner", () => {
     });
 
     test("Banner pop-up is displayed", async () => {
-      expect(
-        await page.waitForSelector("div#agttcnstbnnr", {
+      await expect(
+        page.waitForSelector("div#agttcnstbnnr", {
           visible: true,
           timeout: 1000,
         }),
-      ).toBeDefined();
+      ).resolves.toBeDefined();
     });
 
     test("Channel specific information should be present", async () => {
-      expect(await page.$eval("div#agttcnstbnnr", (node) => node.innerText)).toContain("deren Mitglied");
+      const bannerText = await page.$eval("div#agttcnstbnnr", (node) => node.innerText);
+      expect(bannerText).toContain("deren Mitglied");
     });
 
     test("Channel Name is replaced in legal text", async () => {
-      expect(await page.$eval("div#agttcnstbnnr", (node) => node.innerText)).toContain("ServusTV");
+      const bannerText = await page.$eval("div#agttcnstbnnr", (node) => node.innerText);
+      expect(bannerText).toContain("ServusTV");
     });
 
     describe("When OK button is hit", () => {

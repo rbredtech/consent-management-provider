@@ -16,27 +16,29 @@ describe("Consent Management with banner on a P7 channel", () => {
     await pageHelper.initLoader(page, 3300, true);
   });
 
-  test("Banner pop-up is NOT displayed", () => {
-    expect(
+  test("Banner pop-up is NOT displayed", async () => {
+    await expect(
       page.waitForSelector("div#agttcnstbnnr", {
         visible: true,
-        timeout: 10,
+        timeout: 1000,
       }),
     ).rejects.toBeDefined();
   });
 
   describe("When showBanner API method is called", () => {
     beforeAll(async () => {
-      await page.evaluate(`window.__cbapi('showBanner', 2, console.log)`);
+      await page.evaluate(function () {
+        window.__cbapi("showBanner", 2);
+      });
     });
 
     test("Banner pop-up is displayed", async () => {
-      expect(
-        await page.waitForSelector("div#agttcnstbnnr", {
+      await expect(
+        page.waitForSelector("div#agttcnstbnnr", {
           visible: true,
           timeout: 1000,
         }),
-      ).toBeDefined();
+      ).resolves.toBeDefined();
     });
 
     test("Channel specific information should NOT be present", async () => {
