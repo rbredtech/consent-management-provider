@@ -10,7 +10,7 @@
     try {
       var xt = '<%-XT%>';
       var channelId = '<%-CHANNEL_ID%>';
-      var hasConsent = null;
+      var hasConsent = undefined;
 
       if (window.localStorage && localStorage.getItem && localStorage.setItem) {
         if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
@@ -23,9 +23,9 @@
       }
 
       var tcfapiScriptTag = document.createElement('script');
-      tcfapiScriptTag.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi-iframe.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
+      tcfapiScriptTag.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi-iframe.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== undefined ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
       tcfapiScriptTag.setAttribute('type', 'text/javascript');
-      document.head.appendChild(tcfapiScriptTag);
+      document.getElementsByTagName('head')[0].appendChild(tcfapiScriptTag);
     } catch (e) { }
     //]]>
   </script>
