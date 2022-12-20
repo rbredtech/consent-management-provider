@@ -12,93 +12,34 @@ var bannerContent =
   '</div>' +
   '</div>';
 
+var consBtnAgree;
+var consBtnDismiss;
 var setConsentCallback;
 
 window.__cbapi = function (command, version, callback, parameter) {
-  function setSelected(element) {
-    element.classList.add('selected');
-    element.style.color = '#ffffff';
-    element.style.backgroundColor = '#76b642';
-  }
-
-  function setNotSelected(element) {
-    element.classList.remove('selected');
-    element.style.color = '#76b642';
-    element.style.backgroundColor = '#ffffff';
-  }
-
-  function handleLeftRight(consBtnAgree, consBtnDismiss) {
-    if (!consBtnAgree.classList.contains('selected')) {
-      setSelected(consBtnAgree);
-      setNotSelected(consBtnDismiss);
-    } else {
-      setSelected(consBtnDismiss);
-      setNotSelected(consBtnAgree);
-    }
-  }
-
-  function handleEnter(consentBanner, consBtnAgree, consBtnDismiss) {
-    consentBanner.style.display = 'none';
-    if (consBtnAgree.classList.contains('selected')) {
-      setConsentCallback(true);
-    } else {
-      setConsentCallback(false);
-    }
-    setSelected(consBtnAgree);
-    setNotSelected(consBtnDismiss);
-  }
-
-  function handleVK(keyCode) {
-    var KeyEvent = window['KeyEvent'] || {};
-    KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
-    KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window['VK_RIGHT'] || 39;
-    KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
-
-    var consentBanner = document.getElementById('agttcnstbnnr');
-    var consBtnAgree = document.getElementById('consBtnAgree');
-    var consBtnDismiss = document.getElementById('consBtnDismiss');
-
-    if (!consentBanner || !consBtnAgree || !consBtnDismiss) {
+  function showConsentBanner(nodeId, callback, retriesLeft) {
+    if (retriesLeft < 0) {
       return;
     }
 
-    switch (keyCode) {
-      case KeyEvent.VK_ENTER:
-        handleEnter(consentBanner, consBtnAgree, consBtnDismiss);
-        break;
-      case KeyEvent.VK_LEFT:
-      case KeyEvent.VK_RIGHT:
-        handleLeftRight(consBtnAgree, consBtnDismiss);
-        break;
-      default:
-        break;
+    var bannerParentNode = document.body;
+    if (nodeId) {
+      bannerParentNode = document.getElementById(nodeId);
     }
-  }
 
-  var bannerRetries = 0;
-
-  function showConsentBanner(id, cb) {
-    if (bannerRetries >= 3) {
+    if (!bannerParentNode) {
+      setTimeout(showConsentBanner.bind(this, nodeId, callback, retriesLeft - 1), 100);
       return;
     }
 
-    if (!document.body) {
-      setTimeout(function () {
-        bannerRetries++;
-        showConsentBanner(id, cb);
-      }, 100);
-      return;
+    setConsentCallback = callback;
+
+    if (!document.getElementById('agttcnsntbnnr')) {
+      bannerParentNode.insertAdjacentHTML('beforeend', bannerContent);
     }
 
-    setConsentCallback = cb;
-
-    if (!document.getElementById('agttcnstbnnr')) {
-      if (id && document.getElementById(id)) {
-        document.getElementById(id).insertAdjacentHTML('beforeend', bannerContent);
-      } else {
-        document.body.insertAdjacentHTML('beforeend', bannerContent);
-      }
-    }
+    consBtnAgree = document.getElementById('consBtnAgree');
+    consBtnDismiss = document.getElementById('consBtnDismiss');
 
     document.getElementById('agttcnstbnnr').style.display = 'block';
   }
@@ -113,11 +54,71 @@ window.__cbapi = function (command, version, callback, parameter) {
     return !!document.getElementById('agttcnstbnnr') && document.getElementById('agttcnstbnnr').style.display != 'none';
   }
 
+  function setSelected(element) {
+    if (!element) {
+      return;
+    }
+    element.classList.add('selected');
+    element.style.color = '#ffffff';
+    element.style.backgroundColor = '#76b642';
+  }
+
+  function setNotSelected(element) {
+    if (!element) {
+      return;
+    }
+    element.classList.remove('selected');
+    element.style.color = '#76b642';
+    element.style.backgroundColor = '#ffffff';
+  }
+
+  function handleLeftRight() {
+    if (consBtnAgree && !consBtnAgree.classList.contains('selected')) {
+      setSelected(consBtnAgree);
+      setNotSelected(consBtnDismiss);
+    } else {
+      setSelected(consBtnDismiss);
+      setNotSelected(consBtnAgree);
+    }
+  }
+
+  function handleEnter() {
+    if (consBtnAgree && consBtnAgree.classList.contains('selected')) {
+      setConsentCallback(true);
+    } else {
+      setConsentCallback(false);
+    }
+    hideConsentBanner();
+
+    // reset consent banner to have ACCEPT button selected
+    setSelected(consBtnAgree);
+    setNotSelected(consBtnDismiss);
+  }
+
+  function handleVK(keyCode) {
+    var KeyEvent = window['KeyEvent'] || {};
+    KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
+    KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window['VK_RIGHT'] || 39;
+    KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
+
+    switch (keyCode) {
+      case KeyEvent.VK_ENTER:
+        handleEnter();
+        break;
+      case KeyEvent.VK_LEFT:
+      case KeyEvent.VK_RIGHT:
+        handleLeftRight();
+        break;
+      default:
+        break;
+    }
+  }
+
   var hideBannerTimeout;
 
   switch (command) {
     case 'showBanner':
-      showConsentBanner(parameter, callback);
+      showConsentBanner(parameter, callback, 3);
       hideBannerTimeout = setTimeout(function () {
         hideConsentBanner();
         !!callback && callback();
