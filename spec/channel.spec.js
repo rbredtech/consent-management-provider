@@ -16,7 +16,7 @@ describe("Consent Management with ServusTv channelId", () => {
   beforeAll(async () => {
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     iframeResponse = page.waitForResponse((response) => response.url().includes("iframe.html"));
-    tcfapiResponse = page.waitForResponse((response) => response.url().includes("tcfapi.js"));
+    tcfapiResponse = page.waitForResponse((response) => response.url().includes("tcfapi"));
     await pageHelper.initLoader(page, 0);
   });
 

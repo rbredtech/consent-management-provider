@@ -14,7 +14,7 @@ async function get() {
 }
 
 async function initLoader(page, channelId = undefined, withBanner = false) {
-  const isLoaded = page.waitForResponse((response) => response.url().includes("tcfapi.js"));
+  const isLoaded = page.waitForResponse((response) => response.url().includes("tcfapi"));
   await page.setContent(
     `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}/${API_VERSION}/cmp.js${
       channelId !== undefined ? "?channelId=" + channelId : ""
