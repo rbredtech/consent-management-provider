@@ -18,7 +18,7 @@ var setConsentCallback;
 
 window.__cbapi = function (command, version, callback, parameter) {
   function mountConsentBanner(nodeId) {
-    var bannerParentNode = document.body;
+    var bannerParentNode = document.getElementsByTagName('body')[0];
     if (nodeId) {
       bannerParentNode = document.getElementById(nodeId);
     }
@@ -82,7 +82,7 @@ window.__cbapi = function (command, version, callback, parameter) {
     element.style.backgroundColor = '#ffffff';
   }
 
-  function handleLeftRight() {
+  function handleSelectionToggle() {
     if (consBtnAgree && !consBtnAgree.classList.contains('selected')) {
       setSelected(consBtnAgree);
       setNotSelected(consBtnDismiss);
@@ -117,7 +117,7 @@ window.__cbapi = function (command, version, callback, parameter) {
         break;
       case KeyEvent.VK_LEFT:
       case KeyEvent.VK_RIGHT:
-        handleLeftRight();
+        handleSelectionToggle();
         break;
       default:
         break;
