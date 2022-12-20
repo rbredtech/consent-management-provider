@@ -62,11 +62,9 @@ __tcfapi(method, version, callback?, parameter?)
 
 | Method | Description  | Parameter | Callback  |
 |--------|--------------|------------|----------|
-| ping   |Wait until API is available. Optional. |  | (status: TCStatus) => void |
-| getTCData | Retrieve consent decision | | (data: TCData) => void |
-| showBanner | displays a consent banner to the user (only available if loader-with-banner.js was included) | elementId: string (optional, id of the dom-node the banner should be rendered in. if not given or element not found, body is used) | (consent: boolean) => void |
-| handleKey | Allows for key handling of banner. Call for every key event after app called showBanner method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the app. | Key event from "keydown" | |
-| setConsent | Alter consent decision | consent: boolean | (consent: boolean) => void |
+| ping   |Wait until API is available. Optional. |  | `(status: TCStatus) => void` |
+| getTCData | Retrieve consent decision | | `(data: TCData) => void` |
+| setConsent | Alter consent decision | `boolean` | `(consent: boolean) => void` |
 | addEventListener | Subscribe on internal event log for debugging purposes | |
 | removeEventListener | Unsubscribe from internal event log | |
 
@@ -112,10 +110,10 @@ type TCData = {
 
 | Method | Description  | Parameter | Callback  |
 |--------|--------------|------------|----------|
-| showBanner | displays a consent banner to the user | elementId: string (optional, id of the dom-node the banner should be rendered in. if not given or element not found, body is used) | (consent: boolean) => void |
-| hideBanner | hides the consent banner | none | () => void |
-| isBannerVisible | Callback parameter shows if banner is currently shown | none | (visible: boolean) => void
-| handleKey | Allows for key handling of banner. Call for every key event after app called showBanner method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the app. | Key event from "keydown" | none |
+| showBanner | displays a consent banner to the user | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean) => void` |
+| hideBanner | hides the consent banner | none | none |
+| isBannerVisible | Callback parameter shows if banner is currently shown | none | `(visible: boolean) => void`
+| handleKey | Allows for key handling of banner. Call for every key event after app called `showBanner` method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the host app. | `KeyboardEvent` | none |
 
 ### Checking of consent status
 
