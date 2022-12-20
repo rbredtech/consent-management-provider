@@ -13,7 +13,7 @@ export const setConsentController = (req: Request, res: Response) => {
   const channelId = Number(req.query.channelId);
 
   if (req.query.channelId && isNaN(channelId)) {
-    res.status(500).send({ error: "query parameter channelId must be numeric" });
+    res.status(400).send({ error: "query parameter channelId must be numeric" });
     return;
   }
 
