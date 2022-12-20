@@ -39,6 +39,8 @@ window.__cbapi = function (command, version, callback, parameter) {
     return document.getElementById('agttcnstbnnr');
   }
 
+  var hideBannerTimeout;
+
   function showConsentBanner(nodeId, callback, retriesLeft) {
     if (retriesLeft < 0) {
       return;
@@ -57,11 +59,17 @@ window.__cbapi = function (command, version, callback, parameter) {
     consBtnDismiss = document.getElementById('consBtnDismiss');
 
     banner.style.display = 'block';
+
+    hideBannerTimeout = setTimeout(function () {
+      hideConsentBanner();
+      !!callback && callback();
+    }, parseInt('<%-BANNER_TIMEOUT%>'));
   }
 
   function hideConsentBanner() {
     if (document.getElementById('agttcnstbnnr')) {
       document.getElementById('agttcnstbnnr').style.display = 'none';
+      clearTimeout(hideBannerTimeout);
     }
   }
 
@@ -99,9 +107,9 @@ window.__cbapi = function (command, version, callback, parameter) {
 
   function handleEnter() {
     if (consBtnAgree && consBtnAgree.classList.contains('selected')) {
-      setConsentCallback(true);
+      !!setConsentCallback && setConsentCallback(true);
     } else {
-      setConsentCallback(false);
+      !!setConsentCallback && setConsentCallback(false);
     }
     hideConsentBanner();
 
@@ -110,7 +118,14 @@ window.__cbapi = function (command, version, callback, parameter) {
     setNotSelected(consBtnDismiss);
   }
 
-  function handleVK(keyCode) {
+  function handleVK(parameter) {
+    if (!isConsentBannerVisible) {
+      return;
+    }
+
+    !!parameter.preventDefault && parameter.preventDefault();
+    var keyCode = parameter.keyCode ? parameter.keyCode : parameter;
+
     switch (keyCode) {
       case KeyEvent.VK_ENTER:
         handleEnter();
@@ -124,33 +139,18 @@ window.__cbapi = function (command, version, callback, parameter) {
     }
   }
 
-  var hideBannerTimeout;
-
   switch (command) {
     case 'showBanner':
       showConsentBanner(parameter, callback, 3);
-      hideBannerTimeout = setTimeout(function () {
-        hideConsentBanner();
-        !!callback && callback();
-      }, parseInt('<%-BANNER_TIMEOUT%>'));
       break;
     case 'hideBanner':
       hideConsentBanner();
-      !!callback && callback();
       break;
     case 'isBannerVisible':
       !!callback && callback(isConsentBannerVisible());
       break;
     case 'handleKey':
-      if (isConsentBannerVisible()) {
-        handleVK(parameter.keyCode ? parameter.keyCode : parameter);
-        if (parameter.preventDefault && parameter.keyCode) {
-          parameter.preventDefault();
-          if (parameter.keyCode === KeyEvent.VK_ENTER) {
-            clearTimeout(hideBannerTimeout);
-          }
-        }
-      }
+      handleVK(parameter);
       break;
     default:
       break;
