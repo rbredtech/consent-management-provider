@@ -62,6 +62,15 @@
       window.__tcfapi('log', 2, function () {}, btoa(JSON.stringify({ event: event, parameters: parameters })));
     }
 
+    function isIframeCapable() {
+      return (
+        window.navigator &&
+        navigator.userAgent &&
+        navigator.userAgent.indexOf &&
+        navigator.userAgent.indexOf('Presto') === -1
+      );
+    }
+
     function createIframe() {
       var iframe = document.createElement('iframe');
 
@@ -153,12 +162,7 @@
       tcfapiScriptTag.addEventListener('error', log.bind(null, 'loaded', false, { type: '3rdparty' }));
       tcfapiScriptTag.addEventListener('load', function () {
         // if not an Opera (Presto) browser, we load the iframe into the host document
-        if (
-          window.navigator &&
-          navigator.userAgent &&
-          navigator.userAgent.indexOf &&
-          navigator.userAgent.indexOf('Presto') === -1
-        ) {
+        if (isIframeCapable()) {
           loadIframe();
         } else {
           onAPILoaded('3rdparty');
