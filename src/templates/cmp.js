@@ -116,23 +116,19 @@
       return iframe;
     }
 
-    var iframeRetries = 0;
-
-    function loadIframe() {
-      if (iframeRetries >= 3) {
+    function loadIframe(retriesLeft) {
+      if (retriesLeft < 0) {
         return;
       }
 
-      if (!document.body) {
-        setTimeout(function () {
-          iframeRetries++;
-          loadIframe();
-        }, 100);
+      var body = document.getElementsByTagName('body')[0];
+      if (!body) {
+        setTimeout(loadIframe.bind(this, retriesLeft - 1), 100);
         return;
       }
 
       iframe = createIframe();
-      document.body.appendChild(iframe);
+      body.appendChild(iframe);
     }
 
     function createTcfapiScriptTag() {
@@ -161,19 +157,31 @@
 
       tcfapiScriptTag.addEventListener('error', log.bind(null, 'loaded', false, { type: '3rdparty' }));
       tcfapiScriptTag.addEventListener('load', function () {
-        // if not an Opera (Presto) browser, we load the iframe into the host document
-        if (isIframeCapable()) {
-          loadIframe();
-        } else {
-          onAPILoaded('3rdparty');
-        }
+        onAPILoaded('3rdparty');
       });
 
       return tcfapiScriptTag;
     }
 
-    // insert root tcfapi script tag to host document
-    var tcfapiScriptTag = createTcfapiScriptTag();
-    document.head.appendChild(tcfapiScriptTag);
+    function loadTcfapi(retriesLeft) {
+      if (retriesLeft < 0) {
+        return;
+      }
+
+      var head = document.getElementsByTagName('head')[0];
+      if (!head) {
+        setTimeout(loadTcfapi.bind(this, retriesLeft - 1), 100);
+        return;
+      }
+
+      var tcfapiScriptTag = createTcfapiScriptTag();
+      head.appendChild(tcfapiScriptTag);
+    }
+
+    if (isIframeCapable()) {
+      loadIframe(3);
+    } else {
+      loadTcfapi(3);
+    }
   } catch (e) {}
 })();
