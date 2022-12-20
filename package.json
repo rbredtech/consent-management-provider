@@ -6,7 +6,7 @@
   "scripts": {
     "open": "browser-refresh express --port 8080",
     "dev": "concurrently \"ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
-    "watch": "concurrently \"nodemon -e ts -w ./src -x ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
+    "watch": "concurrently \"nodemon -e ts -w ./src -i './src/templates/*' -x ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
     "start": "npm run prod",
     "build": "rm -rf ./dist/* && gulp",
     "prod": "node ./dist/app.js",
