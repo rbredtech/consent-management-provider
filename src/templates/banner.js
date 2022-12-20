@@ -12,6 +12,11 @@ var bannerContent =
   '</div>' +
   '</div>';
 
+var KeyEvent = window['KeyEvent'] || {};
+KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
+KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window['VK_RIGHT'] || 39;
+KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
+
 var consBtnAgree;
 var consBtnDismiss;
 var setConsentCallback;
@@ -106,11 +111,6 @@ window.__cbapi = function (command, version, callback, parameter) {
   }
 
   function handleVK(keyCode) {
-    var KeyEvent = window['KeyEvent'] || {};
-    KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
-    KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window['VK_RIGHT'] || 39;
-    KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
-
     switch (keyCode) {
       case KeyEvent.VK_ENTER:
         handleEnter();
@@ -143,8 +143,6 @@ window.__cbapi = function (command, version, callback, parameter) {
       break;
     case 'handleKey':
       if (isConsentBannerVisible()) {
-        var KeyEvent = window['KeyEvent'] || {};
-        KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
         handleVK(parameter.keyCode ? parameter.keyCode : parameter);
         if (parameter.preventDefault && parameter.keyCode) {
           parameter.preventDefault();
