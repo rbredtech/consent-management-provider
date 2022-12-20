@@ -123,10 +123,10 @@
       }
 
       iframe = createIframe();
-      document.getElementsByTagName('body')[0].appendChild(iframe);
+      document.body.appendChild(iframe);
     }
 
-    function createManagerScriptTag() {
+    function createTcfapiScriptTag() {
       var xt = '<%-XT%>';
       var hasConsent;
 
@@ -169,7 +169,7 @@
     }
 
     // insert root tcfapi script tag to host document
-    var tcfapiScriptTag = createManagerScriptTag();
-    document.getElementsByTagName('head')[0].appendChild(tcfapiScriptTag);
+    var tcfapiScriptTag = createTcfapiScriptTag();
+    document.head.appendChild(tcfapiScriptTag);
   } catch (e) {}
 })();

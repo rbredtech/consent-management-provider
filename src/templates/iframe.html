@@ -15,17 +15,17 @@
       if (window.localStorage && localStorage.getItem && localStorage.setItem) {
         if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
           // no tech info yet, need to store
-          localStorage.setItem('<%-TECH_COOKIE_NAME%>', parseInt(xt));
+          localStorage.setItem('<%-TECH_COOKIE_NAME%>', xt);
         } else {
           xt = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
           hasConsent = localStorage.getItem('<%-COOKIE_NAME%>');
         }
       }
 
-      var s = document.createElement('script');
-      s.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi-iframe.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
-      s.setAttribute('type', 'text/javascript');
-      document.getElementsByTagName('head')[0].appendChild(s);
+      var tcfapiScriptTag = document.createElement('script');
+      tcfapiScriptTag.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi-iframe.js?<%-TECH_COOKIE_NAME%>=' + xt + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
+      tcfapiScriptTag.setAttribute('type', 'text/javascript');
+      document.head.appendChild(tcfapiScriptTag);
     } catch (e) { }
     //]]>
   </script>
