@@ -38,7 +38,8 @@ describe("Consent Management API configured with 0% sample rate", () => {
     });
 
     test("cmpStatus is disabled", () => {
-      expect(response.text).toContain("eventStatus: 'tcloaded',\n            cmpStatus: 'disabled'");
+      expect(response.text).toContain("eventStatus: 'tcloaded'");
+      expect(response.text).toContain("cmpStatus: 'disabled'");
     });
 
     test("consent is undefined", () => {
@@ -56,7 +57,8 @@ describe("Consent Management API configured with 0% sample rate", () => {
     });
 
     test("cmpStatus is loaded", () => {
-      expect(response.text).toContain("eventStatus: 'tcloaded',\n            cmpStatus: 'loaded'");
+      expect(response.text).toContain("eventStatus: 'tcloaded'");
+      expect(response.text).toContain("cmpStatus: 'loaded'");
     });
 
     test("consent is true", () => {
@@ -72,7 +74,8 @@ describe("Consent Management API configured with 0% sample rate", () => {
     });
 
     test("cmpStatus is loaded", () => {
-      expect(response.text).toContain("eventStatus: 'tcloaded',\n            cmpStatus: 'loaded'");
+      expect(response.text).toContain("eventStatus: 'tcloaded'");
+      expect(response.text).toContain("cmpStatus: 'loaded'");
     });
 
     test("consent is false", () => {
@@ -88,7 +91,8 @@ describe("Consent Management API configured with 0% sample rate", () => {
     });
 
     test("cmpStatus is disabled", () => {
-      expect(response.text).toContain("eventStatus: 'tcloaded',\n            cmpStatus: 'disabled'");
+      expect(response.text).toContain("eventStatus: 'tcloaded'");
+      expect(response.text).toContain("cmpStatus: 'disabled'");
     });
 
     test("consent is undefined", () => {
@@ -106,7 +110,8 @@ describe("Consent Management API configured with 0% sample rate", () => {
     });
 
     test("cmpStatus is disabled", () => {
-      expect(response.text).toContain("eventStatus: 'tcloaded',\n            cmpStatus: 'disabled'");
+      expect(response.text).toContain("eventStatus: 'tcloaded'");
+      expect(response.text).toContain("cmpStatus: 'disabled'");
     });
 
     test("consent is undefined", () => {
@@ -124,7 +129,8 @@ describe("Consent Management API configured with 0% sample rate", () => {
     });
 
     test("cmpStatus is disabled due to sample rate", () => {
-      expect(response.text).toContain("eventStatus: 'tcloaded',\n            cmpStatus: 'disabled'");
+      expect(response.text).toContain("eventStatus: 'tcloaded'");
+      expect(response.text).toContain("cmpStatus: 'disabled'");
     });
 
     test("consent is undefined", () => {
