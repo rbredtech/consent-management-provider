@@ -65,8 +65,6 @@ __tcfapi(method, version, callback?, parameter?)
 | ping   |Wait until API is available. Optional. |  | `(status: TCStatus) => void` |
 | getTCData | Retrieve consent decision | | `(data: TCData) => void` |
 | setConsent | Alter consent decision | `boolean` | `(consent: boolean) => void` |
-| addEventListener | Subscribe on internal event log for debugging purposes | |
-| removeEventListener | Unsubscribe from internal event log | |
 
 ```js
 type TCStatus = {

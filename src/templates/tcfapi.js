@@ -12,18 +12,17 @@ window.__tcfapi = function (command, version, callback, parameter) {
     }
   }
 
-  var listenerCount = 1;
-  var listeners = {};
-
   var logEvents = {
     TC_DATA: 'TCData',
     SET_CONSENT: 'setConsent',
     REMOVE_CONSENT_DECISION: 'removeConsentDecision',
   };
 
+  var logCallback;
+
   function log(event, success, parameters) {
-    if (this._logCallback) {
-      this._logCallback({ event: event, success: success, parameters: parameters, ts: Date.now() });
+    if (logCallback) {
+      logCallback({ event: event, success: success, parameters: parameters, ts: Date.now() });
     }
   }
 
@@ -47,54 +46,36 @@ window.__tcfapi = function (command, version, callback, parameter) {
       break;
     case 'getTCData':
       !!callback &&
-        callback(
-          {
-            tcString: '<%-TC_STRING%>',
-            tcfPolicyVersion: 2,
-            cmpId: 4040,
-            cmpVersion: 1,
-            gdprApplies: true,
-            eventStatus: 'tcloaded',
-            cmpStatus: '<%-CMP_STATUS%>',
-            listenerId: undefined,
-            isServiceSpecific: true,
-            useNonStandardStacks: false,
-            publisherCC: 'AT',
-            purposeOneTreatment: true,
-            purpose: {
-              consents: {
-                4040: hasConsent,
-              },
-            },
-            legitimateInterests: {
-              consents: {
-                4040: hasConsent,
-              },
-            },
-            vendor: {
-              consents: {
-                4040: hasConsent,
-              },
+        callback({
+          tcString: '<%-TC_STRING%>',
+          tcfPolicyVersion: 2,
+          cmpId: 4040,
+          cmpVersion: 1,
+          gdprApplies: true,
+          eventStatus: 'tcloaded',
+          cmpStatus: '<%-CMP_STATUS%>',
+          listenerId: undefined,
+          isServiceSpecific: true,
+          useNonStandardStacks: false,
+          publisherCC: 'AT',
+          purposeOneTreatment: true,
+          purpose: {
+            consents: {
+              4040: hasConsent,
             },
           },
-          true,
-        );
+          legitimateInterests: {
+            consents: {
+              4040: hasConsent,
+            },
+          },
+          vendor: {
+            consents: {
+              4040: hasConsent,
+            },
+          },
+        });
       log(logEvents.TC_DATA, true, { status: '<%-CMP_STATUS%>', consent: hasConsent });
-      break;
-    case 'addEventListener':
-      listeners[listenerCount] = callback;
-      break;
-    case 'removeEventListener':
-      var listener = listeners[parameter];
-      if (!listener) {
-        setTimeout(function () {
-          !!callback && callback(false);
-        }, 1);
-        return;
-      }
-      setTimeout(function () {
-        !!callback && callback(true);
-      }, 1);
       break;
     case 'setConsent':
       image = document.createElement('img');
@@ -133,7 +114,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       !!callback && callback();
       break;
     case 'onLogEvent':
-      this._logCallback = callback;
+      logCallback = callback;
       break;
     case 'log':
       if (parameter) {
