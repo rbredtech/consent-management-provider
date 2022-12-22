@@ -66,6 +66,7 @@ __tcfapi(method, version, callback?, parameter?)
 |--------|--------------|------------|----------|
 | ping   |Wait until API is available. Optional. | none | `(status: TCStatus) => void` |
 | getTCData | Retrieve consent decision | none | `(data: TCData) => void` |
+| subscribeTCData | Callback is executed directly after subscription and on every `setConsent` or `removeConsentDecision` action | none | `(data: TCData) => void` |
 | setConsent | Alter consent decision | `boolean` | `(consent: boolean) => void` |
 | removeConsentDecision | Delete any saved consent decision | none | `() => void` |
 

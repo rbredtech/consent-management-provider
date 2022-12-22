@@ -66,6 +66,10 @@
         }
       }
     });
+
+    __tcfapi('subscribeTCData', 2, function (tcData) {
+      console.log('TCData subscription callback', tcData);
+    });
     //]]>
   </script>
 </head>

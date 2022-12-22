@@ -20,6 +20,7 @@ KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
 var consBtnAgree;
 var consBtnDismiss;
 var setConsentCallback;
+var hideBannerTimeout;
 
 window.__cbapi = function (command, version, callback, parameter) {
   function mountConsentBanner(nodeId) {
@@ -38,8 +39,6 @@ window.__cbapi = function (command, version, callback, parameter) {
 
     return document.getElementById('agttcnstbnnr');
   }
-
-  var hideBannerTimeout;
 
   function showConsentBanner(nodeId, callback, retriesLeft) {
     if (retriesLeft < 0) {
