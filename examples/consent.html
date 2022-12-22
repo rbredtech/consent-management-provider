@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC '-//HbbTV//1.1.1//EN' 'http://www.hbbtv.org/dtd/HbbTV-1.1.1.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+  <meta http-equiv='content-type' content='application/vnd.hbbtv.xhtml+xml; charset=utf-8'>
+  </meta>
+  <title>Consent Management Test</title>
+  <script type='text/javascript' src='https://consent.tvping.com/v2/cmp.js?channelId=1234'></script>
+  <script>
+    //<![CDATA[
+    // example function for setting consent
+    function setConsent(consent) {
+      __tcfapi('setConsent', 2, function (consent) {
+        if (consent === true) {
+          console.log("Consent given");
+        } else if (consent === false) {
+          console.log("Consent declined");
+        } else {
+          console.log("No consent decision yet");
+        }
+      }, consent);
+    }
+
+    // example function for removing consent decision
+    function removeConsentDecision() {
+      __tcfapi('removeConsentDecision', 2, function () {
+        console.log("Consent decision removed")
+      })
+    }
+
+    var CMP_VENDOR_ID = 4040;
+    __tcfapi('getTCData', 2, function (tcData) {
+      if (tcData.cmpStatus === 'loaded') {
+        var consent = tcData.vendor.consents[CMP_VENDOR_ID];
+        if (consent === true) {
+          console.log("Consent given");
+        } else if (consent === false) {
+          console.log("Consent declined");
+        } else {
+          console.log("No consent decision yet");
+        }
+      }
+    });
+    //]]>
+  </script>
+</head>
+
+<body>
+  <div id='cmp'></div>
+  <object id='video' type='video/broadcast' fullscreen='true' width='1280' height='720'
+    style='position:absolute; top: 0px; left: 0px; width: 1280px; height: 720px;'></object>
+  <div style='visibility: hidden; width: 0; height: 0; position: absolute;'>
+    <object id='oipfAppMngr' type='application/oipfApplicationManager'></object>
+    <object id='oipfCfg' type='application/oipfConfiguration'></object>
+  </div>
+</body>
+
+</html>
