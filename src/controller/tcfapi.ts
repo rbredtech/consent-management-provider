@@ -9,7 +9,7 @@ export const tcfapiController = async (req: Request, res: Response) => {
   res.setHeader("Cache-Control", "no-store");
 
   try {
-    const values = getTemplateValues(req, "3rd-party");
+    const values = getTemplateValues(req);
     res.render("tcfapi.js", values);
   } catch (e) {
     logger.error(e);
