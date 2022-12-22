@@ -45,6 +45,8 @@ This image is then pushed to <https://github.com/rbredtech/consent-management-pr
 
 ## Usage
 
+Usage/Integration examples can be found in the `/examples` folder of this repository.
+
 ### API Endpoints
 
 All API endpoints take an optional query parameter`channelId`, which is used to collect metrics about the opt-in/out ratio on a specific channel.
@@ -62,9 +64,10 @@ __tcfapi(method, version, callback?, parameter?)
 
 | Method | Description  | Parameter | Callback  |
 |--------|--------------|------------|----------|
-| ping   |Wait until API is available. Optional. |  | `(status: TCStatus) => void` |
-| getTCData | Retrieve consent decision | | `(data: TCData) => void` |
+| ping   |Wait until API is available. Optional. | none | `(status: TCStatus) => void` |
+| getTCData | Retrieve consent decision | none | `(data: TCData) => void` |
 | setConsent | Alter consent decision | `boolean` | `(consent: boolean) => void` |
+| removeConsentDecision | Delete any saved consent decision | none | `() => void` |
 
 ```js
 type TCStatus = {
