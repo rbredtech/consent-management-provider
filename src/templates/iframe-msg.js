@@ -14,17 +14,14 @@
           var id = message[0];
           var cmd = message[2];
           var version = message[3];
-          var cmdParams = message[4];
-          try {
-            cmdParams = JSON.parse(cmdParams);
-          } catch {}
+          var param = JSON.parse(atob(message[4]));
           __tcfapi(
             cmd,
             version,
-            function (param) {
-              _message(id + ';' + btoa(JSON.stringify(param)));
+            function (cbParam) {
+              _message(id + ';' + btoa(JSON.stringify({ param: cbParam })));
             },
-            cmdParams,
+            param.param,
           );
         }
       },
