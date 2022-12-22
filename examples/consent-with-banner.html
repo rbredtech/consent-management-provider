@@ -11,9 +11,10 @@
     //<![CDATA[
     var isShowingBanner = false;
 
+    // when banner is closed, __tcfapi is used to save the user's consent decision
     function bannerClosedCallback(consentDecision) {
       if (consentDecision === true || consentDecision === false) {
-        __tcfapi('setConsent', 2, function (consent) {
+        window.__tcfapi('setConsent', 2, function (consent) {
           if (consent === true) {
             console.log('Consent accepted');
           }
@@ -29,7 +30,7 @@
 
     function showAgttConsentBanner() {
       isShowingBanner = true;
-      __cbapi('showBanner', 2, bannerClosedCallback, 'cmp'); // mount banner to dom-node with id 'cmp'
+      window.__cbapi('showBanner', 2, bannerClosedCallback, 'cmp'); // mount banner to dom-node with id 'cmp'
     }
 
     // example for extending existing key handler of app to allow for control of buttons of the banner
@@ -39,7 +40,7 @@
 
       if (isShowingBanner) {
         // pass on key events to library while consent banner is displayed
-        __cbapi('handleKey', 2, undefined, event);
+        window.__cbapi('handleKey', 2, undefined, event);
         return;
       } else {
         switch (event.keyCode) {
@@ -55,8 +56,9 @@
 
     window.addEventListener('keydown', keyHandler);
 
+    // we load consent data on page load and show the banner if no consent decision is saved yet
     var CMP_VENDOR_ID = 4040;
-    __tcfapi('getTCData', 2, function (tcData) {
+    window.__tcfapi('getTCData', 2, function (tcData) {
       if (tcData.cmpStatus === 'loaded') {
         var consent = tcData.vendor.consents[CMP_VENDOR_ID];
         if (consent === undefined) {

@@ -43,18 +43,22 @@
   var logCallbackIndex = -1;
   var iframe;
 
-  function message(message, callback) {
+  function message(type, command, version, callback, parameter) {
     if (!iframe.contentWindow) {
       return;
     }
-    var params = message.split(';');
+
     callbackMap[++callbackCount] = [callback];
 
-    if (params[1] === 'onLogEvent') {
+    if (command === 'onLogEvent') {
       logCallbackIndex = callbackCount;
       logQueue();
     }
-    iframe.contentWindow.postMessage(callbackCount + ';' + message, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
+
+    var message =
+      callbackCount + ';' + type + ';' + command + ';' + version + ';' + btoa(JSON.stringify({ param: parameter }));
+
+    iframe.contentWindow.postMessage(message, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
   }
 
   function log(event, success, parameters) {
@@ -83,25 +87,25 @@
 
     iframe.addEventListener('load', function () {
       window.__tcfapi = function (command, version, callback, parameter) {
-        message('cmd;' + command + ';' + version + ';' + parameter, callback);
+        message('cmd', command, version, callback, parameter);
       };
 
       window.addEventListener(
         'message',
-        function (ev) {
-          try {
-            if (ev.origin === '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>' && ev.data) {
-              var message = ev.data.split(';');
-              var position = message[0] === 'err' ? 1 : 0;
-              var id = message[position];
-              var callback = callbackMap[id][position];
-              if (logCallbackIndex + '' !== id) delete callbackMap[id];
-              var r = JSON.parse(atob(message[++position]));
-              if (callback) {
-                callback(r);
-              }
-            }
-          } catch (e) {}
+        function (event) {
+          if (event.origin !== '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>' || !event.data) {
+            return;
+          }
+
+          var message = event.data.split(';');
+          var position = 0;
+          var id = message[position];
+          var callback = callbackMap[id][position];
+          if (logCallbackIndex + '' !== id) delete callbackMap[id];
+          var callbackParameter = JSON.parse(atob(message[++position]));
+          if (callback) {
+            callback(callbackParameter.param);
+          }
         },
         false,
       );
