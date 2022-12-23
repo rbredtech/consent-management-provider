@@ -1,48 +1,14 @@
-name: Build docker image for consent-management-provider
+name: Build, test and release
 on:
   push:
     branches:
-      - master
-  pull_request:
-    branches:
-      - master
+      - "!*"
+    tags:
+      - "release/*.*.*"
 
 jobs:
-  check-version:
-    name: Check version
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    timeout-minutes: 30
-
-    outputs:
-      version: ${{ steps.package-version.outputs.current-version }}
-
-    steps:
-      - name: Checkout repository
-        id: checkout
-        uses: actions/checkout@v3
-
-      - name: Log in to the Container registry
-        id: login
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@main
-
-      - name: Check if version does not yet exist
-        id: compare
-        run: ./test_version.sh ghcr.io/${{ github.repository }}:${{format('v{0}', steps.package-version.outputs.current-version)}}
-
   build-and-push-image:
     name: Build and push image
-    needs: check-version
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -105,7 +71,7 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=${{ github.ref == 'refs/heads/master' && format('v{0}', needs.check-version.outputs.version) || format('build-{0}', github.run_number) }}
+            type=raw,value=${{  github.ref_name }}
 
       - name: Build and push Docker image
         id: build_push
