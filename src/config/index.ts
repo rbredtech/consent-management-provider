@@ -21,3 +21,8 @@ export const BANNER_TIMEOUT = new EnvVar("BANNER_TIMEOUT").getNumberOrDefault(
   1000 * 60 * 2, // 2 mins
 );
 export const CMP_ENABLED = new EnvVar("CMP_ENABLED").getBooleanOrDefault(true);
+export const TRACKING_PROTOCOL = new EnvVar("TRACKING_PROTOCOL").getStringOrDefault("http");
+export const TRACKING_HOST_CONSENT = new EnvVar("TRACKING_HOST_CONSENT").getStringOrDefault("session.tvping.com");
+export const TRACKING_HOST_NO_CONSENT = new EnvVar("TRACKING_HOST_NO_CONSENT").getStringOrDefault(
+  "session-cl.tvping.com",
+);
