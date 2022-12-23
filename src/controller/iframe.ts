@@ -7,7 +7,7 @@ export const iframeController = (req: Request, res: Response) => {
   res.setHeader("Cache-Control", "no-store");
 
   res.render("iframe.html", {
-    XT: req.timestamp,
+    TECH_COOKIE_TIMESTAMP: req.timestamp,
     TECH_COOKIE_NAME,
     COOKIE_NAME,
     API_VERSION,

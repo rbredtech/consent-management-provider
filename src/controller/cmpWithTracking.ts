@@ -28,7 +28,7 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
 
   try {
     const cmpJs = await renderFile(path.join(__dirname, "../templates/cmp.js"), {
-      XT: Date.now(),
+      TECH_COOKIE_TIMESTAMP: Date.now(),
       TECH_COOKIE_NAME,
       COOKIE_NAME,
       API_VERSION,
