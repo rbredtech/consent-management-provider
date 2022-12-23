@@ -18,5 +18,4 @@ Dockerfile
 express.js
 gulpfile.js
 README.md
-test_version.sh
 tsconfig.json
