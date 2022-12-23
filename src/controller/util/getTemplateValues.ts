@@ -68,12 +68,11 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
   return {
     API_VERSION,
     COOKIE_NAME,
-    XT: req.timestamp,
     TC_STRING: "tcstr",
     CMP_STATUS: cmpStatus,
     TC_CONSENT: tcConsent ?? "undefined",
     CONSENT_SERVER_HOST: HTTP_HOST,
-    URL_SCHEME: req.protocol,
+    CONSENT_SERVER_PROTOCOL: req.protocol,
     CHANNEL_ID: req.query.channelId ? req.query.channelId.toString() : "",
     BANNER_TIMEOUT,
   };
