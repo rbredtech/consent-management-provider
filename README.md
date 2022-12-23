@@ -33,15 +33,11 @@ To run in production use `npm start` or `npm run prod` after running the `npm ru
 At this time no actually encoded TC String is used. This service uses an with
 IAB unregistered vendor ID of `4040`.
 
-## Creating a new version
+## Development
 
-Creating a new version of the CMP has to follow these steps:
+This project uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for adding new features and creating new releases. It is advised to install the Gitflow extension on your system (<https://skoch.github.io/Git-Workflow/>).
 
-- create branch for new version
-- update `version` field in `package.json`
-
-Upon merging this branch to master, Github Actions will pick up the change of the `version` field and create a new docker image, tagged with the new version.
-This image is then pushed to <https://github.com/rbredtech/consent-management-provider/pkgs/container/consent-management-provider>
+When a new release is tagged, a docker image containing this version of the app is created. This image is then pushed to <https://github.com/rbredtech/consent-management-provider/pkgs/container/consent-management-provider>.
 
 ## Usage
 
