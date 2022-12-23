@@ -4,7 +4,7 @@ import path from "path";
 
 import { getTemplateValues } from "./util/getTemplateValues";
 
-export const tcfapiIframeController = async (req: Request, res: Response) => {
+export const tcfapiInnerController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
