@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { CHANNEL_ID_NAME, GENERIC_CHANNEL_NAME } from "../config";
+import { GENERIC_CHANNEL_NAME } from "../config";
 import { logger } from "../util/logger";
 
 const channelConfiguration = [
@@ -147,11 +147,24 @@ function isP7(channelId: number): boolean {
   return channelId >= 3300 && channelId < 3500;
 }
 
-export function channelMiddleware(req: Request, _res: Response, next: NextFunction) {
-  const channelId: number | undefined = req.query[CHANNEL_ID_NAME] ? Number(req.query[CHANNEL_ID_NAME]) : undefined;
+export function channelMiddleware(req: Request, res: Response, next: NextFunction) {
+  if (req.query.channelId === undefined) {
+    req.channelId = undefined;
+    req.channelName = GENERIC_CHANNEL_NAME;
+    req.isp7 = false;
+    next();
+    return;
+  }
+
+  if (isNaN(Number(req.query.channelId))) {
+    res.status(400).send({ error: "query parameter channelId must be numeric" });
+    return;
+  }
+
+  const channelId = Number(req.query.channelId);
   req.channelId = channelId;
-  req.channelName = channelId !== undefined ? channelName(channelId) : GENERIC_CHANNEL_NAME;
-  req.isp7 = channelId !== undefined ? isP7(channelId) : false;
+  req.channelName = channelName(channelId);
+  req.isp7 = isP7(channelId);
   logger.debug(`Channel: ${JSON.stringify(req.query)} ::: ${channelId} - ${req.channelName}`);
   next();
 }
