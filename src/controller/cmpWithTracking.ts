@@ -13,15 +13,14 @@ import {
 } from "../config";
 
 export const cmpWithTrackingController = async (req: Request, res: Response) => {
-  const channelId = Number(req.channelId);
-
-  if (req.channelId && isNaN(channelId)) {
-    res.status(400).send({ error: "query parameter channelId must be numeric" });
+  if (req.channelId === undefined) {
+    res.status(400).send({ error: "query parameter channelId is mandatory" });
     return;
   }
 
-  if (!req.query.cmpId) {
+  if (req.query.cmpId === undefined) {
     res.status(400).send({ error: "query parameter cmpId is mandatory" });
+    return;
   }
 
   res.setHeader("Content-Type", "application/javascript");
