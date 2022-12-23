@@ -134,15 +134,15 @@
   }
 
   function createTcfapiScriptTag() {
-    var xt = '<%-XT%>';
+    var techCookieTimestamp = '<%-TECH_COOKIE_TIMESTAMP%>';
     var hasConsent = null;
 
     if (window.localStorage && localStorage.getItem && localStorage.setItem) {
       if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
         // no tech info yet, need to store
-        localStorage.setItem('<%-TECH_COOKIE_NAME%>', xt);
+        localStorage.setItem('<%-TECH_COOKIE_NAME%>', techCookieTimestamp);
       } else {
-        xt = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
+        techCookieTimestamp = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
         hasConsent = localStorage.getItem('<%-COOKIE_NAME%>');
       }
     }
@@ -152,7 +152,7 @@
     tcfapiScriptTag.setAttribute(
       'src',
       '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi.js?<%-TECH_COOKIE_NAME%>=' +
-        xt +
+        techCookieTimestamp +
         (hasConsent !== null ? '&consent=' + hasConsent : '') +
         (channelId !== '' ? '&channelId=' + channelId : ''),
     );
