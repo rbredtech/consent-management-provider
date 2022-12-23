@@ -33,7 +33,7 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
       COOKIE_NAME,
       API_VERSION,
       CONSENT_SERVER_HOST: HTTP_HOST,
-      URL_SCHEME: req.protocol,
+      CONSENT_SERVER_PROTOCOL: req.protocol,
       CHANNEL_ID: req.channelId,
     });
     const trackingJs = await renderFile(path.join(__dirname, "../templates/cmpWithTracking.js"), {

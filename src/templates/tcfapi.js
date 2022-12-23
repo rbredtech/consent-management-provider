@@ -82,7 +82,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       image = document.createElement('img');
       localStorageAvailable = false;
       image.src =
-        '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consent=' +
+        '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consent=' +
         (String(parameter) === 'true' ? 1 : 0) +
         (channelId !== '' ? '&channelId=' + channelId : '');
       if (window.localStorage && localStorage.setItem) {
@@ -102,7 +102,10 @@ window.__tcfapi = function (command, version, callback, parameter) {
     case 'removeConsentDecision':
       image = document.createElement('img');
       localStorageAvailable = false;
-      image.setAttribute('src', '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent');
+      image.setAttribute(
+        'src',
+        '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent',
+      );
       if (window.localStorage && localStorage.removeItem) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
         localStorageAvailable = true;

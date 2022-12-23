@@ -58,7 +58,7 @@
     var message =
       callbackCount + ';' + type + ';' + command + ';' + version + ';' + btoa(JSON.stringify({ param: parameter }));
 
-    iframe.contentWindow.postMessage(message, '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>');
+    iframe.contentWindow.postMessage(message, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
   }
 
   function log(event, success, parameters) {
@@ -79,7 +79,7 @@
 
     iframe.setAttribute(
       'src',
-      '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
+      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
         (channelId !== '' ? '?channelId=' + channelId : ''),
     );
     iframe.setAttribute('style', 'border:0;outline:0;width:0;height:0;');
@@ -93,7 +93,7 @@
       window.addEventListener(
         'message',
         function (event) {
-          if (event.origin !== '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>' || !event.data) {
+          if (event.origin !== '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>' || !event.data) {
             return;
           }
 
@@ -151,7 +151,7 @@
     tcfapiScriptTag.setAttribute('type', 'text/javascript');
     tcfapiScriptTag.setAttribute(
       'src',
-      '<%-URL_SCHEME%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi.js?<%-TECH_COOKIE_NAME%>=' +
+      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi.js?<%-TECH_COOKIE_NAME%>=' +
         techCookieTimestamp +
         (hasConsent !== null ? '&consent=' + hasConsent : '') +
         (channelId !== '' ? '&channelId=' + channelId : ''),
