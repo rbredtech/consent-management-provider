@@ -10,7 +10,7 @@ import {
   removeConsentController,
   setConsentController,
   tcfapiController,
-  tcfapiIframeController,
+  tcfapiInnerController,
 } from "./controller";
 
 import { loggerMiddleware, techCookieMiddleware, channelMiddleware } from "./middleware";
@@ -30,6 +30,6 @@ router.get("/iframe.html", iframeController);
 router.get("/remove-consent", removeConsentController);
 router.get("/set-consent", setConsentController);
 router.get("/tcfapi.js", tcfapiController);
-router.get("/tcfapi-iframe.js", tcfapiIframeController);
+router.get("/tcfapi-inner.js", tcfapiInnerController);
 
 export default router;
