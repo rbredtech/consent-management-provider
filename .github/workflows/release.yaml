@@ -2,9 +2,9 @@ name: Build, test and release
 on:
   push:
     branches:
-      - "!*"
+      - "hotfix/*"
     tags:
-      - "release/*.*.*"
+      - "release/*"
 
 jobs:
   build-and-push-image:
