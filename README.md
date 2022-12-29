@@ -37,6 +37,14 @@ IAB unregistered vendor ID of `4040`.
 
 This project uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for adding new features and creating new releases. It is advised to install the Gitflow extension on your system (<https://skoch.github.io/Git-Workflow/>).
 
+### Propose a change/feature
+
+In order to propose a new feature/a change or bugfix, a feature branch named `feature/[descriptive-name]` needs to be created from the `develop` branch. After adding the desired changes to this branch, a pull request needs to be opened and reviewed before the changes can be merged into the `develop` branch.
+
+## Releases
+
+Creating a new release follows the gitflow pattern of creating a release branch named `release/x.x.x`, which upon wrapping up creates a tag with the release name, and the branch gets merged back into `master`.
+
 When a new release is tagged, a docker image containing this version of the app is created. This image is then pushed to <https://github.com/rbredtech/consent-management-provider/pkgs/container/consent-management-provider>.
 
 ## Usage
