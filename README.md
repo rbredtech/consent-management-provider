@@ -43,7 +43,7 @@ In order to propose a new feature/a change or bugfix, a feature branch named `fe
 
 ## Releases
 
-Creating a new release follows the gitflow pattern of creating a release branch named `release/x.x.x`, which upon wrapping up creates a tag with the release name, and the branch gets merged back into `master`.
+Creating a new release follows the gitflow pattern of creating a release branch named `release/vx.x.x` (the pattern `"v" + version number` is mandatory), which upon wrapping up creates a tag with the release name, and the branch gets merged back into `master`.
 
 When a new release is tagged, a docker image containing this version of the app is created. This image is then pushed to <https://github.com/rbredtech/consent-management-provider/pkgs/container/consent-management-provider>.
 
