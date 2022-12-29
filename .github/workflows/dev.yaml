@@ -4,7 +4,6 @@ on:
     branches:
       - "develop"
       - "feature/*"
-      - "hotfix/*"
 
 jobs:
   build-and-test:
