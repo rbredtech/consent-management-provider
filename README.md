@@ -1,10 +1,14 @@
 # Consent Management Provider for HbbTV
 
-This service implements a consent management provider based on the [TCFv2](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md) standard.
+This service implements a consent management provider based on the [TCFv2](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md) standard which can be used in HbbTV APPs.
 
-To improve the lifetime of the stored consent information, an iframe is used and the storage cookie is
-associated with the iframe document which makes it more robust. The consent information is also stored
-in the `localStorage` associated with the iframe.
+To be able to access the same consent decision across multiple HbbTV apps (which are possibly hosted on different domains),
+an iframe is used and the storage cookie is associated with the iframe document. Additionally, the consent information is
+also stored in the `localStorage` associated with the iframe.
+
+The consent management solution also supports a configurable sampling rate which controls how frequently an end user would
+be prompted for a consent decision. Users who should not be asked for consent will not receive a `loaded` status through
+the consent management `getTCData` callback.
 
 ## Get started
 
