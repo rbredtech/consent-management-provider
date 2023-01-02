@@ -1,22 +1,14 @@
-# Mini CMP - A minimal Consent Management Provider compatible with IAB's TCF v2
+# Consent Management Provider for HbbTV
 
-This service implements the Consent Management Platform API v2.0 as specified
-here: <https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md>
+This service implements a consent management provider based on the [TCFv2](https://github.com/InteractiveAdvertisingBureau/GDPR-Transparency-and-Consent-Framework/blob/master/TCFv2/IAB%20Tech%20Lab%20-%20CMP%20API%20v2.md) standard.
 
-This implementation is meant for HbbTV clients, ie. consumer smart television sets.
-
-Consent information is stored in a cookie. The service should run on a first party
-domain to any app using the provided client side script as to make sure cookies
-have a longer life.
-
-To improve the lifetime of the cookie when used in a 3rd party scenario an iframe
-is used and the cookie is associated with the iframe document which makes it more
-robust. The consent information is also stored in the localStorage associated
-with the iframe.
+To improve the lifetime of the stored consent information, an iframe is used and the storage cookie is
+associated with the iframe document which makes it more robust. The consent information is also stored
+in the `localStorage` associated with the iframe.
 
 ## Get started
 
-To configure the service create a `.env` file using `.env.example`. And set the
+To configure the service for local execution, create a `.env` (`.env.example` can be used as a template) and set the
 values in that file accordingly.
 
 Install dependencies with `npm install`.
@@ -35,17 +27,24 @@ IAB unregistered vendor ID of `4040`.
 
 ## Development
 
-This project uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for adding new features and creating new releases. It is advised to install the Gitflow extension on your system (<https://skoch.github.io/Git-Workflow/>).
+This project uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
+for adding new features and creating new releases. It is advised to install the
+[Gitflow extension](https://skoch.github.io/Git-Workflow/) on your system.
 
 ### Propose a change/feature
 
-In order to propose a new feature/a change or bugfix, a feature branch named `feature/[descriptive-name]` needs to be created from the `develop` branch. After adding the desired changes to this branch, a pull request needs to be opened and reviewed before the changes can be merged into the `develop` branch.
+In order to propose a new feature/a change or bugfix, a feature branch named `feature/[descriptive-name]`
+needs to be created from the `develop` branch. After adding the desired changes to this branch, a pull request
+needs to be opened and reviewed before the changes can be merged into the `develop` branch.
 
 ## Releases
 
-Creating a new release follows the gitflow pattern of creating a release branch named `release/vx.x.x` (the pattern `"v" + version number` is mandatory), which upon wrapping up creates a tag with the release name, and the branch gets merged back into `master`.
+Creating a new release follows the gitflow pattern of creating a release branch named `release/vx.x.x`
+(the pattern `"v" + version number` is mandatory), which upon wrapping up creates a tag with the release name,
+and the branch gets merged back into `master`.
 
-When a new release is tagged, a docker image containing this version of the app is created. This image is then pushed to <https://github.com/rbredtech/consent-management-provider/pkgs/container/consent-management-provider>.
+When a new release is tagged, a docker image containing this version of the app is created. This image is
+then pushed to <https://github.com/rbredtech/consent-management-provider/pkgs/container/consent-management-provider>.
 
 ## Usage
 
@@ -53,7 +52,8 @@ Usage/Integration examples can be found in the `/examples` folder of this reposi
 
 ### API Endpoints
 
-All API endpoints take an optional query parameter`channelId`, which is used to collect metrics about the opt-in/out ratio on a specific channel.
+All API endpoints take an optional query parameter`channelId`, which is used to collect metrics about the
+opt-in/out ratio on a specific channel.
 
 - GET `/v2/cmp.js` - Returns the javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
 - GET `/v2/cmp-with-tracking.js`- Returns a javascript bundle like `/cmp.js`, but also integrates the tracking script depending on the consent decision (<https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script>). There is one mandatory query param `cmpId` which has to be given (`4040`), the query parameters for the tracking script are passed through (see <https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script#tracking-script-parameters> for parameters)
@@ -61,7 +61,8 @@ All API endpoints take an optional query parameter`channelId`, which is used to 
 
 ### __tcfapi methods
 
-Including the loader script into the application will expose the `window.__tcfapi()` method for client side checking of the consent status. The `__tcfapi` method has the following call signature:
+Including the loader script into the application will expose the `window.__tcfapi()` method for client side checking of
+the consent status. The `__tcfapi` method has the following call signature:
 
 ```js
 __tcfapi(method, version, callback?, parameter?)
@@ -112,26 +113,21 @@ type TCData = {
 }
 ```
 
-### __cbapi methods
-
-| Method | Description  | Parameter | Callback  |
-|--------|--------------|------------|----------|
-| showBanner | displays a consent banner to the user | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean) => void` |
-| hideBanner | hides the consent banner | none | none |
-| isBannerVisible | Callback parameter shows if banner is currently shown | none | `(visible: boolean) => void`
-| handleKey | Allows for key handling of banner. Call for every key event after app called `showBanner` method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the host app. | `KeyboardEvent` | none |
-
 ### Checking of consent status
 
-The `{HOST_URL}/v2/cmp.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()` object on the window object providing access to consent information.
+The `{HOST_URL}/v2/cmp.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()`
+object on the window object providing access to consent information.
 
-The app needs to check `cmpStatus` and `consent` for the response of the `tcData` method.
+The app needs to check `cmpStatus` and `consent` of the response of the `tcData` method. If `cmpStatus` is not set as
+`loaded` it means the consent check is currently not available on this device and cookieless tracking should be used.
 
-If `cmpStatus` is not set as `loaded` it means the consent check is currently not available on this device and cookieless tracking should be used.
+If `cmpStatus` is `loaded`, consent checking is available. If `consent` for the pre defined vendor id is `undefined`
+then consent has not yet been set on this device and the app should show a banner asking for consent. There is two options
+to proceed. The app can either display its own banner and use `setConsent` method to set the consent result retrieved by
+the banner, or the app can use the `showBanner` and `handleKey` methods of the `__cbapi` to use the included banner that
+will overlay over the app (see [here](#displaying-consent-banner)).
 
-If `cmpStatus` is `loaded` consent checking is available. If `consent` for the pre defined vendor id is `undefined` then consent has not yet been set on this device and the app should show a banner asking for consent. There is two options to proceed. The app can either display its own banner and use `setConsent` method to set the consent result retrieved by banner. Or the app can use the `showBanner` and `handleKey` methods to use the included banner that will overlay over the app.
-
-Add the `cmp.js` bundle to your application:
+Add `cmp.js` bundle to your application:
 
 ```html
 <script src="{HOST_URL}/v2/cmp.js?channelId=1234"></script>
@@ -142,8 +138,8 @@ Having added the `cmp.js` javascript file to the application, you can check for 
 
 ```js
 var CMP_VENDOR_ID = 4040; // custom Red Tech vendor ID
-__tcfapi('getTCData', 2, function(tcData, success) {
-  var isCmpEnabled = success && tcData.cmpStatus === 'loaded';
+__tcfapi('getTCData', 2, function(tcData) {
+  var isCmpEnabled = tcData.cmpStatus === 'loaded';
   if (!isCmpEnabled) {
     // do nothing, consent checking is unavailable
     // start cookieless tracking
@@ -158,7 +154,15 @@ __tcfapi('getTCData', 2, function(tcData, success) {
   if (consent === undefined) {
     // new device, no consent information exists yet => show banner to ask for consent
   }
-}, [CMP_VENDOR_ID]);
+});
+```
+
+You can set the consent status for a user by executing to following API function:
+
+```js
+__tcfapi('setConsent', 2, function() {
+  // call returned successfully
+}, true); // set to false to revoke content
 ```
 
 ### Displaying consent banner
@@ -175,7 +179,19 @@ This will expose `window.__cbapi()`, which allows for controlling the display of
 __cbapi(method, version, callback?, parameter?)
 ```
 
-This functionality relies on the app to forward any key events from the key handler of the application by using the `handleKey` method while the banner is being displayed.
+### __cbapi methods
+
+| Method | Description  | Parameter | Callback  |
+|--------|--------------|------------|----------|
+| showBanner | displays a consent banner to the user | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean) => void` |
+| hideBanner | hides the consent banner | none | none |
+| isBannerVisible | Callback parameter shows if banner is currently shown | none | `(visible: boolean) => void`
+| handleKey | Allows for key handling of banner. Call for every key event after app called `showBanner` method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the host app. | `KeyboardEvent` | none |
+
+### Banner interaction
+
+The banner implementation relies on the app to forward any key events from the key handler of the application by
+using the `handleKey` method while the banner is being displayed.
 
 ```js
 // use only in case consent from tcData method is undefined
@@ -197,14 +213,4 @@ function keyHandler(event) {
     return;
   }
 }
-```
-
-### Setting of consent status
-
-You can set the consent status for a user by executing to following API function:
-
-```js
-__tcfapi('setConsent', 2, function() {
-  // call returned successfully
-}, true); // set to false to revoke content
 ```
