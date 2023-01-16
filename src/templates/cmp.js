@@ -93,17 +93,20 @@
       window.addEventListener(
         'message',
         function (event) {
-          if (event.origin !== '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>' || !event.data) {
+          if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
             return;
           }
 
           var message = event.data.split(';');
           var position = 0;
           var id = message[position];
+          if (!callbackMap[id] || !callbackMap[id][position]) {
+            return;
+          }
           var callback = callbackMap[id][position];
           if (logCallbackIndex + '' !== id) delete callbackMap[id];
-          var callbackParameter = JSON.parse(atob(message[++position]));
           if (callback) {
+            var callbackParameter = JSON.parse(atob(message[++position]));
             callback(callbackParameter.param);
           }
         },
