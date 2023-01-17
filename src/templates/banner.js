@@ -48,7 +48,9 @@ window.__cbapi = function (command, version, callback, parameter) {
     var banner = mountConsentBanner(nodeId);
 
     if (!banner) {
-      setTimeout(showConsentBanner.bind(this, nodeId, callback, retriesLeft - 1), 100);
+      setTimeout(function () {
+        showConsentBanner(nodeId, callback, retriesLeft - 1);
+      }, 100);
       return;
     }
 
