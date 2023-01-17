@@ -116,7 +116,9 @@
       onAPILoaded('iframe');
     });
 
-    iframe.addEventListener('error', log.bind(null, 'loaded', false, { type: 'iframe' }));
+    iframe.addEventListener('error', function () {
+      log('loaded', false, { type: 'iframe' });
+    });
 
     return iframe;
   }
@@ -128,7 +130,9 @@
 
     var body = document.getElementsByTagName('body')[0];
     if (!body) {
-      setTimeout(loadIframe.bind(this, retriesLeft - 1), 100);
+      setTimeout(function () {
+        loadIframe(retriesLeft - 1);
+      }, 100);
       return;
     }
 
@@ -160,7 +164,9 @@
         (channelId !== '' ? '&channelId=' + channelId : ''),
     );
 
-    tcfapiScriptTag.addEventListener('error', log.bind(null, 'loaded', false, { type: '3rdparty' }));
+    tcfapiScriptTag.addEventListener('error', function () {
+      log('loaded', false, { type: '3rdparty' });
+    });
     tcfapiScriptTag.addEventListener('load', function () {
       onAPILoaded('3rdparty');
     });
@@ -175,7 +181,9 @@
 
     var head = document.getElementsByTagName('head')[0];
     if (!head) {
-      setTimeout(loadTcfapi.bind(this, retriesLeft - 1), 100);
+      setTimeout(function () {
+        loadTcfapi(retriesLeft - 1);
+      }, 100);
       return;
     }
 
