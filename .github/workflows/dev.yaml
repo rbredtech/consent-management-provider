@@ -62,7 +62,7 @@ jobs:
           ./k6 run ./load_test/core.js --vus 50 --iterations 1000
 
       - name: Get latest version
-        id: get-lastest-version
+        id: get-latest-version
         if: github.ref == 'refs/heads/develop'
         uses: actions-ecosystem/action-get-latest-tag@v1
         with:
@@ -77,6 +77,6 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/${{ steps.get-latest-tag.outputs.tag }}_snapshot_${{ github.run_id }}',
+              ref: 'refs/tags/${{ steps.get-latest-version.outputs.tag }}_snapshot_${{ github.run_number }}',
               sha: context.sha
             })
