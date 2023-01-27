@@ -2,9 +2,10 @@ name: Build, test and release
 on:
   push:
     branches:
-      - "hotfix/*"
-    tags:
-      - "v*.*.*"
+      - "!develop"
+      - "refs/tags/v*"
+    paths-ignore:
+      - "examples/**"
 
 jobs:
   build-and-push-image:
