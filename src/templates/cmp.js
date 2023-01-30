@@ -3,11 +3,11 @@
   var logEntries = [];
 
   window.__tcfapi = function (command, version, callback, parameter) {
-    queue[queue.length] = Array.prototype.slice.call(arguments);
+    queue[queue.length] = Array.prototype.slice.call(arguments, 0);
   };
 
   window.__tcfapi('onLogEvent', 2, function () {
-    logEntries[logEntries.length] = Array.prototype.slice.call(arguments);
+    logEntries[logEntries.length] = Array.prototype.slice.call(arguments, 0);
   });
 
   var channelId = '<%-CHANNEL_ID%>';
@@ -33,7 +33,7 @@
     if (!queue) return;
     for (var i = 0; i < queue.length; i++) {
       var f = queue[i];
-      window.__tcfapi.apply(null, f.slice());
+      window.__tcfapi.apply(null, f.slice(0));
     }
     delete queue;
   }
