@@ -91,7 +91,7 @@ window.__cbapi = function (command, version, callback, parameter) {
     if (!element) {
       return;
     }
-    element.className = element.className.replace('selected', '');
+    element.className = element.className.replace(/selected/g, '');
     element.style.color = '#76b642';
     element.style.backgroundColor = '#ffffff';
   }
