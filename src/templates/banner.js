@@ -82,7 +82,7 @@ window.__cbapi = function (command, version, callback, parameter) {
     if (!element) {
       return;
     }
-    element.classList.add('selected');
+    element.className = element.className.length ? element.className + ' selected' : 'selected';
     element.style.color = '#ffffff';
     element.style.backgroundColor = '#76b642';
   }
@@ -91,13 +91,13 @@ window.__cbapi = function (command, version, callback, parameter) {
     if (!element) {
       return;
     }
-    element.classList.remove('selected');
+    element.className = element.className.replace('selected', '');
     element.style.color = '#76b642';
     element.style.backgroundColor = '#ffffff';
   }
 
   function handleSelectionToggle() {
-    if (consBtnAgree && !consBtnAgree.classList.contains('selected')) {
+    if (consBtnAgree && consBtnAgree.className.indexOf('selected') == -1) {
       setSelected(consBtnAgree);
       setNotSelected(consBtnDismiss);
     } else {
@@ -107,7 +107,7 @@ window.__cbapi = function (command, version, callback, parameter) {
   }
 
   function handleEnter() {
-    if (consBtnAgree && consBtnAgree.classList.contains('selected')) {
+    if (consBtnAgree && consBtnAgree.className.indexOf('selected') != -1) {
       !!setConsentCallback && setConsentCallback(true);
     } else {
       !!setConsentCallback && setConsentCallback(false);
