@@ -120,7 +120,7 @@ window.__cbapi = function (command, version, callback, parameter) {
   }
 
   function handleVK(parameter) {
-    if (!isConsentBannerVisible) {
+    if (!isConsentBannerVisible()) {
       return;
     }
 
