@@ -41,6 +41,9 @@ In order to propose a new feature/a change or bugfix, a feature branch named `fe
 needs to be created from the `develop` branch. After adding the desired changes to this branch, a pull request
 needs to be opened and reviewed before the changes can be merged into the `develop` branch.
 
+Every push/merge to the `develop` branch creates a snapshot tag (e.g. `v0.1.2_snapshot_26`) which makes it easier
+to inspect all changes since the currently released version (which would be `v0.1.2` for the given example).
+
 ## Releases
 
 Creating a new release follows the gitflow pattern of creating a release branch named `release/vx.x.x`

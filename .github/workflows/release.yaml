@@ -6,6 +6,7 @@ on:
       - "refs/tags/v*"
     paths-ignore:
       - "examples/**"
+      - "README.md"
 
 jobs:
   build-and-push-image:
