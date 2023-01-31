@@ -81,3 +81,31 @@ jobs:
               ref: 'refs/tags/${{ steps.get-latest-version.outputs.tag }}_snapshot_${{ github.run_number }}',
               sha: context.sha
             })
+
+      - name: Log in to the Container registry
+        id: registry-login
+        if: github.ref == 'refs/heads/develop'
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: docker-meta
+        if: github.ref == 'refs/heads/develop'
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=${{ steps.get-latest-version.outputs.tag }}_snapshot_${{ github.run_number }}
+
+      - name: Build and push Docker image
+        id: docker-build-push
+        if: github.ref == 'refs/heads/develop'
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.docker-meta.outputs.tags }}
+          labels: ${{ steps.docker-meta.outputs.labels }}
