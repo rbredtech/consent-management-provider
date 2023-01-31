@@ -67,10 +67,11 @@
 
   function isIframeCapable() {
     var excludeList = [
-      'hybrid',
-      'presto',
-      'maple',
       'antgalio',
+      'hybrid',
+      'maple',
+      'presto',
+      'smarttv2012',
       'technotrend goerler',
       'viera 2011',
       'viera 2012',
