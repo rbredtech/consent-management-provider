@@ -30,10 +30,10 @@ window.__cbapi = function (command, version, callback, parameter) {
     }
 
     if (!bannerParentNode) {
-      return;
+      return null;
     }
 
-    if (!document.getElementById('agttcnsntbnnr')) {
+    if (!document.getElementById('agttcnsntbnnr') && bannerParentNode.insertAdjacentHTML) {
       bannerParentNode.insertAdjacentHTML('beforeend', bannerContent);
     }
 
@@ -42,6 +42,7 @@ window.__cbapi = function (command, version, callback, parameter) {
 
   function showConsentBanner(nodeId, callback, retriesLeft) {
     if (retriesLeft < 0) {
+      callback(undefined);
       return;
     }
 
