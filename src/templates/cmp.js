@@ -67,9 +67,9 @@
 
   function isIframeCapable() {
     var excludeList = ['hybrid', 'presto', 'maple', 'smarttv2012', 'antgalio', 'technotrend goerler', 'viera 2013'];
-    var currentUserAgent = window.navigator && navigator.userAgent.toLowerCase();
+    var currentUserAgent = window.navigator && navigator.userAgent && navigator.userAgent.toLowerCase();
 
-    if (!currentUserAgent) {
+    if (!currentUserAgent || !currentUserAgent.indexOf) {
       return false;
     }
 
