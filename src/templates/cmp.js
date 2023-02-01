@@ -66,17 +66,7 @@
   }
 
   function isIframeCapable() {
-    var excludeList = [
-      'antgalio',
-      'hybrid',
-      'maple',
-      'presto',
-      'smarttv2012',
-      'technotrend goerler',
-      'viera 2011',
-      'viera 2012',
-      'viera 2013',
-    ];
+    var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
     var currentUserAgent = window.navigator && navigator.userAgent && navigator.userAgent.toLowerCase();
 
     if (!currentUserAgent || !currentUserAgent.indexOf) {
