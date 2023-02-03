@@ -33,7 +33,7 @@ window.__cbapi = function (command, version, callback, parameter) {
       return null;
     }
 
-    if (!document.getElementById('agttcnsntbnnr') && bannerParentNode.insertAdjacentHTML) {
+    if (!document.getElementById('agttcnstbnnr') && bannerParentNode.insertAdjacentHTML) {
       bannerParentNode.insertAdjacentHTML('beforeend', bannerContent);
     }
 
