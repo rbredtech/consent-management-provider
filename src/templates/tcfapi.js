@@ -130,7 +130,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       break;
     case 'log':
       if (parameter) {
-        var logParameters = JSON.parse(atob(parameter));
+        var logParameters = JSON.parse(parameter);
         if (logParameters && logParameters.event) {
           log(logParameters.event, true, logParameters.parameters);
         }
