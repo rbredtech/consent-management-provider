@@ -24,7 +24,6 @@ function buildBannerElement() {
   bannerOuter.style.backgroundColor = '#ffffff';
   bannerOuter.style.border = '4px solid #76b642';
   bannerOuter.style.borderRadius = '8px';
-  bannerOuter.style.zIndex = '9999';
 
   var bannerContentWrapper = document.createElement('div');
   bannerContentWrapper.style.margin = '30px 70px 0 70px';
@@ -122,11 +121,18 @@ window.__cbapi = function (command, version, callback, parameter) {
       return null;
     }
 
-    if (!document.getElementById('agttcnstbnnr')) {
-      bannerParentNode.appendChild(buildBannerElement());
+    var banner = document.getElementById('agttcnstbnnr');
+
+    if (!banner) {
+      banner = buildBannerElement();
+      bannerParentNode.appendChild(banner);
     }
 
-    return document.getElementById('agttcnstbnnr');
+    if (!nodeId) {
+      banner.style.zIndex = '9999';
+    }
+
+    return banner;
   }
 
   function showConsentBanner(nodeId, callback, retriesLeft) {
