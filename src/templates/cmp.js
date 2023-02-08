@@ -56,13 +56,13 @@
     }
 
     var message =
-      callbackCount + ';' + type + ';' + command + ';' + version + ';' + btoa(JSON.stringify({ param: parameter }));
+      callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
 
     iframe.contentWindow.postMessage(message, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
   }
 
   function log(event, success, parameters) {
-    window.__tcfapi('log', 2, function () {}, btoa(JSON.stringify({ event: event, parameters: parameters })));
+    window.__tcfapi('log', 2, function () {}, JSON.stringify({ event: event, parameters: parameters }));
   }
 
   function isIframeCapable() {
@@ -113,7 +113,7 @@
           var callback = callbackMap[id][position];
           if (logCallbackIndex + '' !== id) delete callbackMap[id];
           if (callback) {
-            var callbackParameter = JSON.parse(atob(message[++position]));
+            var callbackParameter = JSON.parse(message[++position]);
             callback(callbackParameter.param);
           }
         },
