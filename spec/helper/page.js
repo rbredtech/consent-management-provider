@@ -1,4 +1,5 @@
 const puppeteer = require("puppeteer");
+const { wait } = require("./wait");
 
 const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
 const HTTP_PROTOCOL = process.env.HTTP_PROTOCOL || "http";
@@ -26,6 +27,7 @@ async function initLoader(page, channelId = undefined, withBanner = false) {
         : ""
     }`,
   );
+  await wait(500);
   return isLoaded;
 }
 
