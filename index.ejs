@@ -70,6 +70,10 @@
         }
       }
     });
+
+    window.__tcfapi('onLogEvent', 2, function ({ event, success, parameters, ts }) {
+      console.warn("logEvent", event, success, parameters, ts);
+    });
     //]]>
   </script>
 </head>

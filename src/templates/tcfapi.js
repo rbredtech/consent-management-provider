@@ -1,3 +1,5 @@
+var logCallback;
+
 window.__tcfapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
 
@@ -18,8 +20,6 @@ window.__tcfapi = function (command, version, callback, parameter) {
     SET_CONSENT: 'setConsent',
     REMOVE_CONSENT_DECISION: 'removeConsentDecision',
   };
-
-  var logCallback;
 
   function log(event, success, parameters) {
     if (logCallback) {
@@ -95,12 +95,6 @@ window.__tcfapi = function (command, version, callback, parameter) {
           localStorageAvailable: localStorageAvailable,
         });
       });
-      image.addEventListener('load', function () {
-        log(logEvents.SET_CONSENT, true, {
-          consent: parameter,
-          localStorageAvailable: localStorageAvailable,
-        });
-      });
       image.addEventListener('error', function () {
         log(logEvents.SET_CONSENT, false, {});
       });
@@ -118,10 +112,10 @@ window.__tcfapi = function (command, version, callback, parameter) {
         localStorageAvailable = true;
       }
       image.addEventListener('load', function () {
-        log(null, logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
+        log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
       });
-      image.addEventListener('error', function () {
-        log(null, logEvents.REMOVE_CONSENT_DECISION, false, {});
+      image.addEventListener('error', function (e) {
+        log(logEvents.REMOVE_CONSENT_DECISION, false, {});
       });
       !!callback && callback();
       break;

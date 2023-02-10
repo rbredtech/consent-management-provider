@@ -3,6 +3,11 @@ import { Request, Response } from "express";
 import { COOKIE_DOMAIN, COOKIE_NAME } from "../config";
 import { consentCounterMetric } from "../util/metrics";
 
+const img = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNiYAAAAAkAAxkR2eQAAAAASUVORK5CYII=",
+  "base64",
+);
+
 export const removeConsentController = (req: Request, res: Response) => {
   consentCounterMetric.labels({ consent: "remove" }).inc();
 
@@ -11,5 +16,7 @@ export const removeConsentController = (req: Request, res: Response) => {
     domain: COOKIE_DOMAIN,
   });
   res.setHeader("Cache-Control", "no-store");
-  res.sendStatus(200);
+  res.setHeader("Content-Type", "image/png");
+  res.setHeader("Content-Length", img.length);
+  res.send(img);
 };
