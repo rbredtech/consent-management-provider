@@ -13,7 +13,9 @@
   var channelId = '<%-CHANNEL_ID%>';
 
   function logQueue() {
-    if (!logEntries || !logEntries.length || logCallbackIndex < 0) return;
+    if (!logEntries.length || logCallbackIndex < 0) {
+      return;
+    }
 
     for (var i = 0; i < logEntries.length; i++) {
       var f = logEntries[i];
@@ -21,7 +23,8 @@
         callbackMap[logCallbackIndex][0](f[0]);
       }
     }
-    delete logEntries;
+
+    logEntries = [];
   }
 
   function onAPILoaded(type) {
@@ -30,12 +33,16 @@
   }
 
   function callQueue() {
-    if (!queue) return;
+    if (!queue) {
+      return;
+    }
+
     for (var i = 0; i < queue.length; i++) {
       var f = queue[i];
       window.__tcfapi.apply(null, f.slice(0));
     }
-    delete queue;
+
+    queue = [];
   }
 
   var callbackCount = 0;
