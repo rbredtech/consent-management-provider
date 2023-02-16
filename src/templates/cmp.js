@@ -51,10 +51,6 @@
   var iframe;
 
   function message(type, command, version, callback, parameter) {
-    if (!iframe.contentWindow) {
-      return;
-    }
-
     callbackMap[++callbackCount] = [callback];
 
     if (command === 'onLogEvent') {
@@ -90,6 +86,10 @@
 
   function createIframe() {
     var iframe = document.createElement('iframe');
+
+    if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
+      return;
+    }
 
     iframe.setAttribute(
       'src',
@@ -151,7 +151,12 @@
     }
 
     iframe = createIframe();
-    body.appendChild(iframe);
+
+    if (!iframe) {
+      loadTcfapi(3);
+    } else {
+      body.appendChild(iframe);
+    }
   }
 
   function createTcfapiScriptTag() {
