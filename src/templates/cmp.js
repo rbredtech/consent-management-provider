@@ -33,7 +33,7 @@
   }
 
   function callQueue() {
-    if (!queue) {
+    if (!queue.length) {
       return;
     }
 
