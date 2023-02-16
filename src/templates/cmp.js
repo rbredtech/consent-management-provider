@@ -51,10 +51,6 @@
   var iframe;
 
   function message(type, command, version, callback, parameter) {
-    if (!iframe.contentWindow) {
-      return;
-    }
-
     callbackMap[++callbackCount] = [callback];
 
     if (command === 'onLogEvent') {
@@ -100,6 +96,12 @@
     iframe.setAttribute('frameborder', '0');
 
     iframe.addEventListener('load', function () {
+      if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
+        iframe.parentElement.removeChild(iframe);
+        loadTcfapi(3);
+        return;
+      }
+
       window.__tcfapi = function (command, version, callback, parameter) {
         message('cmd', command, version, callback, parameter);
       };
