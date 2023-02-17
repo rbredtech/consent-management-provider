@@ -96,7 +96,7 @@
     iframe.setAttribute('frameborder', '0');
 
     iframe.onload = function () {
-      if (!iframe.contentWindow || iframe.contentWindow.postMessage) {
+      if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
         iframe.parentElement.removeChild(iframe);
         loadTcfapi(3);
         return;
