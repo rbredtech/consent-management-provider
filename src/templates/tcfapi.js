@@ -89,15 +89,15 @@ window.__tcfapi = function (command, version, callback, parameter) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
         localStorageAvailable = true;
       }
-      image.addEventListener('load', function () {
+      image.onload = function () {
         log(logEvents.SET_CONSENT, true, {
           consent: parameter,
           localStorageAvailable: localStorageAvailable,
         });
-      });
-      image.addEventListener('error', function () {
+      };
+      image.onerror = function () {
         log(logEvents.SET_CONSENT, false, {});
-      });
+      };
       !!callback && callback(parameter);
       break;
     case 'removeConsentDecision':
@@ -111,12 +111,12 @@ window.__tcfapi = function (command, version, callback, parameter) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
         localStorageAvailable = true;
       }
-      image.addEventListener('load', function () {
+      image.onload = function () {
         log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
-      });
-      image.addEventListener('error', function () {
+      };
+      image.onError = function () {
         log(logEvents.REMOVE_CONSENT_DECISION, false, {});
-      });
+      };
       !!callback && callback();
       break;
     case 'onLogEvent':

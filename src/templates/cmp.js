@@ -95,8 +95,8 @@
     iframe.setAttribute('style', 'border:0;outline:0;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
 
-    iframe.addEventListener('load', function () {
-      if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
+    iframe.onload = function () {
+      if (!iframe.contentWindow || iframe.contentWindow.postMessage) {
         iframe.parentElement.removeChild(iframe);
         loadTcfapi(3);
         return;
@@ -130,11 +130,11 @@
       );
 
       onAPILoaded('iframe');
-    });
+    };
 
-    iframe.addEventListener('error', function () {
+    iframe.onerror = function () {
       log('loaded', false, { type: 'iframe' });
-    });
+    };
 
     return iframe;
   }
@@ -180,12 +180,13 @@
         (channelId !== '' ? '&channelId=' + channelId : ''),
     );
 
-    tcfapiScriptTag.addEventListener('error', function () {
-      log('loaded', false, { type: '3rdparty' });
-    });
-    tcfapiScriptTag.addEventListener('load', function () {
+    tcfapiScriptTag.onload = function () {
       onAPILoaded('3rdparty');
-    });
+    };
+
+    tcfapiScriptTag.onerror = function () {
+      log('loaded', false, { type: '3rdparty' });
+    };
 
     return tcfapiScriptTag;
   }
