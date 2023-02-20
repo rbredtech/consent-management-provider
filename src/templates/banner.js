@@ -42,9 +42,11 @@ function buildBannerElement() {
   if ('<%-IS_PRO7%>' === 'true') {
     bannerLegalText.appendChild(
       document.createTextNode(
-        'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-Messung), möchte ' +
-          'das Nutzungsverhalten der Zuseher:innen erfassen, um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, deren TV Angebot stetig verbessern zu können. Dazu benötigt die ' +
-          'AGTT Ihre Zustimmung, nach der ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:',
+        'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-messung), möchte ' +
+          'die Nutzung der TV-Geräte erfassen (die Daten können ohne Unterstützung der nutzenden Person keinem ' +
+          'konkreten TV-Gerät zugeordnet werden), um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, ' +
+          'deren TV- und Werbeangebot stetig zu verbessern.  Dazu benötigt die AGTT Ihre Einwilligung, nach der ' +
+          'ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:',
       ),
     );
   } else {
@@ -53,23 +55,26 @@ function buildBannerElement() {
 
     bannerLegalText.appendChild(
       document.createTextNode(
-        'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-Messung), deren Mitglied ',
+        'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-messung), deren Mitglied ',
       ),
     );
     bannerLegalText.appendChild(bannerLegalTextChannelName);
     bannerLegalText.appendChild(
       document.createTextNode(
         ' ist, möchte ' +
-          'das Nutzungsverhalten der Zuseher:innen erfassen, um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, deren TV Angebot stetig verbessern zu können. Dazu benötigt die ' +
-          'AGTT Ihre Zustimmung, nach der ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:',
+          'die Nutzung der TV-Geräte erfassen (die Daten können ohne Unterstützung der nutzenden Person keinem ' +
+          'konkreten TV-Gerät zugeordnet werden), um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, ' +
+          'deren TV- und Werbeangebot stetig zu verbessern.  Dazu benötigt die AGTT Ihre Einwilligung, nach der ' +
+          'ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:',
       ),
     );
   }
   bannerLegalText.appendChild(document.createElement('br'));
   bannerLegalText.appendChild(
     document.createTextNode(
-      'Geräte ID, IP-Adresse, System- bzw. Browserinformationen, Geräteinformationen (verwendet HbbTV-Version, TV-Hersteller, Übertragungsweg via Satellit oder Kabel, Geräteauflösung). ' +
-        'Nähere Informationen zum Datenschutz finden Sie in der HbbTV Applikation des Senders, wo Sie den Status Ihrer Einwilligung verwalten bzw. ändern können.',
+      'Geräte ID, IP-Adresse, System- bzw. Browserinformationen, Geräteinformationen (verwendete HbbTV-Version, TV-Hersteller, ' +
+        'Übertragungsweg via Satellit oder Kabel, Geräteauflösung). Nähere Informationen zum Datenschutz finden Sie in der ' +
+        'HbbTV Applikation des Senders, wo Sie den Status Ihrer Einwilligung verwalten bzw. widerrufen können.',
     ),
   );
 
