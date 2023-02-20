@@ -103,10 +103,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
     case 'removeConsentDecision':
       image = document.createElement('img');
       localStorageAvailable = false;
-      image.setAttribute(
-        'src',
-        '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent',
-      );
+      image.src = '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent';
       if (window.localStorage && localStorage.removeItem) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
         localStorageAvailable = true;
