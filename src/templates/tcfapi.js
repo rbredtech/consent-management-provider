@@ -114,7 +114,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       image.onload = function () {
         log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
       };
-      image.onError = function () {
+      image.onerror = function () {
         log(logEvents.REMOVE_CONSENT_DECISION, false, {});
       };
       !!callback && callback();
