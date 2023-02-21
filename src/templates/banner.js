@@ -220,7 +220,7 @@ window.__cbapi = function (command, version, callback, parameter) {
     setNotSelected(consBtnDecline);
   }
 
-  function handleVK(parameter) {
+  function handleVK(parameter, callback) {
     if (!isConsentBannerVisible()) {
       return;
     }
@@ -231,10 +231,12 @@ window.__cbapi = function (command, version, callback, parameter) {
     switch (keyCode) {
       case KeyEvent.VK_ENTER:
         handleEnter();
+        !!callback && callback(keyCode);
         break;
       case KeyEvent.VK_LEFT:
       case KeyEvent.VK_RIGHT:
         handleSelectionToggle();
+        !!callback && callback(keyCode);
         break;
       default:
         break;
@@ -252,7 +254,7 @@ window.__cbapi = function (command, version, callback, parameter) {
       !!callback && callback(isConsentBannerVisible());
       break;
     case 'handleKey':
-      handleVK(parameter);
+      handleVK(parameter, callback);
       break;
     default:
       break;
