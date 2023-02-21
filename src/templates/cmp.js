@@ -87,15 +87,23 @@
   function createIframe() {
     var iframe = document.createElement('iframe');
 
-    iframe.setAttribute(
-      'src',
-      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
-        (channelId !== '' ? '?channelId=' + channelId : ''),
-    );
-    iframe.setAttribute('style', 'border:0;outline:0;width:0;height:0;');
-    iframe.setAttribute('frameborder', '0');
+    if (iframe['setAttribute']) {
+      iframe.setAttribute(
+        'src',
+        '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
+          (channelId !== '' ? '?channelId=' + channelId : ''),
+      );
+      iframe.setAttribute('style', 'border:0;outline:0;width:0;height:0;');
+      iframe.setAttribute('frameborder', '0');
+    } else {
+      iframe.src =
+        '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
+        (channelId !== '' ? '?channelId=' + channelId : '');
+      iframe.style = 'border:0;outline:0;width:0;height:0;';
+      iframe.frameBorder = 0;
+    }
 
-    iframe.onload = function () {
+    function iFrameOnLoad() {
       if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
         iframe.parentElement.removeChild(iframe);
         loadTcfapi(3);
@@ -106,35 +114,45 @@
         message('cmd', command, version, callback, parameter);
       };
 
-      window.addEventListener(
-        'message',
-        function (event) {
-          if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
-            return;
-          }
+      function messageCallback(event) {
+        if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
+          return;
+        }
 
-          var message = event.data.split(';');
-          var position = 0;
-          var id = message[position];
-          if (!callbackMap[id] || !callbackMap[id][position]) {
-            return;
-          }
-          var callback = callbackMap[id][position];
-          if (logCallbackIndex + '' !== id) delete callbackMap[id];
-          if (callback) {
-            var callbackParameter = JSON.parse(message[++position]);
-            callback(callbackParameter.param);
-          }
-        },
-        false,
-      );
+        var message = event.data.split(';');
+        var position = 0;
+        var id = message[position];
+        if (!callbackMap[id] || !callbackMap[id][position]) {
+          return;
+        }
+        var callback = callbackMap[id][position];
+        if (logCallbackIndex + '' !== id) delete callbackMap[id];
+        if (callback) {
+          var callbackParameter = JSON.parse(message[++position]);
+          callback(callbackParameter.param);
+        }
+      }
+
+      if (window['addEventListener']) {
+        window.addEventListener('message', messageCallback);
+      } else {
+        window.onmessage(messageCallback);
+      }
 
       onAPILoaded('iframe');
-    };
+    }
 
-    iframe.onerror = function () {
-      log('loaded', false, { type: 'iframe' });
-    };
+    if (iframe['addEventListener']) {
+      iframe.addEventListener('load', iFrameOnLoad);
+      iframe.addEventListener('error', function () {
+        log('loaded', false, { type: 'iframe' });
+      });
+    } else {
+      iframe.onload = iFrameOnLoad;
+      iframe.onerror = function () {
+        log('loaded', false, { type: 'iframe' });
+      };
+    }
 
     return iframe;
   }
@@ -171,22 +189,42 @@
     }
 
     var tcfapiScriptTag = document.createElement('script');
-    tcfapiScriptTag.setAttribute('type', 'text/javascript');
-    tcfapiScriptTag.setAttribute(
-      'src',
-      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi.js?<%-TECH_COOKIE_NAME%>=' +
+
+    if (tcfapiScriptTag['setAttribute']) {
+      tcfapiScriptTag.setAttribute('type', 'text/javascript');
+      tcfapiScriptTag.setAttribute(
+        'src',
+        '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi.js?<%-TECH_COOKIE_NAME%>=' +
+          techCookieTimestamp +
+          (hasConsent !== null ? '&consent=' + hasConsent : '') +
+          (channelId !== '' ? '&channelId=' + channelId : ''),
+      );
+    } else {
+      tcfapiScriptTag.type = 'text/javascript';
+      tcfapiScriptTag.src =
+        '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi.js?<%-TECH_COOKIE_NAME%>=' +
         techCookieTimestamp +
         (hasConsent !== null ? '&consent=' + hasConsent : '') +
-        (channelId !== '' ? '&channelId=' + channelId : ''),
-    );
+        (channelId !== '' ? '&channelId=' + channelId : '');
+    }
 
-    tcfapiScriptTag.onload = function () {
-      onAPILoaded('3rdparty');
-    };
+    if (tcfapiScriptTag['addEventListener']) {
+      tcfapiScriptTag.addEventListener('load', function () {
+        onAPILoaded('3rdparty');
+      });
 
-    tcfapiScriptTag.onerror = function () {
-      log('loaded', false, { type: '3rdparty' });
-    };
+      tcfapiScriptTag.addEventListener('error', function () {
+        log('loaded', false, { type: '3rdparty' });
+      });
+    } else {
+      tcfapiScriptTag.onload = function () {
+        onAPILoaded('3rdparty');
+      };
+
+      tcfapiScriptTag.onerror = function () {
+        log('loaded', false, { type: '3rdparty' });
+      };
+    }
 
     return tcfapiScriptTag;
   }
