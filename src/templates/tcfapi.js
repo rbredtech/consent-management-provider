@@ -89,28 +89,15 @@ window.__tcfapi = function (command, version, callback, parameter) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
         localStorageAvailable = true;
       }
-      if (image['addEventListener']) {
-        image.addEventListener('load', function () {
-          log(logEvents.SET_CONSENT, true, {
-            consent: parameter,
-            localStorageAvailable: localStorageAvailable,
-          });
+      image.onload = function () {
+        log(logEvents.SET_CONSENT, true, {
+          consent: parameter,
+          localStorageAvailable: localStorageAvailable,
         });
-        image.addEventListener('error', function () {
-          log(logEvents.SET_CONSENT, false, {});
-        });
-      } else {
-        image.onload = function () {
-          log(logEvents.SET_CONSENT, true, {
-            consent: parameter,
-            localStorageAvailable: localStorageAvailable,
-          });
-        };
-        image.onerror = function () {
-          log(logEvents.SET_CONSENT, false, {});
-        };
-      }
-
+      };
+      image.onerror = function () {
+        log(logEvents.SET_CONSENT, false, {});
+      };
       !!callback && callback(parameter);
       break;
     case 'removeConsentDecision':
@@ -121,21 +108,12 @@ window.__tcfapi = function (command, version, callback, parameter) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
         localStorageAvailable = true;
       }
-      if (image['addEventListener']) {
-        image.addEventListener('load', function () {
-          log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
-        });
-        image.addEventListener('error', function () {
-          log(logEvents.REMOVE_CONSENT_DECISION, false, {});
-        });
-      } else {
-        image.onload = function () {
-          log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
-        };
-        image.onerror = function () {
-          log(logEvents.REMOVE_CONSENT_DECISION, false, {});
-        };
-      }
+      image.onload = function () {
+        log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
+      };
+      image.onerror = function () {
+        log(logEvents.REMOVE_CONSENT_DECISION, false, {});
+      };
       !!callback && callback();
       break;
     case 'onLogEvent':
