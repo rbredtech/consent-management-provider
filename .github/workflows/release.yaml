@@ -3,7 +3,8 @@ on:
   push:
     branches:
       - "!develop"
-      - "refs/tags/v*"
+    tags:
+      - "v*.*.*"
     paths-ignore:
       - "examples/**"
       - "README.md"
