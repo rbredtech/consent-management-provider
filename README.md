@@ -193,7 +193,7 @@ __cbapi(method, version, callback?, parameter?)
 | showBanner | displays a consent banner to the user | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean | undefined) => void` |
 | hideBanner | hides the consent banner | none | none |
 | isBannerVisible | Callback parameter shows if banner is currently shown | none | `(visible: boolean) => void`
-| handleKey | Allows for key handling of banner. Call for every key event after app called `showBanner` method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the host app. | `KeyboardEvent` | none |
+| handleKey | Allows for key handling of banner. Call for every key event after app called `showBanner` method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the host app. | `KeyboardEvent` | `(keyCode: number) => void` |
 
 ### Banner interaction
 
