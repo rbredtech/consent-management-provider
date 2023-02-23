@@ -3,17 +3,19 @@
   var logEntries = [];
 
   window.__tcfapi = function (command, version, callback, parameter) {
-    queue[queue.length] = Array.prototype.slice.call(arguments);
+    queue[queue.length] = Array.prototype.slice.call(arguments, 0);
   };
 
   window.__tcfapi('onLogEvent', 2, function () {
-    logEntries[logEntries.length] = Array.prototype.slice.call(arguments);
+    logEntries[logEntries.length] = Array.prototype.slice.call(arguments, 0);
   });
 
   var channelId = '<%-CHANNEL_ID%>';
 
   function logQueue() {
-    if (!logEntries || !logEntries.length || logCallbackIndex < 0) return;
+    if (!logEntries.length || logCallbackIndex < 0) {
+      return;
+    }
 
     for (var i = 0; i < logEntries.length; i++) {
       var f = logEntries[i];
@@ -21,7 +23,8 @@
         callbackMap[logCallbackIndex][0](f[0]);
       }
     }
-    delete logEntries;
+
+    logEntries = [];
   }
 
   function onAPILoaded(type) {
@@ -30,12 +33,16 @@
   }
 
   function callQueue() {
-    if (!queue) return;
+    if (!queue.length) {
+      return;
+    }
+
     for (var i = 0; i < queue.length; i++) {
       var f = queue[i];
-      window.__tcfapi.apply(null, f.slice());
+      window.__tcfapi.apply(null, f.slice(0));
     }
-    delete queue;
+
+    queue = [];
   }
 
   var callbackCount = 0;
@@ -44,10 +51,6 @@
   var iframe;
 
   function message(type, command, version, callback, parameter) {
-    if (!iframe.contentWindow) {
-      return;
-    }
-
     callbackMap[++callbackCount] = [callback];
 
     if (command === 'onLogEvent') {
@@ -56,22 +59,29 @@
     }
 
     var message =
-      callbackCount + ';' + type + ';' + command + ';' + version + ';' + btoa(JSON.stringify({ param: parameter }));
+      callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
 
     iframe.contentWindow.postMessage(message, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
   }
 
   function log(event, success, parameters) {
-    window.__tcfapi('log', 2, function () {}, btoa(JSON.stringify({ event: event, parameters: parameters })));
+    window.__tcfapi('log', 2, function () {}, JSON.stringify({ event: event, parameters: parameters }));
   }
 
   function isIframeCapable() {
-    return (
-      window.navigator &&
-      navigator.userAgent &&
-      navigator.userAgent.indexOf &&
-      navigator.userAgent.indexOf('Presto') === -1
-    );
+    var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
+    var currentUserAgent = window.navigator && navigator.userAgent && navigator.userAgent.toLowerCase();
+
+    if (!currentUserAgent || !currentUserAgent.indexOf) {
+      return false;
+    }
+
+    var userAgentIsExcluded = false;
+    for (var i = 0; i < excludeList.length; i++) {
+      userAgentIsExcluded = userAgentIsExcluded || currentUserAgent.indexOf(excludeList[i]) !== -1;
+    }
+
+    return !userAgentIsExcluded;
   }
 
   function createIframe() {
@@ -85,7 +95,13 @@
     iframe.setAttribute('style', 'border:0;outline:0;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
 
-    iframe.addEventListener('load', function () {
+    iframe.onload = function () {
+      if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
+        iframe.parentElement.removeChild(iframe);
+        loadTcfapi(3);
+        return;
+      }
+
       window.__tcfapi = function (command, version, callback, parameter) {
         message('cmd', command, version, callback, parameter);
       };
@@ -106,7 +122,7 @@
           var callback = callbackMap[id][position];
           if (logCallbackIndex + '' !== id) delete callbackMap[id];
           if (callback) {
-            var callbackParameter = JSON.parse(atob(message[++position]));
+            var callbackParameter = JSON.parse(message[++position]);
             callback(callbackParameter.param);
           }
         },
@@ -114,11 +130,11 @@
       );
 
       onAPILoaded('iframe');
-    });
+    };
 
-    iframe.addEventListener('error', function () {
+    iframe.onerror = function () {
       log('loaded', false, { type: 'iframe' });
-    });
+    };
 
     return iframe;
   }
@@ -164,12 +180,13 @@
         (channelId !== '' ? '&channelId=' + channelId : ''),
     );
 
-    tcfapiScriptTag.addEventListener('error', function () {
-      log('loaded', false, { type: '3rdparty' });
-    });
-    tcfapiScriptTag.addEventListener('load', function () {
+    tcfapiScriptTag.onload = function () {
       onAPILoaded('3rdparty');
-    });
+    };
+
+    tcfapiScriptTag.onerror = function () {
+      log('loaded', false, { type: '3rdparty' });
+    };
 
     return tcfapiScriptTag;
   }

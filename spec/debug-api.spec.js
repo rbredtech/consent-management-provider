@@ -1,6 +1,6 @@
-const { describe, beforeAll, test, expect, afterAll } = require("@jest/globals");
+const { describe, beforeAll, expect, afterAll, it } = require("@jest/globals");
 const pageHelper = require("./helper/page");
-const { wait } = require("../helper/util");
+const { wait } = require("./helper/wait");
 
 let page;
 
@@ -34,11 +34,15 @@ describe("Debug API", () => {
 
     describe("and getTCData API method is called", () => {
       beforeAll(async () => {
-        const apiResponse = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
-        await apiResponse;
+        await page.evaluate(() => {
+          return new Promise((resolve) => {
+            window.__tcfapi("getTCData", 2, resolve);
+          });
+        });
+        await wait(100);
       });
 
-      test("load event is logged", async () => {
+      it("should log load event", async () => {
         const queue = await page.evaluate(() => {
           return window.callbackQueue;
         });
@@ -51,13 +55,13 @@ describe("Debug API", () => {
         });
       });
 
-      test("activity for getTCData is logged", async () => {
+      it("should log activity for getTCData", async () => {
         const queue = await page.evaluate(() => {
           return window.callbackQueue;
         });
         expect(queue).toHaveLength(2);
         expect(queue[1]).toEqual({
-          event: "TCData",
+          event: "getTCData",
           parameters: { status: "disabled" },
           success: true,
           ts: expect.any(Number),
@@ -69,12 +73,16 @@ describe("Debug API", () => {
 
         beforeAll(async () => {
           consentCookieLoaded = page.waitForResponse((response) => response.url().includes("set-consent"));
-          await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('setConsent', 1, resolve, false)}))`);
+          await page.evaluate(() => {
+            return new Promise((resolve) => {
+              window.__tcfapi("setConsent", 2, resolve, false);
+            });
+          });
           await consentCookieLoaded;
           await wait(100);
         });
 
-        test("activity for setConsent is logged", async () => {
+        it("should log activity for setConsent", async () => {
           const queue = await page.evaluate(() => {
             return window.callbackQueue;
           });

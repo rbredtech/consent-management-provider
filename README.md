@@ -41,6 +41,9 @@ In order to propose a new feature/a change or bugfix, a feature branch named `fe
 needs to be created from the `develop` branch. After adding the desired changes to this branch, a pull request
 needs to be opened and reviewed before the changes can be merged into the `develop` branch.
 
+Every push/merge to the `develop` branch creates a snapshot tag (e.g. `v0.1.2_snapshot_26`) which makes it easier
+to inspect all changes since the currently released version (which would be `v0.1.2` for the given example).
+
 ## Releases
 
 Creating a new release follows the gitflow pattern of creating a release branch named `release/vx.x.x`
@@ -187,10 +190,10 @@ __cbapi(method, version, callback?, parameter?)
 
 | Method | Description  | Parameter | Callback  |
 |--------|--------------|------------|----------|
-| showBanner | displays a consent banner to the user | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean) => void` |
+| showBanner | displays a consent banner to the user | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean | undefined) => void` |
 | hideBanner | hides the consent banner | none | none |
 | isBannerVisible | Callback parameter shows if banner is currently shown | none | `(visible: boolean) => void`
-| handleKey | Allows for key handling of banner. Call for every key event after app called `showBanner` method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the host app. | `KeyboardEvent` | none |
+| handleKey | Allows for key handling of banner. Call for every key event after app called `showBanner` method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the host app. | `KeyboardEvent` | `(keyCode: number) => void` |
 
 ### Banner interaction
 

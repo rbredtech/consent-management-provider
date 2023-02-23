@@ -1,3 +1,5 @@
+var logCallback;
+
 window.__tcfapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
 
@@ -18,8 +20,6 @@ window.__tcfapi = function (command, version, callback, parameter) {
     SET_CONSENT: 'setConsent',
     REMOVE_CONSENT_DECISION: 'removeConsentDecision',
   };
-
-  var logCallback;
 
   function log(event, success, parameters) {
     if (logCallback) {
@@ -89,40 +89,31 @@ window.__tcfapi = function (command, version, callback, parameter) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
         localStorageAvailable = true;
       }
-      image.addEventListener('load', function () {
+      image.onload = function () {
         log(logEvents.SET_CONSENT, true, {
           consent: parameter,
           localStorageAvailable: localStorageAvailable,
         });
-      });
-      image.addEventListener('load', function () {
-        log(logEvents.SET_CONSENT, true, {
-          consent: parameter,
-          localStorageAvailable: localStorageAvailable,
-        });
-      });
-      image.addEventListener('error', function () {
+      };
+      image.onerror = function () {
         log(logEvents.SET_CONSENT, false, {});
-      });
+      };
       !!callback && callback(parameter);
       break;
     case 'removeConsentDecision':
       image = document.createElement('img');
       localStorageAvailable = false;
-      image.setAttribute(
-        'src',
-        '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent',
-      );
+      image.src = '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent';
       if (window.localStorage && localStorage.removeItem) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
         localStorageAvailable = true;
       }
-      image.addEventListener('load', function () {
-        log(null, logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
-      });
-      image.addEventListener('error', function () {
-        log(null, logEvents.REMOVE_CONSENT_DECISION, false, {});
-      });
+      image.onload = function () {
+        log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
+      };
+      image.onerror = function () {
+        log(logEvents.REMOVE_CONSENT_DECISION, false, {});
+      };
       !!callback && callback();
       break;
     case 'onLogEvent':
@@ -130,7 +121,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       break;
     case 'log':
       if (parameter) {
-        var logParameters = JSON.parse(atob(parameter));
+        var logParameters = JSON.parse(parameter);
         if (logParameters && logParameters.event) {
           log(logParameters.event, true, logParameters.parameters);
         }
