@@ -131,3 +131,6 @@ window.__cmpapi = function (command, version, callback, parameter) {
       break;
   }
 };
+
+// fallback for old __tcfapi implementation
+window.__tcfapi = window.__cmpapi;

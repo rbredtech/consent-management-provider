@@ -6,6 +6,9 @@
     queue[queue.length] = Array.prototype.slice.call(arguments, 0);
   };
 
+  // fallback for old __tcfapi implementation
+  window.__tcfapi = window.__cmpapi;
+
   window.__cmpapi('onLogEvent', 2, function () {
     logEntries[logEntries.length] = Array.prototype.slice.call(arguments, 0);
   });
@@ -98,13 +101,16 @@
     iframe.onload = function () {
       if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
         iframe.parentElement.removeChild(iframe);
-        loadTcfapi(3);
+        loadCmpApi(3);
         return;
       }
 
       window.__cmpapi = function (command, version, callback, parameter) {
         message('cmd', command, version, callback, parameter);
       };
+
+      // fallback for old __tcfapi implementation
+      window.__tcfapi = window.__cmpapi;
 
       window.addEventListener(
         'message',
@@ -191,7 +197,7 @@
     return cmpapiScriptTag;
   }
 
-  function loadTcfapi(retriesLeft) {
+  function loadCmpApi(retriesLeft) {
     if (retriesLeft < 0) {
       return;
     }
@@ -199,7 +205,7 @@
     var head = document.getElementsByTagName('head')[0];
     if (!head) {
       setTimeout(function () {
-        loadTcfapi(retriesLeft - 1);
+        loadCmpApi(retriesLeft - 1);
       }, 100);
       return;
     }
@@ -211,6 +217,6 @@
   if (isIframeCapable()) {
     loadIframe(3);
   } else {
-    loadTcfapi(3);
+    loadCmpApi(3);
   }
 })();
