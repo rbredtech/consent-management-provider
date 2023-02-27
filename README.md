@@ -28,7 +28,7 @@ opt-in/out ratio on a specific channel.
 - GET `/v2/cmp-with-tracking.js`- Returns a javascript bundle like `/cmp.js`, but also integrates the tracking script depending on the consent decision (<https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script>). There is one mandatory query param `cmpId` which has to be given (`4040`), the query parameters for the tracking script are passed through (see <https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script#tracking-script-parameters> for parameters)
 - GET `/v2/banner.js` - Returns the javascript bundle providing the `__cbapi()` API for controlling the consent banner.
 
-There is an alias for `__cmpapi` in order to maintain backwards compatibility with implementations still using `__tcfapi`. All methods available via `__cmpapi` are also availalbe via `__tcfapi`.
+There is an alias for `__cmpapi` in order to maintain backwards compatibility with implementations still using `__tcfapi`. All methods available via `__cmpapi` are also available via `__tcfapi`.
 
 ### __cmpapi methods
 
