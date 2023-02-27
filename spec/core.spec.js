@@ -17,7 +17,7 @@ describe("Consent Management is loaded", () => {
   });
 
   test("Ping API call returns basic configuration", async () => {
-    const result = page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('ping', 1, resolve)}))`);
+    const result = page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('ping', 1, resolve)}))`);
 
     return expect(result).resolves.toEqual({
       apiVersion: "2.0",
@@ -33,7 +33,7 @@ describe("Consent Management is loaded", () => {
   });
 
   test("Storage status is disabled", async () => {
-    const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
+    const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 1, resolve)}))`);
 
     expect(apiResponse.cmpStatus).toBe("disabled");
     expect(apiResponse.vendor["consents"]).toBeDefined();

@@ -23,10 +23,10 @@
         }
       }
 
-      var tcfapiScriptTag = document.createElement('script');
-      tcfapiScriptTag.setAttribute('src', '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi-inner.js?<%-TECH_COOKIE_NAME%>=' + techCookieTimestamp + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
-      tcfapiScriptTag.setAttribute('type', 'text/javascript');
-      document.getElementsByTagName('head')[0].appendChild(tcfapiScriptTag);
+      var cmpApiScriptTag = document.createElement('script');
+      cmpApiScriptTag.setAttribute('src', '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi-iframe.js?<%-TECH_COOKIE_NAME%>=' + techCookieTimestamp + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
+      cmpApiScriptTag.setAttribute('type', 'text/javascript');
+      document.getElementsByTagName('head')[0].appendChild(cmpApiScriptTag);
     } catch (e) { }
     //]]>
   </script>
