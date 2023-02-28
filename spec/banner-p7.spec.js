@@ -18,7 +18,7 @@ describe("Consent Management with banner on a P7 channel", () => {
 
   test("Banner pop-up is NOT displayed", async () => {
     await expect(
-      page.waitForSelector("div#agttcnstbnnr", {
+      page.waitForSelector("div#agttcnsntbnnr", {
         visible: true,
         timeout: 1000,
       }),
@@ -34,7 +34,7 @@ describe("Consent Management with banner on a P7 channel", () => {
 
     test("Banner pop-up is displayed", async () => {
       await expect(
-        page.waitForSelector("div#agttcnstbnnr", {
+        page.waitForSelector("div#agttcnsntbnnr", {
           visible: true,
           timeout: 1000,
         }),
@@ -42,7 +42,7 @@ describe("Consent Management with banner on a P7 channel", () => {
     });
 
     test("Channel specific information should NOT be present", async () => {
-      expect(await page.$eval("div#agttcnstbnnr", (node) => node.innerText)).not.toContain("deren Mitglied");
+      expect(await page.$eval("div#agttcnsntbnnr", (node) => node.innerText)).not.toContain("deren Mitglied");
     });
   });
 });
