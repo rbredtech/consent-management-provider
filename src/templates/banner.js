@@ -96,7 +96,7 @@ function buildBannerElement() {
 
 window.__cbapi = function (command, version, callback, parameter) {
   function mountBannerDefaultStyles() {
-    var head = document.head || document.getElementsByTagName('head')[0];
+    var head = document.getElementsByTagName('head')[0];
     var styleTag = document.createElement('style');
     styleTag.type = 'text/css';
 
@@ -107,7 +107,7 @@ window.__cbapi = function (command, version, callback, parameter) {
       styleTag.appendChild(document.createTextNode(bannerDefaultStyles));
     }
 
-    head.appendChild(styleTag);
+    head.insertBefore(styleTag, head.firstChild);
   }
 
   function mountConsentBanner(nodeId) {
