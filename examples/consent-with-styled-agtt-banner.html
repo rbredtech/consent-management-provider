@@ -5,9 +5,9 @@
   <meta http-equiv='content-type' content='application/vnd.hbbtv.xhtml+xml; charset=utf-8'>
   </meta>
   <title>Consent Management Test</title>
-  <script type='text/javascript' src='http://localhost:4000/v2/cmp.js?channelId=0'></script>
-  <script type='text/javascript' src='http://localhost:4000/v2/banner.js?channelId=0'></script>
-  <!--
+  <script type='text/javascript' src='http://consent.tvping.com/v2/cmp.js?channelId=1234'></script>
+  <script type='text/javascript' src='http://consent.tvping.com/v2/banner.js?channelId=1234'></script>
+  <!-- style overrides -->
   <style type='text/css'>
     #agttcnsntbnnr {
       border: 4px solid #0536B3;
@@ -31,11 +31,11 @@
     }
 
   </style>
-  -->
   <script>
     //<![CDATA[
     var isShowingBanner = false;
 
+    // when banner is closed, __tcfapi is used to save the user's consent decision
     function bannerClosedCallback(consentDecision) {
       if (consentDecision === true || consentDecision === false) {
         window.__tcfapi('setConsent', 2, function (consent) {
@@ -80,6 +80,7 @@
 
     window.addEventListener('keydown', keyHandler);
 
+    // we load consent data on page load and show the banner if no consent decision is saved yet
     var CMP_VENDOR_ID = 4040;
     window.__tcfapi('getTCData', 2, function (tcData) {
       if (tcData.cmpStatus === 'loaded') {
@@ -87,31 +88,20 @@
         if (consent === undefined) {
           showAgttConsentBanner();
         }
-        if (consent === true) {
-          console.log("Consent already given");
-        }
-        if (consent === false) {
-          console.log("Consent already declined");
-        }
       }
-    });
-
-    window.__tcfapi('onLogEvent', 2, function ({ event, success, parameters, ts }) {
-      console.warn("logEvent", event, success, parameters, ts);
     });
     //]]>
   </script>
 </head>
 
 <body>
+  <div id='cmp'></div>
   <object id='video' type='video/broadcast' fullscreen='true' width='1280' height='720'
     style='position:absolute; top: 0px; left: 0px; width: 1280px; height: 720px;'></object>
   <div style='visibility: hidden; width: 0; height: 0; position: absolute;'>
     <object id='oipfAppMngr' type='application/oipfApplicationManager'></object>
     <object id='oipfCfg' type='application/oipfConfiguration'></object>
   </div>
-  <script src='<%-BROWSER_REFRESH_URL%>'></script>
-  <div id='cmp'></div>
 </body>
 
 </html>

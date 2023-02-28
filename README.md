@@ -184,6 +184,11 @@ function keyHandler(event) {
 }
 ```
 
+### Banner styling
+
+The default styles of the banner can be overruled by adding css either with a `<style>` tag or by linking a stylesheet. An example for which classes can be styled
+can be found und `examples/banner.css`, or also `examples/consent-with-styled-agtt-banner.html`.
+
 ## Development
 
 ### Get started
