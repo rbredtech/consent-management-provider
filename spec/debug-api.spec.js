@@ -23,7 +23,7 @@ describe("Debug API", () => {
       await page.evaluate(() => {
         return new Promise((resolve) => {
           window.callbackQueue = [];
-          window.__tcfapi("addLogEventListener", 2, function (params) {
+          window.__tcfapi("onLogEvent", 2, function (params) {
             window.callbackQueue.push(params);
           });
           resolve();

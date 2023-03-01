@@ -1,4 +1,4 @@
-var logCallbacks = [];
+var logCallback;
 
 window.__tcfapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
@@ -22,8 +22,8 @@ window.__tcfapi = function (command, version, callback, parameter) {
   };
 
   function log(event, success, parameters) {
-    for (var i = 0; i < logCallbacks.length; i++) {
-      logCallbacks[i]({ event: event, success: success, parameters: parameters, ts: Date.now() });
+    if (logCallback) {
+      logCallback({ event: event, success: success, parameters: parameters, ts: Date.now() });
     }
   }
 
@@ -116,14 +116,8 @@ window.__tcfapi = function (command, version, callback, parameter) {
       };
       !!callback && callback();
       break;
-    case 'addLogEventListener':
-      logCallbacks.push(callback);
-      break;
-    case 'removeLogEventListener':
-      var index = logCallbacks.indexOf(callback);
-      if (index > -1) {
-        logCallbacks.splice(index, 1);
-      }
+    case 'onLogEvent':
+      logCallback = callback;
       break;
     case 'log':
       if (parameter) {

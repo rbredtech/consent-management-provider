@@ -6,7 +6,7 @@
     queue[queue.length] = Array.prototype.slice.call(arguments, 0);
   };
 
-  window.__tcfapi('addLogEventListener', 2, function () {
+  window.__tcfapi('onLogEvent', 2, function () {
     logEntries[logEntries.length] = Array.prototype.slice.call(arguments, 0);
   });
 
@@ -53,7 +53,7 @@
   function message(type, command, version, callback, parameter) {
     callbackMap[++callbackCount] = [callback];
 
-    if (command === 'addLogEventListener') {
+    if (command === 'onLogEvent') {
       logCallbackIndex = callbackCount;
       logQueue();
     }
@@ -120,6 +120,7 @@
             return;
           }
           var callback = callbackMap[id][position];
+          if (logCallbackIndex + '' !== id) delete callbackMap[id];
           if (callback) {
             var callbackParameter = JSON.parse(message[++position]);
             callback(callbackParameter.param);
@@ -240,7 +241,7 @@
     });
   }
 
-  window.__tcfapi('addLogEventListener', 2, function (log) {
+  window.__tcfapi('onLogEvent', 2, function (log) {
     var consent = undefined;
     if (log.success === true && (log.event === 'getTCData' || log.event === 'setConsent')) {
       consent = log.parameters.consent;
