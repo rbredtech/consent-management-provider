@@ -1,4 +1,4 @@
-var logCallback;
+var logCallbacks = [];
 
 window.__tcfapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
@@ -22,8 +22,8 @@ window.__tcfapi = function (command, version, callback, parameter) {
   };
 
   function log(event, success, parameters) {
-    if (logCallback) {
-      logCallback({ event: event, success: success, parameters: parameters, ts: Date.now() });
+    for (var i = 0; i < logCallbacks.length; i++) {
+      logCallbacks[i]({ event: event, success: success, parameters: parameters, ts: Date.now() });
     }
   }
 
@@ -36,7 +36,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
         callback({
           gdprApplies: true,
           cmpLoaded: true,
-          cmpStatus: 'loaded',
+          cmpStatus: '<%-CMP_STATUS%>',
           displayStatus: 'hidden',
           apiVersion: '2.0',
           cmpVersion: 1,
@@ -116,8 +116,14 @@ window.__tcfapi = function (command, version, callback, parameter) {
       };
       !!callback && callback();
       break;
-    case 'onLogEvent':
-      logCallback = callback;
+    case 'addLogEventListener':
+      logCallbacks.push(callback);
+      break;
+    case 'removeLogEventListener':
+      var index = logCallbacks.indexOf(callback);
+      if (index > -1) {
+        logCallbacks.splice(index, 1);
+      }
       break;
     case 'log':
       if (parameter) {

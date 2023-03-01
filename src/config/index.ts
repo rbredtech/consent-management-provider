@@ -25,3 +25,4 @@ export const TRACKING_HOST_CONSENT = new EnvVar("TRACKING_HOST_CONSENT").getStri
 export const TRACKING_HOST_NO_CONSENT = new EnvVar("TRACKING_HOST_NO_CONSENT").getStringOrDefault(
   "session-cl.tvping.com",
 );
+export const TRACKING_VERSION = new EnvVar("TRACKING_VERSION").getStringOrDefault("v2");

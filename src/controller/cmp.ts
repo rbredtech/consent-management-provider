@@ -1,6 +1,15 @@
 import { Request, Response } from "express";
 
-import { API_VERSION, HTTP_HOST, TECH_COOKIE_NAME, COOKIE_NAME } from "../config";
+import {
+  API_VERSION,
+  HTTP_HOST,
+  TECH_COOKIE_NAME,
+  COOKIE_NAME,
+  TRACKING_PROTOCOL,
+  TRACKING_HOST_CONSENT,
+  TRACKING_HOST_NO_CONSENT,
+  TRACKING_VERSION,
+} from "../config";
 import { loadedCounterMetric } from "../util/metrics";
 
 export const cmpController = async (req: Request, res: Response) => {
@@ -18,6 +27,10 @@ export const cmpController = async (req: Request, res: Response) => {
       CONSENT_SERVER_HOST: HTTP_HOST,
       CONSENT_SERVER_PROTOCOL: req.protocol,
       CHANNEL_ID: req.channelId,
+      TRACKING_PROTOCOL,
+      TRACKING_HOST_CONSENT,
+      TRACKING_HOST_NO_CONSENT,
+      TRACKING_VERSION,
     });
   } catch (e) {
     res.status(500).send(e);

@@ -6,7 +6,7 @@
     queue[queue.length] = Array.prototype.slice.call(arguments, 0);
   };
 
-  window.__tcfapi('onLogEvent', 2, function () {
+  window.__tcfapi('addLogEventListener', 2, function () {
     logEntries[logEntries.length] = Array.prototype.slice.call(arguments, 0);
   });
 
@@ -53,7 +53,7 @@
   function message(type, command, version, callback, parameter) {
     callbackMap[++callbackCount] = [callback];
 
-    if (command === 'onLogEvent') {
+    if (command === 'addLogEventListener') {
       logCallbackIndex = callbackCount;
       logQueue();
     }
@@ -120,7 +120,6 @@
             return;
           }
           var callback = callbackMap[id][position];
-          if (logCallbackIndex + '' !== id) delete callbackMap[id];
           if (callback) {
             var callbackParameter = JSON.parse(message[++position]);
             callback(callbackParameter.param);
@@ -213,4 +212,43 @@
   } else {
     loadTcfapi(3);
   }
+
+  // send device ids
+  function sendDeviceId(consent, retriesLeft) {
+    if (retriesLeft < 0) {
+      return;
+    }
+
+    if (!__hbb_tracking_tgt || !__hbb_tracking_tgt.getDID) {
+      setTimeout(function () {
+        sendDeviceId(consent, retriesLeft - 1);
+      }, 100);
+      return;
+    }
+
+    __hbb_tracking_tgt.getDID(function (deviceId) {
+      var image = document.createElement('img');
+      image.src =
+        '<%-TRACKING_PROTOCOL%>://' +
+        (consent ? '<%-TRACKING_HOST_CONSENT%>' : '<%-TRACKING_HOST_NO_CONSENT%>') +
+        '/<%-TRACKING_VERSION%>/consent-status/' +
+        deviceId +
+        '/' +
+        Date.now() +
+        '/consent.gif?consent=' +
+        String(consent);
+    });
+  }
+
+  window.__tcfapi('addLogEventListener', 2, function (log) {
+    var consent = undefined;
+    if (log.success === true && (log.event === 'getTCData' || log.event === 'setConsent')) {
+      consent = log.parameters.consent;
+    }
+    if (consent !== undefined) {
+      try {
+        sendDeviceId(consent, 3);
+      } catch (e) {}
+    }
+  });
 })();
