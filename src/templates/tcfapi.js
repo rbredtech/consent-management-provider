@@ -36,7 +36,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
         callback({
           gdprApplies: true,
           cmpLoaded: true,
-          cmpStatus: '<%-CMP_STATUS%>',
+          cmpStatus: 'loaded',
           displayStatus: 'hidden',
           apiVersion: '2.0',
           cmpVersion: 1,
