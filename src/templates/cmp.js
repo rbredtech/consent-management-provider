@@ -120,7 +120,6 @@
             return;
           }
           var callback = callbackMap[id][position];
-          if (logCallbackIndex + '' !== id) delete callbackMap[id];
           if (callback) {
             var callbackParameter = JSON.parse(message[++position]);
             callback(callbackParameter.param);
