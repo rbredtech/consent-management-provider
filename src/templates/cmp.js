@@ -241,11 +241,7 @@
     });
   }
 
-  window.__tcfapi('onLogEvent', 2, function (log) {
-    var consent = undefined;
-    if (log.success === true && (log.event === 'getTCData' || log.event === 'setConsent')) {
-      consent = log.parameters.consent;
-    }
+  window.__tcfapi('onConsent', 2, function (consent) {
     if (consent !== undefined) {
       try {
         sendDeviceId(consent, 3);

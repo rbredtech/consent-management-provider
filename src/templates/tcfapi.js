@@ -1,4 +1,5 @@
-var logCallback;
+var onLogEventCallback;
+var onConsentCallback;
 
 window.__tcfapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
@@ -22,8 +23,14 @@ window.__tcfapi = function (command, version, callback, parameter) {
   };
 
   function log(event, success, parameters) {
-    if (logCallback) {
-      logCallback({ event: event, success: success, parameters: parameters, ts: Date.now() });
+    if (onLogEventCallback) {
+      onLogEventCallback({ event: event, success: success, parameters: parameters, ts: Date.now() });
+    }
+  }
+
+  function onConsent(consent) {
+    if (onConsentCallback) {
+      onConsentCallback(consent);
     }
   }
 
@@ -77,6 +84,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
           },
         });
       log(logEvents.GET_TC_DATA, true, { status: '<%-CMP_STATUS%>', consent: hasConsent });
+      onConsent(hasConsent);
       break;
     case 'setConsent':
       image = document.createElement('img');
@@ -99,6 +107,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
         log(logEvents.SET_CONSENT, false, {});
       };
       !!callback && callback(parameter);
+      onConsent(String(parameter) === 'true');
       break;
     case 'removeConsentDecision':
       image = document.createElement('img');
@@ -117,7 +126,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       !!callback && callback();
       break;
     case 'onLogEvent':
-      logCallback = callback;
+      onLogEventCallback = callback;
       break;
     case 'log':
       if (parameter) {
@@ -126,6 +135,9 @@ window.__tcfapi = function (command, version, callback, parameter) {
           log(logParameters.event, true, logParameters.parameters);
         }
       }
+      break;
+    case 'onConsent':
+      onConsentCallback = callback;
       break;
     default:
       break;
