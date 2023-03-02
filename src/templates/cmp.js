@@ -5,6 +5,9 @@
     queue[queue.length] = arguments;
   };
 
+  // fallback for old __tcfapi implementation
+  window.__tcfapi = window.__cmpapi;
+
   var channelId = '<%-CHANNEL_ID%>';
 
   function onAPILoaded(type) {
