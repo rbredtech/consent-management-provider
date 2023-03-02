@@ -48,6 +48,7 @@
   var callbackCount = 0;
   var callbackMap = {};
   var logCallbackIndex = -1;
+  var onConsentCallbackIndex = -1;
   var iframe;
 
   function message(type, command, version, callback, parameter) {
@@ -56,6 +57,10 @@
     if (command === 'onLogEvent') {
       logCallbackIndex = callbackCount;
       logQueue();
+    }
+
+    if (command === 'onConsent') {
+      onConsentCallbackIndex = callbackCount;
     }
 
     var message =
@@ -120,6 +125,7 @@
             return;
           }
           var callback = callbackMap[id][position];
+          if (logCallbackIndex + '' !== id && onConsentCallbackIndex + '' !== id) delete callbackMap[id];
           if (callback) {
             var callbackParameter = JSON.parse(message[++position]);
             callback(callbackParameter.param);
