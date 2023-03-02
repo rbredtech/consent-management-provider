@@ -24,17 +24,19 @@ Usage/Integration examples can be found in the `/examples` folder of this reposi
 All API endpoints take a query parameter`channelId`, which is used to collect metrics about the
 opt-in/out ratio on a specific channel.
 
-- GET `/v2/cmp.js` - Returns the javascript bundle providing the `__tcfapi()` API for client side checking of consent status.
+- GET `/v2/cmp.js` - Returns the javascript bundle providing the `__cmpapi()` API for client side checking of consent status.
 - GET `/v2/cmp-with-tracking.js`- Returns a javascript bundle like `/cmp.js`, but also integrates the tracking script depending on the consent decision (<https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script>). There is one mandatory query param `cmpId` which has to be given (`4040`), the query parameters for the tracking script are passed through (see <https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script#tracking-script-parameters> for parameters)
 - GET `/v2/banner.js` - Returns the javascript bundle providing the `__cbapi()` API for controlling the consent banner.
 
-### __tcfapi methods
+There is an alias for `__cmpapi` in order to maintain backwards compatibility with implementations still using `__tcfapi`. All methods available via `__cmpapi` are also available via `__tcfapi`.
 
-Including the loader script into the application will expose the `window.__tcfapi()` method for client side checking of
-the consent status. The `__tcfapi` method has the following call signature:
+### __cmpapi methods
+
+Including the loader script into the application will expose the `window.__cmpapi()` method for client side checking of
+the consent status. The `__cmpapi` method has the following call signature:
 
 ```js
-__tcfapi(method, version, callback?, parameter?)
+__cmpapi(method, version, callback?, parameter?)
 ```
 
 | Method | Description  | Parameter | Callback  |
@@ -84,7 +86,7 @@ type TCData = {
 
 ### Checking of consent status
 
-The `{HOST_URL}/v2/cmp.js` script can be added as javascript bundle to your application. This will expose the `__tcfapi()`
+The `{HOST_URL}/v2/cmp.js` script can be added as javascript bundle to your application. This will expose the `__cmpapi()`
 object on the window object providing access to consent information.
 
 The app needs to check `cmpStatus` and `consent` of the response of the `tcData` method. If `cmpStatus` is not set as
@@ -103,11 +105,11 @@ Add `cmp.js` bundle to your application:
 ```
 
 The `channelId` query parameter is optional and is used to collect metrics about which channel opt-ins/outs come from.
-Having added the `cmp.js` javascript file to the application, you can check for the user's consent status through the API endpoints provided by the `__tcfapi` object:
+Having added the `cmp.js` javascript file to the application, you can check for the user's consent status through the API endpoints provided by the `__cmpapi` object:
 
 ```js
 var CMP_VENDOR_ID = 4040; // custom vendor id to store AGTT-wide consent decision
-__tcfapi('getTCData', 2, function(tcData) {
+__cmpapi('getTCData', 2, function(tcData) {
   var isCmpEnabled = tcData.cmpStatus === 'loaded';
   if (!isCmpEnabled) {
     // do nothing, consent checking is unavailable
@@ -129,7 +131,7 @@ __tcfapi('getTCData', 2, function(tcData) {
 You can set the consent status for a user by executing to following API function:
 
 ```js
-__tcfapi('setConsent', 2, function() {
+__cmpapi('setConsent', 2, function() {
   // call returned successfully
 }, true); // set to false to revoke consent
 ```
@@ -142,7 +144,7 @@ By loading `/v2/banner.js` (besides `/v2/cmp.js`) an additional API is available
 <script src="{HOST_URL}/v2/banner.js?channelId=1234"></script>
 ```
 
-This will expose `window.__cbapi()`, which allows for controlling the display of a consent banner. The `__cbapi` method has the same call signature as `__tcfapi`:
+This will expose `window.__cbapi()`, which allows for controlling the display of a consent banner. The `__cbapi` method has the same call signature as `__cmpapi`:
 
 ```js
 __cbapi(method, version, callback?, parameter?)
@@ -168,7 +170,7 @@ var isShowingBanner = true;
 __cbapi('showBanner', 2, function(consent) {
   // user has closed the banner by remote control or the banner timeout was reached
   if (consentDecision === true || consentDecision === false) {
-    __tcfapi('setConsent', 2, undefined, consentDecision);
+    __cmpapi('setConsent', 2, undefined, consentDecision);
   }
   isShowingBanner = false;
 });

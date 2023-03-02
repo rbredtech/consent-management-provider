@@ -1,6 +1,6 @@
 var logCallback;
 
-window.__tcfapi = function (command, version, callback, parameter) {
+window.__cmpapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
 
   var hasConsent = '<%-TC_CONSENT%>' === 'undefined' ? undefined : '<%-TC_CONSENT%>' === 'true';
@@ -131,3 +131,6 @@ window.__tcfapi = function (command, version, callback, parameter) {
       break;
   }
 };
+
+// fallback for old __tcfapi implementation
+window.__tcfapi = window.__cmpapi;

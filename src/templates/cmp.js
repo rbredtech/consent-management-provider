@@ -2,11 +2,14 @@
   var queue = [];
   var logEntries = [];
 
-  window.__tcfapi = function (command, version, callback, parameter) {
+  window.__cmpapi = function (command, version, callback, parameter) {
     queue[queue.length] = Array.prototype.slice.call(arguments, 0);
   };
 
-  window.__tcfapi('onLogEvent', 2, function () {
+  // fallback for old __tcfapi implementation
+  window.__tcfapi = window.__cmpapi;
+
+  window.__cmpapi('onLogEvent', 2, function () {
     logEntries[logEntries.length] = Array.prototype.slice.call(arguments, 0);
   });
 
@@ -39,7 +42,7 @@
 
     for (var i = 0; i < queue.length; i++) {
       var f = queue[i];
-      window.__tcfapi.apply(null, f.slice(0));
+      window.__cmpapi.apply(null, f.slice(0));
     }
 
     queue = [];
@@ -65,7 +68,7 @@
   }
 
   function log(event, success, parameters) {
-    window.__tcfapi('log', 2, function () {}, JSON.stringify({ event: event, parameters: parameters }));
+    window.__cmpapi('log', 2, function () {}, JSON.stringify({ event: event, parameters: parameters }));
   }
 
   function isIframeCapable() {
@@ -98,13 +101,16 @@
     iframe.onload = function () {
       if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
         iframe.parentElement.removeChild(iframe);
-        loadTcfapi(3);
+        loadCmpApi(3);
         return;
       }
 
-      window.__tcfapi = function (command, version, callback, parameter) {
+      window.__cmpapi = function (command, version, callback, parameter) {
         message('cmd', command, version, callback, parameter);
       };
+
+      // fallback for old __tcfapi implementation
+      window.__tcfapi = window.__cmpapi;
 
       window.addEventListener(
         'message',
@@ -156,7 +162,7 @@
     body.appendChild(iframe);
   }
 
-  function createTcfapiScriptTag() {
+  function createCmpApiScriptTag() {
     var techCookieTimestamp = '<%-TECH_COOKIE_TIMESTAMP%>';
     var hasConsent = null;
 
@@ -170,28 +176,28 @@
       }
     }
 
-    var tcfapiScriptTag = document.createElement('script');
-    tcfapiScriptTag.setAttribute('type', 'text/javascript');
-    tcfapiScriptTag.setAttribute(
+    var cmpapiScriptTag = document.createElement('script');
+    cmpapiScriptTag.setAttribute('type', 'text/javascript');
+    cmpapiScriptTag.setAttribute(
       'src',
-      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi.js?<%-TECH_COOKIE_NAME%>=' +
+      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
         techCookieTimestamp +
         (hasConsent !== null ? '&consent=' + hasConsent : '') +
         (channelId !== '' ? '&channelId=' + channelId : ''),
     );
 
-    tcfapiScriptTag.onload = function () {
+    cmpapiScriptTag.onload = function () {
       onAPILoaded('3rdparty');
     };
 
-    tcfapiScriptTag.onerror = function () {
+    cmpapiScriptTag.onerror = function () {
       log('loaded', false, { type: '3rdparty' });
     };
 
-    return tcfapiScriptTag;
+    return cmpapiScriptTag;
   }
 
-  function loadTcfapi(retriesLeft) {
+  function loadCmpApi(retriesLeft) {
     if (retriesLeft < 0) {
       return;
     }
@@ -199,18 +205,18 @@
     var head = document.getElementsByTagName('head')[0];
     if (!head) {
       setTimeout(function () {
-        loadTcfapi(retriesLeft - 1);
+        loadCmpApi(retriesLeft - 1);
       }, 100);
       return;
     }
 
-    var tcfapiScriptTag = createTcfapiScriptTag();
-    head.appendChild(tcfapiScriptTag);
+    var cmpapiScriptTag = createCmpApiScriptTag();
+    head.appendChild(cmpapiScriptTag);
   }
 
   if (isIframeCapable()) {
     loadIframe(3);
   } else {
-    loadTcfapi(3);
+    loadCmpApi(3);
   }
 })();
