@@ -31,7 +31,7 @@
     document.getElementsByTagName('head')[0].appendChild(trackingScriptTag);
   };
 
-  window.__tcfapi('getTCData', 2, function (tcData) {
+  window.__cmpapi('getTCData', 2, function (tcData) {
     initTracking(tcData.vendor.consents['<%-CMP_ID%>']);
   });
 })();

@@ -6,9 +6,6 @@ on:
       - "feature/*"
       - "release/*"
       - "hotfix/*"
-    paths-ignore:
-      - "examples/**"
-      - "README.md"
 
 jobs:
   build-and-test:

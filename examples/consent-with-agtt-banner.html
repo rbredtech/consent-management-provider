@@ -11,10 +11,10 @@
     //<![CDATA[
     var isShowingBanner = false;
 
-    // when banner is closed, __tcfapi is used to save the user's consent decision
+    // when banner is closed, __cmpapi is used to save the user's consent decision
     function bannerClosedCallback(consentDecision) {
       if (consentDecision === true || consentDecision === false) {
-        window.__tcfapi('setConsent', 2, function (consent) {
+        window.__cmpapi('setConsent', 2, function (consent) {
           if (consent === true) {
             console.log('Consent accepted');
           }
@@ -58,7 +58,7 @@
 
     // we load consent data on page load and show the banner if no consent decision is saved yet
     var CMP_VENDOR_ID = 4040;
-    window.__tcfapi('getTCData', 2, function (tcData) {
+    window.__cmpapi('getTCData', 2, function (tcData) {
       if (tcData.cmpStatus === 'loaded') {
         var consent = tcData.vendor.consents[CMP_VENDOR_ID];
         if (consent === undefined) {

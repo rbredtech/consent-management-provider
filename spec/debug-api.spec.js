@@ -23,7 +23,7 @@ describe("Debug API", () => {
       await page.evaluate(() => {
         return new Promise((resolve) => {
           window.callbackQueue = [];
-          window.__tcfapi("onLogEvent", 2, function (params) {
+          window.__cmpapi("onLogEvent", 2, function (params) {
             window.callbackQueue.push(params);
           });
           resolve();
@@ -36,7 +36,7 @@ describe("Debug API", () => {
       beforeAll(async () => {
         await page.evaluate(() => {
           return new Promise((resolve) => {
-            window.__tcfapi("getTCData", 2, resolve);
+            window.__cmpapi("getTCData", 2, resolve);
           });
         });
         await wait(100);
@@ -75,7 +75,7 @@ describe("Debug API", () => {
           consentCookieLoaded = page.waitForResponse((response) => response.url().includes("set-consent"));
           await page.evaluate(() => {
             return new Promise((resolve) => {
-              window.__tcfapi("setConsent", 2, resolve, false);
+              window.__cmpapi("setConsent", 2, resolve, false);
             });
           });
           await consentCookieLoaded;

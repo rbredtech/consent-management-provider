@@ -9,7 +9,7 @@
   <script type='text/javascript' src='http://localhost:4000/v2/banner.js?channelId=0'></script>
   <script>
     //<![CDATA[
-    window.__tcfapi('onLogEvent', 2, function ({ event, success, parameters, ts }) {
+    window.__cmpapi('onLogEvent', 2, function ({ event, success, parameters, ts }) {
       console.warn("logEvent", event, success, parameters, ts);
     });
 
@@ -17,7 +17,7 @@
 
     function bannerClosedCallback(consentDecision) {
       if (consentDecision === true || consentDecision === false) {
-        window.__tcfapi('setConsent', 2, function (consent) {
+        window.__cmpapi('setConsent', 2, function (consent) {
           if (consent === true) {
             console.log('Consent accepted');
           }
@@ -60,7 +60,7 @@
     window.addEventListener('keydown', keyHandler);
 
     var CMP_VENDOR_ID = 4040;
-    window.__tcfapi('getTCData', 2, function (tcData) {
+    window.__cmpapi('getTCData', 2, function (tcData) {
       if (tcData.cmpStatus === 'loaded') {
         var consent = tcData.vendor.consents[CMP_VENDOR_ID];
         if (consent === undefined) {

@@ -9,8 +9,8 @@ import {
   iframeController,
   removeConsentController,
   setConsentController,
-  tcfapiController,
-  tcfapiInnerController,
+  cmpapiController,
+  cmpapiIframeController,
 } from "./controller";
 
 import { loggerMiddleware, techCookieMiddleware, channelMiddleware } from "./middleware";
@@ -29,7 +29,7 @@ router.get("/cmp-with-tracking.js", cmpWithTrackingController);
 router.get("/iframe.html", iframeController);
 router.get("/remove-consent", removeConsentController);
 router.get("/set-consent", setConsentController);
-router.get("/tcfapi.js", tcfapiController);
-router.get("/tcfapi-inner.js", tcfapiInnerController);
+router.get("/cmpapi.js", cmpapiController);
+router.get("/cmpapi-iframe.js", cmpapiIframeController);
 
 export default router;

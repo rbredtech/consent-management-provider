@@ -1,7 +1,7 @@
 (function () {
   var queue = [];
 
-  window.__tcfapi = function () {
+  window.__cmpapi = function () {
     queue[queue.length] = arguments;
   };
 
@@ -14,7 +14,7 @@
 
   function callQueue() {
     for (var i = 0; i < queue.length; i++) {
-      window.__tcfapi.apply(null, queue[i]);
+      window.__cmpapi.apply(null, queue[i]);
     }
 
     queue = [];
@@ -34,7 +34,7 @@
   }
 
   function log(event, success, parameters) {
-    window.__tcfapi(
+    window.__cmpapi(
       'log',
       2,
       function () {},
@@ -72,13 +72,16 @@
     iframe.onload = function () {
       if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
         iframe.parentElement.removeChild(iframe);
-        loadTcfapi(3);
+        loadCmpApi(3);
         return;
       }
 
-      window.__tcfapi = function (command, version, callback, parameter) {
+      window.__cmpapi = function (command, version, callback, parameter) {
         message('cmd', command, version, callback, parameter);
       };
+
+      // fallback for old __tcfapi implementation
+      window.__tcfapi = window.__cmpapi;
 
       function onMessage(event) {
         if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
@@ -123,7 +126,7 @@
     body.appendChild(iframe);
   }
 
-  function createTcfapiScriptTag() {
+  function createCmpApiScriptTag() {
     var techCookieTimestamp = '<%-TECH_COOKIE_TIMESTAMP%>';
     var hasConsent = null;
 
@@ -137,28 +140,28 @@
       }
     }
 
-    var tcfapiScriptTag = document.createElement('script');
-    tcfapiScriptTag.setAttribute('type', 'text/javascript');
-    tcfapiScriptTag.setAttribute(
+    var cmpapiScriptTag = document.createElement('script');
+    cmpapiScriptTag.setAttribute('type', 'text/javascript');
+    cmpapiScriptTag.setAttribute(
       'src',
-      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi.js?<%-TECH_COOKIE_NAME%>=' +
+      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
         techCookieTimestamp +
         (hasConsent !== null ? '&consent=' + hasConsent : '') +
         (channelId !== '' ? '&channelId=' + channelId : ''),
     );
 
-    tcfapiScriptTag.onload = function () {
+    cmpapiScriptTag.onload = function () {
       onAPILoaded('3rdparty');
     };
 
-    tcfapiScriptTag.onerror = function () {
+    cmpapiScriptTag.onerror = function () {
       log('loaded', false, { type: '3rdparty' });
     };
 
-    return tcfapiScriptTag;
+    return cmpapiScriptTag;
   }
 
-  function loadTcfapi(retriesLeft) {
+  function loadCmpApi(retriesLeft) {
     if (retriesLeft < 0) {
       return;
     }
@@ -166,18 +169,18 @@
     var head = document.getElementsByTagName('head')[0];
     if (!head) {
       setTimeout(function () {
-        loadTcfapi(retriesLeft - 1);
+        loadCmpApi(retriesLeft - 1);
       }, 100);
       return;
     }
 
-    var tcfapiScriptTag = createTcfapiScriptTag();
-    head.appendChild(tcfapiScriptTag);
+    var cmpapiScriptTag = createCmpApiScriptTag();
+    head.appendChild(cmpapiScriptTag);
   }
 
   if (isIframeCapable()) {
     loadIframe(3);
   } else {
-    loadTcfapi(3);
+    loadCmpApi(3);
   }
 })();
