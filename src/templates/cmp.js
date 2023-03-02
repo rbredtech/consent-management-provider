@@ -1,31 +1,11 @@
 (function () {
   var queue = [];
-  var logEntries = [];
 
-  window.__tcfapi = function (command, version, callback, parameter) {
-    queue[queue.length] = Array.prototype.slice.call(arguments, 0);
+  window.__tcfapi = function () {
+    queue[queue.length] = arguments;
   };
 
-  window.__tcfapi('onLogEvent', 2, function () {
-    logEntries[logEntries.length] = Array.prototype.slice.call(arguments, 0);
-  });
-
   var channelId = '<%-CHANNEL_ID%>';
-
-  function logQueue() {
-    if (!logEntries.length || logCallbackIndex < 0) {
-      return;
-    }
-
-    for (var i = 0; i < logEntries.length; i++) {
-      var f = logEntries[i];
-      if (callbackMap[logCallbackIndex]) {
-        callbackMap[logCallbackIndex][0](f[0]);
-      }
-    }
-
-    logEntries = [];
-  }
 
   function onAPILoaded(type) {
     callQueue();
@@ -33,13 +13,8 @@
   }
 
   function callQueue() {
-    if (!queue.length) {
-      return;
-    }
-
     for (var i = 0; i < queue.length; i++) {
-      var f = queue[i];
-      window.__tcfapi.apply(null, f.slice(0));
+      window.__tcfapi.apply(null, queue[i]);
     }
 
     queue = [];
@@ -47,16 +22,10 @@
 
   var callbackCount = 0;
   var callbackMap = {};
-  var logCallbackIndex = -1;
   var iframe;
 
   function message(type, command, version, callback, parameter) {
-    callbackMap[++callbackCount] = [callback];
-
-    if (command === 'onLogEvent') {
-      logCallbackIndex = callbackCount;
-      logQueue();
-    }
+    callbackMap[++callbackCount] = callback;
 
     var message =
       callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
@@ -65,7 +34,12 @@
   }
 
   function log(event, success, parameters) {
-    window.__tcfapi('log', 2, function () {}, JSON.stringify({ event: event, parameters: parameters }));
+    window.__tcfapi(
+      'log',
+      2,
+      function () {},
+      JSON.stringify({ event: event, success: success, parameters: parameters }),
+    );
   }
 
   function isIframeCapable() {
@@ -106,28 +80,21 @@
         message('cmd', command, version, callback, parameter);
       };
 
-      window.addEventListener(
-        'message',
-        function (event) {
-          if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
-            return;
-          }
+      function onMessage(event) {
+        if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
+          return;
+        }
 
-          var message = event.data.split(';');
-          var position = 0;
-          var id = message[position];
-          if (!callbackMap[id] || !callbackMap[id][position]) {
-            return;
-          }
-          var callback = callbackMap[id][position];
-          if (logCallbackIndex + '' !== id) delete callbackMap[id];
-          if (callback) {
-            var callbackParameter = JSON.parse(message[++position]);
-            callback(callbackParameter.param);
-          }
-        },
-        false,
-      );
+        var message = event.data.split(';');
+        var id = message[0];
+        var callbackParameter = JSON.parse(message[1]);
+        if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
+          return;
+        }
+        callbackMap[id](callbackParameter.param);
+      }
+
+      window.addEventListener('message', onMessage);
 
       onAPILoaded('iframe');
     };
