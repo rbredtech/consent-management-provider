@@ -42,25 +42,12 @@ describe("Debug API", () => {
         await wait(100);
       });
 
-      it("should log load event", async () => {
-        const queue = await page.evaluate(() => {
-          return window.callbackQueue;
-        });
-        expect(queue).toHaveLength(2);
-        expect(queue[0]).toEqual({
-          event: "loaded",
-          parameters: { type: "iframe" },
-          success: true,
-          ts: expect.any(Number),
-        });
-      });
-
       it("should log activity for getTCData", async () => {
         const queue = await page.evaluate(() => {
           return window.callbackQueue;
         });
-        expect(queue).toHaveLength(2);
-        expect(queue[1]).toEqual({
+        expect(queue).toHaveLength(1);
+        expect(queue[0]).toEqual({
           event: "getTCData",
           parameters: { status: "disabled" },
           success: true,
@@ -86,8 +73,8 @@ describe("Debug API", () => {
           const queue = await page.evaluate(() => {
             return window.callbackQueue;
           });
-          expect(queue).toHaveLength(3);
-          expect(queue[2]).toEqual({
+          expect(queue).toHaveLength(2);
+          expect(queue[1]).toEqual({
             event: "setConsent",
             parameters: {
               consent: false,

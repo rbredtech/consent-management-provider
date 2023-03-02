@@ -1,26 +1,39 @@
 (function () {
   var queue = [];
+  var onLogEventQueue = [];
 
   window.__cmpapi = function () {
-    queue[queue.length] = arguments;
+    var args = Array.prototype.slice.call(arguments, 0);
+    if (args[0] === 'onLogEvent') {
+      onLogEventQueue[onLogEventQueue.length] = args;
+    } else {
+      queue[queue.length] = args;
+    }
   };
 
   // fallback for old __tcfapi implementation
   window.__tcfapi = window.__cmpapi;
 
-  var channelId = '<%-CHANNEL_ID%>';
-
-  function onAPILoaded(type) {
-    callQueue();
-    log('loaded', true, { type: type });
+  function log(event, success, parameters) {
+    window.__cmpapi('log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
   }
 
-  function callQueue() {
+  function callQueue(type) {
+    for (var x = 0; x < onLogEventQueue.length; x++) {
+      window.__cmpapi.apply(null, onLogEventQueue[x]);
+    }
+    onLogEventQueue = [];
+
+    log('loaded', true, { type: type });
+
     for (var i = 0; i < queue.length; i++) {
       window.__cmpapi.apply(null, queue[i]);
     }
-
     queue = [];
+  }
+
+  function onAPILoaded(type) {
+    callQueue(type);
   }
 
   var callbackCount = 0;
@@ -29,21 +42,11 @@
 
   function message(type, command, version, callback, parameter) {
     callbackMap[++callbackCount] = callback;
-
-    var message =
-      callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
-
-    iframe.contentWindow.postMessage(message, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
+    var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
+    iframe.contentWindow.postMessage(msg, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
   }
 
-  function log(event, success, parameters) {
-    window.__cmpapi(
-      'log',
-      2,
-      function () {},
-      JSON.stringify({ event: event, success: success, parameters: parameters }),
-    );
-  }
+  var channelId = '<%-CHANNEL_ID%>';
 
   function isIframeCapable() {
     var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
