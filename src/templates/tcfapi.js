@@ -91,7 +91,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       localStorageAvailable = false;
       image.src =
         '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consent=' +
-        (String(parameter) === 'true' ? 1 : 0) +
+        (parameter + '' === 'true' ? 1 : 0) +
         (channelId !== '' ? '&channelId=' + channelId : '');
       if (window.localStorage && localStorage.setItem) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
@@ -107,7 +107,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
         log(logEvents.SET_CONSENT, false, {});
       };
       !!callback && callback(parameter);
-      onConsent(String(parameter) === 'true');
+      onConsent(parameter + '' === 'true');
       break;
     case 'removeConsentDecision':
       image = document.createElement('img');
@@ -132,7 +132,7 @@ window.__tcfapi = function (command, version, callback, parameter) {
       if (parameter) {
         var logParameters = JSON.parse(parameter);
         if (logParameters && logParameters.event) {
-          log(logParameters.event, true, logParameters.parameters);
+          log(logParameters.event, !!logParameters.success, logParameters.parameters);
         }
       }
       break;

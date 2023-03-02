@@ -70,7 +70,12 @@
   }
 
   function log(event, success, parameters) {
-    window.__tcfapi('log', 2, function () {}, JSON.stringify({ event: event, parameters: parameters }));
+    window.__tcfapi(
+      'log',
+      2,
+      function () {},
+      JSON.stringify({ event: event, success: success, parameters: parameters }),
+    );
   }
 
   function isIframeCapable() {
@@ -242,7 +247,24 @@
         '/' +
         Date.now() +
         '/consent.gif?consent=' +
-        String(consent);
+        consent;
+
+      image.onload = function () {
+        window.__tcfapi(
+          'log',
+          2,
+          undefined,
+          '{"event":"onConsent","success":true,"parameters":{"consent":' + consent + '}}',
+        );
+      };
+      image.onerror = function () {
+        window.__tcfapi(
+          'log',
+          2,
+          undefined,
+          '{"event":"onConsent","success":false,"parameters":{"consent":' + consent + '}}',
+        );
+      };
     });
   }
 
