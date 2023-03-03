@@ -23,10 +23,6 @@
   <script type='text/javascript' src='http://localhost:4000/v2/banner.js?channelId=0'></script>
   <script>
     //<![CDATA[
-    window.__tcfapi('onLogEvent', 2, function ({ event, success, parameters, ts }) {
-      console.warn("logEvent", event, success, parameters, ts);
-    });
-
     var isShowingBanner = false;
 
     function bannerClosedCallback(consentDecision) {
@@ -87,6 +83,10 @@
           console.log("Consent already declined");
         }
       }
+    });
+
+    window.__cmpapi('onLogEvent', 2, function ({ event, success, parameters, ts }) {
+      console.warn("logEvent", event, success, parameters, ts);
     });
     //]]>
   </script>
