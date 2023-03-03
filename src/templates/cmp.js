@@ -48,7 +48,6 @@
   var callbackCount = 0;
   var callbackMap = {};
   var logCallbackIndex = -1;
-  var onConsentCallbackIndex = -1;
   var iframe;
 
   function message(type, command, version, callback, parameter) {
@@ -57,10 +56,6 @@
     if (command === 'onLogEvent') {
       logCallbackIndex = callbackCount;
       logQueue();
-    }
-
-    if (command === 'onConsent') {
-      onConsentCallbackIndex = callbackCount;
     }
 
     var message =
@@ -130,7 +125,7 @@
             return;
           }
           var callback = callbackMap[id][position];
-          if (logCallbackIndex + '' !== id && onConsentCallbackIndex + '' !== id) delete callbackMap[id];
+          if (logCallbackIndex + '' !== id) delete callbackMap[id];
           if (callback) {
             var callbackParameter = JSON.parse(message[++position]);
             callback(callbackParameter.param);
@@ -240,35 +235,21 @@
     __hbb_tracking_tgt.getDID(function (deviceId) {
       var image = document.createElement('img');
       image.src =
-        '<%-TRACKING_PROTOCOL%>://' +
-        (consent ? '<%-TRACKING_HOST_CONSENT%>' : '<%-TRACKING_HOST_NO_CONSENT%>') +
-        '/<%-TRACKING_VERSION%>/consent-status/' +
+        '<%-SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL%>/' +
         deviceId +
         '/' +
         Date.now() +
         '/consent.gif?consent=' +
         consent;
-
-      image.onload = function () {
-        window.__tcfapi(
-          'log',
-          2,
-          undefined,
-          '{"event":"onConsent","success":true,"parameters":{"consent":' + consent + '}}',
-        );
-      };
-      image.onerror = function () {
-        window.__tcfapi(
-          'log',
-          2,
-          undefined,
-          '{"event":"onConsent","success":false,"parameters":{"consent":' + consent + '}}',
-        );
-      };
     });
   }
 
-  window.__tcfapi('onConsent', 2, function (consent) {
+  window.__tcfapi('onLogEvent', 2, function (log) {
+    var consent = undefined;
+    if (log.success === true && (log.event === 'getTCData' || log.event === 'setConsent')) {
+      consent = log.parameters.consent;
+    }
+
     if (consent !== undefined) {
       try {
         sendDeviceId(consent, 3);
