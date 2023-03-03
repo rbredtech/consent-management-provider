@@ -5,6 +5,20 @@
   <meta http-equiv='content-type' content='application/vnd.hbbtv.xhtml+xml; charset=utf-8'>
   </meta>
   <title>Consent Management Test</title>
+  <script>
+    //<![CDATA[
+    // tracking script api mock with delayed availability
+    window.setTimeout(function () {
+      window.__hbb_tracking_tgt = {
+        getDID: function (callback) {
+          if (typeof callback === 'function') {
+            callback('TEST_DID');
+          }
+        }
+      }
+    }, 200);
+    //]]>
+  </script>
   <script type='text/javascript' src='http://localhost:4000/v2/cmp.js?channelId=0'></script>
   <script type='text/javascript' src='http://localhost:4000/v2/banner.js?channelId=0'></script>
   <script>

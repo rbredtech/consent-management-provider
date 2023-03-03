@@ -38,7 +38,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
         callback({
           gdprApplies: true,
           cmpLoaded: true,
-          cmpStatus: 'loaded',
+          cmpStatus: '<%-CMP_STATUS%>',
           displayStatus: 'hidden',
           apiVersion: '2.0',
           cmpVersion: 1,

@@ -23,7 +23,7 @@ describe("Consent Management is loaded", () => {
       apiVersion: "2.0",
       cmpId: 4040,
       cmpLoaded: true,
-      cmpStatus: "loaded",
+      cmpStatus: "disabled",
       cmpVersion: 1,
       displayStatus: "hidden",
       gdprApplies: true,
