@@ -17,7 +17,7 @@ describe("API is called right after loading", () => {
   beforeAll(async () => {
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     await pageHelper.initLoader(page);
-    apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 1, resolve)}))`);
+    apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 1, resolve)}))`);
   });
 
   test("Callback is eventually called", () => {

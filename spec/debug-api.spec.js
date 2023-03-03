@@ -23,7 +23,7 @@ describe("Debug API", () => {
       await page.evaluate(() => {
         return new Promise((resolve) => {
           window.callbackQueue = [];
-          window.__tcfapi("onLogEvent", 2, function (params) {
+          window.__cmpapi("onLogEvent", 2, function (params) {
             window.callbackQueue.push(params);
           });
           resolve();
@@ -36,7 +36,7 @@ describe("Debug API", () => {
       beforeAll(async () => {
         await page.evaluate(() => {
           return new Promise((resolve) => {
-            window.__tcfapi("getTCData", 2, resolve);
+            window.__cmpapi("getTCData", 2, resolve);
           });
         });
         await wait(100);
@@ -75,7 +75,7 @@ describe("Debug API", () => {
           consentCookieLoaded = page.waitForResponse((response) => response.url().includes("set-consent"));
           await page.evaluate(() => {
             return new Promise((resolve) => {
-              window.__tcfapi("setConsent", 2, resolve, false);
+              window.__cmpapi("setConsent", 2, resolve, false);
             });
           });
           await consentCookieLoaded;
@@ -93,6 +93,46 @@ describe("Debug API", () => {
               consent: false,
               localStorageAvailable: true,
             },
+            success: true,
+            ts: expect.any(Number),
+          });
+        });
+      });
+
+      describe("and a second debug listener is added", () => {
+        beforeAll(async () => {
+          await page.evaluate(() => {
+            return new Promise((resolve) => {
+              window.__cmpapi("onLogEvent", 2, function (params) {
+                window.callbackQueue.push(params);
+              });
+              resolve();
+            });
+          });
+          await wait(100);
+
+          await page.evaluate(() => {
+            return new Promise((resolve) => {
+              window.__cmpapi("getTCData", 2, resolve);
+            });
+          });
+          await wait(100);
+        });
+
+        it("should log activity for getTCData twice", async () => {
+          const queue = await page.evaluate(() => {
+            return window.callbackQueue;
+          });
+          expect(queue).toHaveLength(5);
+          expect(queue[3]).toEqual({
+            event: "getTCData",
+            parameters: { status: "disabled", consent: false },
+            success: true,
+            ts: expect.any(Number),
+          });
+          expect(queue[4]).toEqual({
+            event: "getTCData",
+            parameters: { status: "disabled", consent: false },
             success: true,
             ts: expect.any(Number),
           });

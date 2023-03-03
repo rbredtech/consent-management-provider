@@ -15,7 +15,7 @@
           var cmd = message[2];
           var version = message[3];
           var param = JSON.parse(message[4]);
-          __tcfapi(
+          __cmpapi(
             cmd,
             version,
             function (cbParam) {
