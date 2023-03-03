@@ -1,4 +1,4 @@
-var logCallback;
+var logCallbacks = [];
 
 window.__cmpapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
@@ -22,8 +22,10 @@ window.__cmpapi = function (command, version, callback, parameter) {
   };
 
   function log(event, success, parameters) {
-    if (logCallback) {
-      logCallback({ event: event, success: success, parameters: parameters, ts: Date.now() });
+    for (var i = 0; i < logCallbacks.length; i++) {
+      if (logCallbacks[i] && typeof logCallbacks[i] === 'function') {
+        logCallbacks[i]({ event: event, success: success, parameters: parameters, ts: Date.now() });
+      }
     }
   }
 
@@ -79,16 +81,19 @@ window.__cmpapi = function (command, version, callback, parameter) {
       log(logEvents.GET_TC_DATA, true, { status: '<%-CMP_STATUS%>', consent: hasConsent });
       break;
     case 'setConsent':
-      image = document.createElement('img');
       localStorageAvailable = false;
+
+      image = document.createElement('img');
       image.src =
         '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consent=' +
-        (String(parameter) === 'true' ? 1 : 0) +
+        (parameter + '' === 'true' ? 1 : 0) +
         (channelId !== '' ? '&channelId=' + channelId : '');
+
       if (window.localStorage && localStorage.setItem) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
         localStorageAvailable = true;
       }
+
       image.onload = function () {
         log(logEvents.SET_CONSENT, true, {
           consent: parameter,
@@ -98,32 +103,36 @@ window.__cmpapi = function (command, version, callback, parameter) {
       image.onerror = function () {
         log(logEvents.SET_CONSENT, false, {});
       };
+
       !!callback && callback(parameter);
       break;
     case 'removeConsentDecision':
-      image = document.createElement('img');
       localStorageAvailable = false;
+
+      image = document.createElement('img');
       image.src = '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent';
       if (window.localStorage && localStorage.removeItem) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
         localStorageAvailable = true;
       }
+
       image.onload = function () {
         log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
       };
       image.onerror = function () {
         log(logEvents.REMOVE_CONSENT_DECISION, false, {});
       };
+
       !!callback && callback();
       break;
     case 'onLogEvent':
-      logCallback = callback;
+      logCallbacks[logCallbacks.length] = callback;
       break;
     case 'log':
       if (parameter) {
         var logParameters = JSON.parse(parameter);
         if (logParameters && logParameters.event) {
-          log(logParameters.event, true, logParameters.parameters);
+          log(logParameters.event, !!logParameters.success, logParameters.parameters);
         }
       }
       break;

@@ -1,75 +1,52 @@
 (function () {
   var queue = [];
-  var logEntries = [];
+  var onLogEventQueue = [];
 
-  window.__cmpapi = function (command, version, callback, parameter) {
-    queue[queue.length] = Array.prototype.slice.call(arguments, 0);
+  window.__cmpapi = function () {
+    var args = Array.prototype.slice.call(arguments, 0);
+    if (args[0] === 'onLogEvent') {
+      onLogEventQueue[onLogEventQueue.length] = args;
+    } else {
+      queue[queue.length] = args;
+    }
   };
 
   // fallback for old __tcfapi implementation
   window.__tcfapi = window.__cmpapi;
 
-  window.__cmpapi('onLogEvent', 2, function () {
-    logEntries[logEntries.length] = Array.prototype.slice.call(arguments, 0);
-  });
+  function log(event, success, parameters) {
+    window.__cmpapi('log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
+  }
 
-  var channelId = '<%-CHANNEL_ID%>';
-
-  function logQueue() {
-    if (!logEntries.length || logCallbackIndex < 0) {
-      return;
+  function callQueue(type) {
+    for (var x = 0; x < onLogEventQueue.length; x++) {
+      window.__cmpapi.apply(null, onLogEventQueue[x]);
     }
+    onLogEventQueue = [];
 
-    for (var i = 0; i < logEntries.length; i++) {
-      var f = logEntries[i];
-      if (callbackMap[logCallbackIndex]) {
-        callbackMap[logCallbackIndex][0](f[0]);
-      }
+    log('loaded', true, { type: type });
+
+    for (var i = 0; i < queue.length; i++) {
+      window.__cmpapi.apply(null, queue[i]);
     }
-
-    logEntries = [];
+    queue = [];
   }
 
   function onAPILoaded(type) {
-    callQueue();
-    log('loaded', true, { type: type });
-  }
-
-  function callQueue() {
-    if (!queue.length) {
-      return;
-    }
-
-    for (var i = 0; i < queue.length; i++) {
-      var f = queue[i];
-      window.__cmpapi.apply(null, f.slice(0));
-    }
-
-    queue = [];
+    callQueue(type);
   }
 
   var callbackCount = 0;
   var callbackMap = {};
-  var logCallbackIndex = -1;
   var iframe;
 
   function message(type, command, version, callback, parameter) {
-    callbackMap[++callbackCount] = [callback];
-
-    if (command === 'onLogEvent') {
-      logCallbackIndex = callbackCount;
-      logQueue();
-    }
-
-    var message =
-      callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
-
-    iframe.contentWindow.postMessage(message, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
+    callbackMap[++callbackCount] = callback;
+    var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
+    iframe.contentWindow.postMessage(msg, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
   }
 
-  function log(event, success, parameters) {
-    window.__cmpapi('log', 2, function () {}, JSON.stringify({ event: event, parameters: parameters }));
-  }
+  var channelId = '<%-CHANNEL_ID%>';
 
   function isIframeCapable() {
     var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
@@ -112,28 +89,21 @@
       // fallback for old __tcfapi implementation
       window.__tcfapi = window.__cmpapi;
 
-      window.addEventListener(
-        'message',
-        function (event) {
-          if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
-            return;
-          }
+      function onMessage(event) {
+        if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
+          return;
+        }
 
-          var message = event.data.split(';');
-          var position = 0;
-          var id = message[position];
-          if (!callbackMap[id] || !callbackMap[id][position]) {
-            return;
-          }
-          var callback = callbackMap[id][position];
-          if (logCallbackIndex + '' !== id) delete callbackMap[id];
-          if (callback) {
-            var callbackParameter = JSON.parse(message[++position]);
-            callback(callbackParameter.param);
-          }
-        },
-        false,
-      );
+        var message = event.data.split(';');
+        var id = message[0];
+        var callbackParameter = JSON.parse(message[1]);
+        if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
+          return;
+        }
+        callbackMap[id](callbackParameter.param);
+      }
+
+      window.addEventListener('message', onMessage);
 
       onAPILoaded('iframe');
     };

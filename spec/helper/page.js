@@ -1,5 +1,4 @@
 const puppeteer = require("puppeteer");
-const { wait } = require("./wait");
 
 const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
 const HTTP_PROTOCOL = process.env.HTTP_PROTOCOL || "http";
@@ -15,7 +14,6 @@ async function get() {
 }
 
 async function initLoader(page, channelId = undefined, withBanner = false) {
-  const isLoaded = page.waitForResponse((response) => response.url().includes("cmpapi"));
   await page.setContent(
     `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}/${API_VERSION}/cmp.js${
       channelId !== undefined ? "?channelId=" + channelId : ""
@@ -27,7 +25,7 @@ async function initLoader(page, channelId = undefined, withBanner = false) {
         : ""
     }`,
   );
-  await wait(500);
+  const isLoaded = page.waitForFunction(() => document.readyState === "complete");
   return isLoaded;
 }
 

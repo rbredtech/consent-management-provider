@@ -98,6 +98,46 @@ describe("Debug API", () => {
           });
         });
       });
+
+      describe("and a second debug listener is added", () => {
+        beforeAll(async () => {
+          await page.evaluate(() => {
+            return new Promise((resolve) => {
+              window.__cmpapi("onLogEvent", 2, function (params) {
+                window.callbackQueue.push(params);
+              });
+              resolve();
+            });
+          });
+          await wait(100);
+
+          await page.evaluate(() => {
+            return new Promise((resolve) => {
+              window.__cmpapi("getTCData", 2, resolve);
+            });
+          });
+          await wait(100);
+        });
+
+        it("should log activity for getTCData twice", async () => {
+          const queue = await page.evaluate(() => {
+            return window.callbackQueue;
+          });
+          expect(queue).toHaveLength(5);
+          expect(queue[3]).toEqual({
+            event: "getTCData",
+            parameters: { status: "disabled", consent: false },
+            success: true,
+            ts: expect.any(Number),
+          });
+          expect(queue[4]).toEqual({
+            event: "getTCData",
+            parameters: { status: "disabled", consent: false },
+            success: true,
+            ts: expect.any(Number),
+          });
+        });
+      });
     });
   });
 });
