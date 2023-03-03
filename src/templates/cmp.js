@@ -215,6 +215,10 @@
     });
   }
 
+  function waitForTrackingScriptAndSendDeviceId(consent) {
+    sendDeviceId(consent, 3);
+  }
+
   window.__tcfapi('onLogEvent', 2, function (log) {
     var consent = undefined;
     if (log.success === true && (log.event === 'getTCData' || log.event === 'setConsent')) {
@@ -223,7 +227,7 @@
 
     if (consent !== undefined) {
       try {
-        sendDeviceId(consent, 3);
+        waitForTrackingScriptAndSendDeviceId(consent);
       } catch (e) {}
     }
   });
