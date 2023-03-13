@@ -18,19 +18,19 @@ describe("Consent Management with Presto user agent", () => {
   });
 
   describe("Is loaded", () => {
-    let tcfapiJsLoaded;
+    let cmpapiJsLoaded;
 
     beforeAll(async () => {
-      tcfapiJsLoaded = page.waitForResponse((response) => response.url().includes("tcfapi.js"));
+      cmpapiJsLoaded = page.waitForResponse((response) => response.url().includes("cmpapi.js"));
       await pageHelper.initLoader(page);
     });
 
     test("Loads 3rd party version of API", async () => {
-      expect(await tcfapiJsLoaded).toBeDefined();
+      expect(await cmpapiJsLoaded).toBeDefined();
     });
 
     test("Storage status is enabled and consent is false", async () => {
-      const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('getTCData', 2, resolve)}))`);
+      const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 2, resolve)}))`);
 
       expect(apiResponse.cmpStatus).toBe("loaded");
       expect(apiResponse.vendor["consents"]).toBeDefined();

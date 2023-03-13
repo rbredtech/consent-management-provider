@@ -30,7 +30,7 @@ describe("Consent Management with banner", () => {
       await page.evaluate(function () {
         window.__cbapi("showBanner", 2, function (consentDecision) {
           if (typeof consentDecision === "boolean") {
-            window.__tcfapi("setConsent", 2, undefined, consentDecision);
+            window.__cmpapi("setConsent", 2, undefined, consentDecision);
           }
         });
       });
@@ -74,7 +74,7 @@ describe("Consent Management with banner", () => {
           await page.evaluate(function () {
             window.__cbapi("showBanner", 2, function (consentDecision) {
               if (typeof consentDecision === "boolean") {
-                window.__tcfapi("setConsent", 2, undefined, consentDecision);
+                window.__cmpapi("setConsent", 2, undefined, consentDecision);
               }
             });
           });

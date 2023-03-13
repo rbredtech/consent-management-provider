@@ -11,12 +11,12 @@ afterAll(async () => {
 }, 20000);
 
 describe("Consent Management with ServusTv channelId", () => {
-  let iframeResponse, tcfapiResponse;
+  let iframeResponse, cmpapiResponse;
 
   beforeAll(async () => {
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     iframeResponse = page.waitForResponse((response) => response.url().includes("iframe.html"));
-    tcfapiResponse = page.waitForResponse((response) => response.url().includes("tcfapi"));
+    cmpapiResponse = page.waitForResponse((response) => response.url().includes("cmpapi"));
     await pageHelper.initLoader(page, 0);
   });
 
@@ -24,14 +24,14 @@ describe("Consent Management with ServusTv channelId", () => {
     expect((await iframeResponse).url()).toContain("channelId=0");
   });
 
-  test("Passing through channelId for tcfapi request", async () => {
-    expect((await tcfapiResponse).url()).toContain("channelId=0");
+  test("Passing through channelId for cmpapi request", async () => {
+    expect((await cmpapiResponse).url()).toContain("channelId=0");
   });
 
   describe("When consent is set", () => {
     let setConsentResponse = beforeAll(async () => {
       setConsentResponse = page.waitForResponse((response) => response.url().includes("set-consent"));
-      await page.evaluate(`(new Promise((resolve)=>{window.__tcfapi('setConsent', 2, resolve, true);}))`);
+      await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('setConsent', 2, resolve, true);}))`);
     });
 
     test("Passing through channelId for setConsent request", async () => {

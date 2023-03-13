@@ -1,72 +1,52 @@
 (function () {
   var queue = [];
-  var logEntries = [];
+  var onLogEventQueue = [];
 
-  window.__tcfapi = function (command, version, callback, parameter) {
-    queue[queue.length] = Array.prototype.slice.call(arguments, 0);
+  window.__cmpapi = function () {
+    var args = Array.prototype.slice.call(arguments, 0);
+    if (args[0] === 'onLogEvent') {
+      onLogEventQueue[onLogEventQueue.length] = args;
+    } else {
+      queue[queue.length] = args;
+    }
   };
 
-  window.__tcfapi('onLogEvent', 2, function () {
-    logEntries[logEntries.length] = Array.prototype.slice.call(arguments, 0);
-  });
+  // fallback for old __tcfapi implementation
+  window.__tcfapi = window.__cmpapi;
 
-  var channelId = '<%-CHANNEL_ID%>';
+  function log(event, success, parameters) {
+    window.__cmpapi('log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
+  }
 
-  function logQueue() {
-    if (!logEntries.length || logCallbackIndex < 0) {
-      return;
+  function callQueue(type) {
+    for (var x = 0; x < onLogEventQueue.length; x++) {
+      window.__cmpapi.apply(null, onLogEventQueue[x]);
     }
+    onLogEventQueue = [];
 
-    for (var i = 0; i < logEntries.length; i++) {
-      var f = logEntries[i];
-      if (callbackMap[logCallbackIndex]) {
-        callbackMap[logCallbackIndex][0](f[0]);
-      }
+    log('loaded', true, { type: type });
+
+    for (var i = 0; i < queue.length; i++) {
+      window.__cmpapi.apply(null, queue[i]);
     }
-
-    logEntries = [];
+    queue = [];
   }
 
   function onAPILoaded(type) {
-    callQueue();
-    log('loaded', true, { type: type });
-  }
-
-  function callQueue() {
-    if (!queue.length) {
-      return;
-    }
-
-    for (var i = 0; i < queue.length; i++) {
-      var f = queue[i];
-      window.__tcfapi.apply(null, f.slice(0));
-    }
-
-    queue = [];
+    callQueue(type);
   }
 
   var callbackCount = 0;
   var callbackMap = {};
-  var logCallbackIndex = -1;
   var iframe;
 
   function message(type, command, version, callback, parameter) {
-    callbackMap[++callbackCount] = [callback];
-
-    if (command === 'onLogEvent') {
-      logCallbackIndex = callbackCount;
-      logQueue();
-    }
-
-    var message =
-      callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
-
-    iframe.contentWindow.postMessage(message, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
+    callbackMap[++callbackCount] = callback;
+    var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
+    iframe.contentWindow.postMessage(msg, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
   }
 
-  function log(event, success, parameters) {
-    window.__tcfapi('log', 2, function () {}, JSON.stringify({ event: event, parameters: parameters }));
-  }
+  var channelId = '<%-CHANNEL_ID%>';
 
   function isIframeCapable() {
     var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
@@ -92,42 +72,38 @@
       '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
         (channelId !== '' ? '?channelId=' + channelId : ''),
     );
-    iframe.setAttribute('style', 'border:0;outline:0;width:0;height:0;');
+    iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
 
     iframe.onload = function () {
       if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
         iframe.parentElement.removeChild(iframe);
-        loadTcfapi(3);
+        loadCmpApi(3);
         return;
       }
 
-      window.__tcfapi = function (command, version, callback, parameter) {
+      window.__cmpapi = function (command, version, callback, parameter) {
         message('cmd', command, version, callback, parameter);
       };
 
-      window.addEventListener(
-        'message',
-        function (event) {
-          if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
-            return;
-          }
+      // fallback for old __tcfapi implementation
+      window.__tcfapi = window.__cmpapi;
 
-          var message = event.data.split(';');
-          var position = 0;
-          var id = message[position];
-          if (!callbackMap[id] || !callbackMap[id][position]) {
-            return;
-          }
-          var callback = callbackMap[id][position];
-          if (logCallbackIndex + '' !== id) delete callbackMap[id];
-          if (callback) {
-            var callbackParameter = JSON.parse(message[++position]);
-            callback(callbackParameter.param);
-          }
-        },
-        false,
-      );
+      function onMessage(event) {
+        if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
+          return;
+        }
+
+        var message = event.data.split(';');
+        var id = message[0];
+        var callbackParameter = JSON.parse(message[1]);
+        if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
+          return;
+        }
+        callbackMap[id](callbackParameter.param);
+      }
+
+      window.addEventListener('message', onMessage);
 
       onAPILoaded('iframe');
     };
@@ -156,7 +132,7 @@
     body.appendChild(iframe);
   }
 
-  function createTcfapiScriptTag() {
+  function createCmpApiScriptTag() {
     var techCookieTimestamp = '<%-TECH_COOKIE_TIMESTAMP%>';
     var hasConsent = null;
 
@@ -170,28 +146,28 @@
       }
     }
 
-    var tcfapiScriptTag = document.createElement('script');
-    tcfapiScriptTag.setAttribute('type', 'text/javascript');
-    tcfapiScriptTag.setAttribute(
+    var cmpapiScriptTag = document.createElement('script');
+    cmpapiScriptTag.setAttribute('type', 'text/javascript');
+    cmpapiScriptTag.setAttribute(
       'src',
-      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/tcfapi.js?<%-TECH_COOKIE_NAME%>=' +
+      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
         techCookieTimestamp +
         (hasConsent !== null ? '&consent=' + hasConsent : '') +
         (channelId !== '' ? '&channelId=' + channelId : ''),
     );
 
-    tcfapiScriptTag.onload = function () {
+    cmpapiScriptTag.onload = function () {
       onAPILoaded('3rdparty');
     };
 
-    tcfapiScriptTag.onerror = function () {
+    cmpapiScriptTag.onerror = function () {
       log('loaded', false, { type: '3rdparty' });
     };
 
-    return tcfapiScriptTag;
+    return cmpapiScriptTag;
   }
 
-  function loadTcfapi(retriesLeft) {
+  function loadCmpApi(retriesLeft) {
     if (retriesLeft < 0) {
       return;
     }
@@ -199,18 +175,60 @@
     var head = document.getElementsByTagName('head')[0];
     if (!head) {
       setTimeout(function () {
-        loadTcfapi(retriesLeft - 1);
+        loadCmpApi(retriesLeft - 1);
       }, 100);
       return;
     }
 
-    var tcfapiScriptTag = createTcfapiScriptTag();
-    head.appendChild(tcfapiScriptTag);
+    var cmpapiScriptTag = createCmpApiScriptTag();
+    head.appendChild(cmpapiScriptTag);
   }
 
   if (isIframeCapable()) {
     loadIframe(3);
   } else {
-    loadTcfapi(3);
+    loadCmpApi(3);
   }
+
+  // send device ids
+  function sendDeviceId(consent, retriesLeft) {
+    if (retriesLeft < 0) {
+      return;
+    }
+
+    if (!__hbb_tracking_tgt || !__hbb_tracking_tgt.getDID) {
+      setTimeout(function () {
+        sendDeviceId(consent, retriesLeft - 1);
+      }, 100);
+      return;
+    }
+
+    __hbb_tracking_tgt.getDID(function (deviceId) {
+      var image = document.createElement('img');
+      image.src =
+        '<%-SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL%>/' +
+        deviceId +
+        '/' +
+        Date.now() +
+        '/consent.gif?consent=' +
+        consent;
+    });
+  }
+
+  function waitForTrackingScriptAndSendDeviceId(consent) {
+    sendDeviceId(consent, 3);
+  }
+
+  window.__tcfapi('onLogEvent', 2, function (log) {
+    var consent = undefined;
+    if (log.success === true && (log.event === 'getTCData' || log.event === 'setConsent')) {
+      consent = log.parameters.consent;
+    }
+
+    if (consent !== undefined) {
+      try {
+        waitForTrackingScriptAndSendDeviceId(consent);
+      } catch (e) {}
+    }
+  });
 })();
