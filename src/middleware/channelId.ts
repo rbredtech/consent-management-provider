@@ -60,6 +60,10 @@ const channelConfiguration = [
     name: "CANAL+ FIRST",
   },
   {
+    id: "3206",
+    name: "Laola1",
+  },
+  {
     id: "3300",
     name: "ProSieben Austria",
   },
