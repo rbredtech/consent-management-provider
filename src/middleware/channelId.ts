@@ -8,14 +8,6 @@ const channelConfiguration = [
     name: "ServusTV",
   },
   {
-    id: "2000",
-    name: "ServusTV - Digital",
-  },
-  {
-    id: "2002",
-    name: "ServusTV Digital Sport 1",
-  },
-  {
     id: "3100",
     name: "ORF1",
   },
@@ -30,10 +22,6 @@ const channelConfiguration = [
   {
     id: "3103",
     name: "ORF Sport+",
-  },
-  {
-    id: "3104",
-    name: "ORF On",
   },
   {
     id: "3200",
