@@ -27,8 +27,6 @@ opt-in/out ratio on a specific channel.
 - GET `/v2/cmp.js` - Returns the javascript bundle providing the `__cmpapi()` API for client side checking of consent status.
 - GET `/v2/banner.js` - Returns the javascript bundle providing the `__cbapi()` API for controlling the consent banner.
 
-There is an alias for `__cmpapi` in order to maintain backwards compatibility with implementations still using `__tcfapi`. All methods available via `__cmpapi` are also available via `__tcfapi`.
-
 ### __cmpapi methods
 
 Including the loader script into the application will expose the `window.__cmpapi()` method for client side checking of
