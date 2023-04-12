@@ -11,9 +11,6 @@
     }
   };
 
-  // fallback for old __tcfapi implementation
-  window.__tcfapi = window.__cmpapi;
-
   function log(event, success, parameters) {
     window.__cmpapi('log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
   }
@@ -85,9 +82,6 @@
       window.__cmpapi = function (command, version, callback, parameter) {
         message('cmd', command, version, callback, parameter);
       };
-
-      // fallback for old __tcfapi implementation
-      window.__tcfapi = window.__cmpapi;
 
       function onMessage(event) {
         if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
@@ -219,7 +213,7 @@
     sendDeviceId(consent, 3);
   }
 
-  window.__tcfapi('onLogEvent', 2, function (log) {
+  window.__cmpapi('onLogEvent', 2, function (log) {
     var consent = undefined;
     if (log.success === true && (log.event === 'getTCData' || log.event === 'setConsent')) {
       consent = log.parameters.consent;
