@@ -5,7 +5,6 @@ import { Router } from "express";
 import {
   bannerController,
   cmpController,
-  cmpWithTrackingController,
   iframeController,
   removeConsentController,
   setConsentController,
@@ -25,7 +24,6 @@ router.use(channelMiddleware);
 
 router.get("/banner.js", bannerController);
 router.get("/cmp.js", cmpController);
-router.get("/cmp-with-tracking.js", cmpWithTrackingController);
 router.get("/iframe.html", iframeController);
 router.get("/remove-consent", removeConsentController);
 router.get("/set-consent", setConsentController);
