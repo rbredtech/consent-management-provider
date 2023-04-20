@@ -8,36 +8,27 @@ var consBtnDecline;
 var setConsentCallback;
 var hideBannerTimeout;
 
+var bannerDefaultStyles =
+  '#agttcnsntbnnr{position:absolute;left:20px;right:20px;bottom:20px;font-family:sans-serif;font-size:16px;font-weight:400;line-height:24px;color:#505050;background-color:#fff;border:4px solid #76b642;border-radius:8px}' +
+  '#agttcnsntbnnr .header{display:block;font-size:24px;line-height:24px;font-weight:500;color:#76b642;margin-bottom:16px}' +
+  '#agttcnsntbnnr .content{margin:30px 70px 0 70px}' +
+  '#agttcnsntbnnr .actions{color:#76b642;margin:30px 70px 40px 70px}#agttcnsntbnnr .action{margin-right:10px;padding:10px;border:1px solid #76b642;border-radius:8px;background-color:#fff;color:#76b642}' +
+  '#agttcnsntbnnr .action.selected{background-color:#76b642;color:#fff}';
+
 function buildBannerElement() {
   var bannerOuter = document.createElement('div');
-  bannerOuter.id = 'agttcnstbnnr';
-  bannerOuter.style.position = 'absolute';
-  bannerOuter.style.left = '20px';
-  bannerOuter.style.right = '20px';
-  bannerOuter.style.bottom = '20px';
+  bannerOuter.id = 'agttcnsntbnnr';
   bannerOuter.style.display = 'none';
-  bannerOuter.style.fontFamily = 'sans-serif';
-  bannerOuter.style.fontSize = '16px';
-  bannerOuter.style.fontWeight = '400';
-  bannerOuter.style.lineHeight = '24px';
-  bannerOuter.style.color = '#505050';
-  bannerOuter.style.backgroundColor = '#ffffff';
-  bannerOuter.style.border = '4px solid #76b642';
-  bannerOuter.style.borderRadius = '8px';
 
   var bannerContentWrapper = document.createElement('div');
-  bannerContentWrapper.style.margin = '30px 70px 0 70px';
+  bannerContentWrapper.className = 'content';
 
   var bannerHeader = document.createElement('span');
-  bannerHeader.style.display = 'block';
-  bannerHeader.style.fontSize = '24px';
-  bannerHeader.style.lineHeight = '24px';
-  bannerHeader.style.fontWeight = '500';
-  bannerHeader.style.color = '#76b642';
-  bannerHeader.style.marginBottom = '16px';
+  bannerHeader.className = 'header';
   bannerHeader.appendChild(document.createTextNode('Datenschutzeinwilligung zur Reichweitenmessung'));
 
   var bannerLegalText = document.createElement('span');
+  bannerLegalText.className = 'body';
 
   if ('<%-IS_PRO7%>' === 'true') {
     bannerLegalText.appendChild(
@@ -79,28 +70,16 @@ function buildBannerElement() {
   );
 
   var bannerActionsWrapper = document.createElement('div');
-  bannerActionsWrapper.style.color = '#76b642';
-  bannerActionsWrapper.style.margin = '30px 70px 40px 70px';
+  bannerActionsWrapper.className = 'actions';
 
   var bannerActionAccept = document.createElement('span');
   bannerActionAccept.id = 'consBtnAgree';
-  bannerActionAccept.className = 'selected';
-  bannerActionAccept.style.marginRight = '10px';
-  bannerActionAccept.style.padding = '10px';
-  bannerActionAccept.style.border = '1px solid #76b642';
-  bannerActionAccept.style.borderRadius = '8px';
-  bannerActionAccept.style.backgroundColor = '#76b642';
-  bannerActionAccept.style.color = '#ffffff';
+  bannerActionAccept.className = 'action selected';
   bannerActionAccept.appendChild(document.createTextNode('Zustimmen'));
 
   var bannerActionDecline = document.createElement('span');
   bannerActionDecline.id = 'consBtnDecline';
-  bannerActionDecline.style.marginRight = '10px';
-  bannerActionDecline.style.padding = '10px';
-  bannerActionDecline.style.border = '1px solid #76b642';
-  bannerActionDecline.style.borderRadius = '8px';
-  bannerActionDecline.style.backgroundColor = '#ffffff';
-  bannerActionDecline.style.color = '#76b642';
+  bannerActionDecline.className = 'action';
   bannerActionDecline.appendChild(document.createTextNode('Ablehnen'));
 
   bannerActionsWrapper.appendChild(bannerActionAccept);
@@ -116,6 +95,21 @@ function buildBannerElement() {
 }
 
 window.__cbapi = function (command, version, callback, parameter) {
+  function mountBannerDefaultStyles() {
+    var head = document.getElementsByTagName('head')[0];
+    var styleTag = document.createElement('style');
+    styleTag.type = 'text/css';
+
+    if (styleTag.styleSheet) {
+      // fallback for old browsers
+      styleTag.styleSheet.cssText = bannerDefaultStyles;
+    } else {
+      styleTag.appendChild(document.createTextNode(bannerDefaultStyles));
+    }
+
+    head.insertBefore(styleTag, head.firstChild);
+  }
+
   function mountConsentBanner(nodeId) {
     var bannerParentNode = document.getElementsByTagName('body')[0];
     if (nodeId) {
@@ -126,9 +120,10 @@ window.__cbapi = function (command, version, callback, parameter) {
       return null;
     }
 
-    var banner = document.getElementById('agttcnstbnnr');
+    var banner = document.getElementById('agttcnsntbnnr');
 
     if (!banner) {
+      mountBannerDefaultStyles();
       banner = buildBannerElement();
       bannerParentNode.appendChild(banner);
     }
@@ -169,14 +164,16 @@ window.__cbapi = function (command, version, callback, parameter) {
   }
 
   function hideConsentBanner() {
-    if (document.getElementById('agttcnstbnnr')) {
-      document.getElementById('agttcnstbnnr').style.display = 'none';
+    if (document.getElementById('agttcnsntbnnr')) {
+      document.getElementById('agttcnsntbnnr').style.display = 'none';
       clearTimeout(hideBannerTimeout);
     }
   }
 
   function isConsentBannerVisible() {
-    return !!document.getElementById('agttcnstbnnr') && document.getElementById('agttcnstbnnr').style.display != 'none';
+    return (
+      !!document.getElementById('agttcnsntbnnr') && document.getElementById('agttcnsntbnnr').style.display != 'none'
+    );
   }
 
   function setSelected(element) {
