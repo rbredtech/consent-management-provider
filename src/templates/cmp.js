@@ -110,7 +110,7 @@
   }
 
   function loadOnDomContentLoad() {
-    window.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
       if (isIframeCapable()) {
         loadIframe(3);
       } else {
