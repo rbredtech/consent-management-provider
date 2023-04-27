@@ -109,8 +109,19 @@
     return iframe;
   }
 
+  function loadOnDomContentLoad() {
+    window.addEventListener('DOMContentLoaded', function () {
+      if (isIframeCapable()) {
+        loadIframe(3);
+      } else {
+        loadCmpApi(3);
+      }
+    });
+  }
+
   function loadIframe(retriesLeft) {
     if (retriesLeft < 0) {
+      loadOnDomContentLoad();
       return;
     }
 
@@ -163,6 +174,7 @@
 
   function loadCmpApi(retriesLeft) {
     if (retriesLeft < 0) {
+      loadOnDomContentLoad();
       return;
     }
 
