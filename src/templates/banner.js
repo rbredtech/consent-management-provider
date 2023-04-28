@@ -115,19 +115,17 @@ function buildBannerElement() {
   return bannerOuter;
 }
 
-function loadOnDOMContentLoaded(callback) {
+function loadOnDOMContentLoaded(domContentLoadedCB) {
   document.addEventListener('DOMContentLoaded', function () {
-    if (callback && typeof callback === 'function') {
-      callback();
+    if (domContentLoadedCB && typeof domContentLoadedCB === 'function') {
+      domContentLoadedCB();
     }
   });
 }
 
-function waitForDOMElement(elementId, success, fail, retriesLeft) {
+function waitForDOMElement(elementId, onDomElementFoundCB, retriesLeft) {
   if (retriesLeft < 0) {
-    if (fail && typeof fail === 'function') {
-      fail();
-    }
+    loadOnDOMContentLoaded(onDomElementFoundCB);
     return;
   }
 
@@ -138,13 +136,13 @@ function waitForDOMElement(elementId, success, fail, retriesLeft) {
 
   if (!element) {
     setTimeout(function () {
-      waitForDOMElement(elementId, success, fail, retriesLeft - 1);
+      waitForDOMElement(elementId, onDomElementFoundCB, retriesLeft - 1);
     }, 200);
     return;
   }
 
-  if (success && typeof success === 'function') {
-    success();
+  if (onDomElementFoundCB && typeof onDomElementFoundCB === 'function') {
+    onDomElementFoundCB();
   }
 }
 
@@ -282,9 +280,6 @@ window.__cbapi = function (command, version, callback, parameter) {
         function () {
           showConsentBanner(parameter, callback);
         },
-        loadOnDOMContentLoaded(function () {
-          showConsentBanner(parameter, callback);
-        }),
         3,
       );
       break;

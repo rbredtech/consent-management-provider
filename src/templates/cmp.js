@@ -109,21 +109,17 @@
     return iframe;
   }
 
-  function loadOnDOMContentLoaded() {
+  function loadOnDOMContentLoaded(onDOMContentLoadedCB) {
     document.addEventListener('DOMContentLoaded', function () {
-      if (isIframeCapable()) {
-        loadIframe();
-      } else {
-        loadCmpApi();
+      if (onDOMContentLoadedCB && typeof onDOMContentLoadedCB === 'function') {
+        onDOMContentLoadedCB();
       }
     });
   }
 
-  function waitForDOMElement(elementTagName, success, fail, retriesLeft) {
+  function waitForDOMElement(elementTagName, onDomElementFoundCB, retriesLeft) {
     if (retriesLeft < 0) {
-      if (fail && typeof fail === 'function') {
-        fail();
-      }
+      loadOnDOMContentLoaded(onDomElementFoundCB);
       return;
     }
 
@@ -131,13 +127,13 @@
 
     if (!element) {
       setTimeout(function () {
-        waitForDOMElement(elementTagName, success, fail, retriesLeft - 1);
+        waitForDOMElement(elementTagName, onDomElementFoundCB, retriesLeft - 1);
       }, 200);
       return;
     }
 
-    if (success && typeof success === 'function') {
-      success();
+    if (onDomElementFoundCB && typeof onDomElementFoundCB === 'function') {
+      onDomElementFoundCB();
     }
   }
 
@@ -188,10 +184,13 @@
     head.appendChild(cmpapiScriptTag);
   }
 
-  if (isIframeCapable()) {
-    waitForDOMElement('body', loadIframe, loadOnDOMContentLoaded, 3);
-  } else {
-    waitForDOMElement('head', loadCmpApi, loadOnDOMContentLoaded, 3);
+  function init() {
+    var waitForDOMElementRetries = 3;
+    if (isIframeCapable()) {
+      waitForDOMElement('body', loadIframe, waitForDOMElementRetries);
+    } else {
+      waitForDOMElement('head', loadCmpApi, waitForDOMElementRetries);
+    }
   }
 
   // send device ids
@@ -219,8 +218,10 @@
     });
   }
 
+  var waitForTrackingScriptRetries = 6;
+
   function waitForTrackingScriptAndSendDeviceId(consent) {
-    sendDeviceId(consent, 6);
+    sendDeviceId(consent, waitForTrackingScriptRetries);
   }
 
   window.__cmpapi('onLogEvent', 2, function (log) {
@@ -235,4 +236,6 @@
       } catch (e) {}
     }
   });
+
+  init();
 })();
