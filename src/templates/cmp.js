@@ -109,30 +109,40 @@
     return iframe;
   }
 
-  function loadOnDomContentLoad() {
+  function loadOnDOMContentLoaded() {
     document.addEventListener('DOMContentLoaded', function () {
       if (isIframeCapable()) {
-        loadIframe(3);
+        loadIframe();
       } else {
-        loadCmpApi(3);
+        loadCmpApi();
       }
     });
   }
 
-  function loadIframe(retriesLeft) {
+  function waitForDomElement(elementTagName, success, fail, retriesLeft) {
     if (retriesLeft < 0) {
-      loadOnDomContentLoad();
+      if (fail && typeof fail === 'function') {
+        fail();
+      }
       return;
     }
 
-    var body = document.getElementsByTagName('body')[0];
-    if (!body) {
+    var element = document.getElementsByTagName(elementTagName)[0];
+
+    if (!element) {
       setTimeout(function () {
-        loadIframe(retriesLeft - 1);
-      }, 100);
+        waitForDomElement(elementTagName, success, fail, retriesLeft - 1);
+      }, 200);
       return;
     }
 
+    if (success && typeof success === 'function') {
+      success();
+    }
+  }
+
+  function loadIframe() {
+    var body = document.getElementsByTagName('body')[0];
     iframe = createIframe();
     body.appendChild(iframe);
   }
@@ -172,28 +182,16 @@
     return cmpapiScriptTag;
   }
 
-  function loadCmpApi(retriesLeft) {
-    if (retriesLeft < 0) {
-      loadOnDomContentLoad();
-      return;
-    }
-
+  function loadCmpApi() {
     var head = document.getElementsByTagName('head')[0];
-    if (!head) {
-      setTimeout(function () {
-        loadCmpApi(retriesLeft - 1);
-      }, 100);
-      return;
-    }
-
     var cmpapiScriptTag = createCmpApiScriptTag();
     head.appendChild(cmpapiScriptTag);
   }
 
   if (isIframeCapable()) {
-    loadIframe(3);
+    waitForDomElement('body', loadIframe, loadOnDOMContentLoaded, 3);
   } else {
-    loadCmpApi(3);
+    waitForDomElement('head', loadCmpApi, loadOnDOMContentLoaded, 3);
   }
 
   // send device ids
@@ -205,7 +203,7 @@
     if (!__hbb_tracking_tgt || !__hbb_tracking_tgt.getDID) {
       setTimeout(function () {
         sendDeviceId(consent, retriesLeft - 1);
-      }, 100);
+      }, 200);
       return;
     }
 
@@ -222,7 +220,7 @@
   }
 
   function waitForTrackingScriptAndSendDeviceId(consent) {
-    sendDeviceId(consent, 3);
+    sendDeviceId(consent, 6);
   }
 
   window.__cmpapi('onLogEvent', 2, function (log) {
