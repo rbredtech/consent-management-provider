@@ -123,7 +123,7 @@ function loadOnDOMContentLoaded(callback) {
   });
 }
 
-function waitForDomElement(elementId, success, fail, retriesLeft) {
+function waitForDOMElement(elementId, success, fail, retriesLeft) {
   if (retriesLeft < 0) {
     if (fail && typeof fail === 'function') {
       fail();
@@ -138,7 +138,7 @@ function waitForDomElement(elementId, success, fail, retriesLeft) {
 
   if (!element) {
     setTimeout(function () {
-      waitForDomElement(elementId, success, fail, retriesLeft - 1);
+      waitForDOMElement(elementId, success, fail, retriesLeft - 1);
     }, 200);
     return;
   }
@@ -277,7 +277,7 @@ window.__cbapi = function (command, version, callback, parameter) {
 
   switch (command) {
     case 'showBanner':
-      waitForDomElement(
+      waitForDOMElement(
         parameter,
         function () {
           showConsentBanner(parameter, callback);

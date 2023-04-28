@@ -119,7 +119,7 @@
     });
   }
 
-  function waitForDomElement(elementTagName, success, fail, retriesLeft) {
+  function waitForDOMElement(elementTagName, success, fail, retriesLeft) {
     if (retriesLeft < 0) {
       if (fail && typeof fail === 'function') {
         fail();
@@ -131,7 +131,7 @@
 
     if (!element) {
       setTimeout(function () {
-        waitForDomElement(elementTagName, success, fail, retriesLeft - 1);
+        waitForDOMElement(elementTagName, success, fail, retriesLeft - 1);
       }, 200);
       return;
     }
@@ -189,9 +189,9 @@
   }
 
   if (isIframeCapable()) {
-    waitForDomElement('body', loadIframe, loadOnDOMContentLoaded, 3);
+    waitForDOMElement('body', loadIframe, loadOnDOMContentLoaded, 3);
   } else {
-    waitForDomElement('head', loadCmpApi, loadOnDOMContentLoaded, 3);
+    waitForDOMElement('head', loadCmpApi, loadOnDOMContentLoaded, 3);
   }
 
   // send device ids
