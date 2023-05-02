@@ -15,7 +15,7 @@
     "lint": "eslint --ext .ts,.js src",
     "lint:apply": "eslint --ext .ts,.js src --fix"
   },
-  "author": "Alexander Futász <alexander.futasz@fokus.fraunhofer.de>",
+  "author": "Andreas Jantschnig <andreas.jantschnig@tv-insight>",
   "license": "UNLICENSED",
   "dependencies": {
     "cookie-parser": "^1.4.6",

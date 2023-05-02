@@ -11,7 +11,7 @@
     window.setTimeout(function () {
       window.__hbb_tracking_tgt = {
         getDID: function (callback) {
-          if (typeof callback === 'function') {
+          if (callback && typeof callback === 'function') {
             callback('TEST_DID');
           }
         }
@@ -19,8 +19,8 @@
     }, 200);
     //]]>
   </script>
-  <script type='text/javascript' src='http://localhost:4000/v2/cmp.js?channelId=0'></script>
-  <script type='text/javascript' src='http://localhost:4000/v2/banner.js?channelId=0'></script>
+  <script type='text/javascript' src='http://localhost:3000/v2/cmp.js?channelId=0'></script>
+  <script type='text/javascript' src='http://localhost:3000/v2/banner.js?channelId=0'></script>
   <script>
     //<![CDATA[
     var isShowingBanner = false;
