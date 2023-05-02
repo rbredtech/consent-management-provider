@@ -125,6 +125,7 @@ function loadOnDOMContentLoaded(domContentLoadedCB) {
 
 function waitForDOMElement(elementId, onDomElementFoundCB, retriesLeft) {
   if (retriesLeft < 0) {
+    // After retry attempts have been exhausted we try to use the DOMContentLoaded event as a fallback
     loadOnDOMContentLoaded(onDomElementFoundCB);
     return;
   }

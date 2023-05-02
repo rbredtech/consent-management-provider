@@ -187,8 +187,12 @@
   function init() {
     var waitForDOMElementRetries = 3;
     if (isIframeCapable()) {
+      // in case of iframe handling, we need to wait for the body element to be available,
+      // as the iframe is mounted to the body
       waitForDOMElement('body', loadIframe, waitForDOMElementRetries);
     } else {
+      // in case of non-iframe handling, the cmp is loaded with a script tag, therefore
+      // we need to check for the head to be available, where the script tag is written to
       waitForDOMElement('head', loadCmpApi, waitForDOMElementRetries);
     }
   }
