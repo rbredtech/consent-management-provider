@@ -115,11 +115,43 @@ function buildBannerElement() {
   return bannerOuter;
 }
 
+function loadOnDOMContentLoaded(domContentLoadedCB) {
+  document.addEventListener('DOMContentLoaded', function () {
+    if (domContentLoadedCB && typeof domContentLoadedCB === 'function') {
+      domContentLoadedCB();
+    }
+  });
+}
+
+function waitForDOMElement(elementId, onDomElementFoundCB, retriesLeft) {
+  if (retriesLeft < 0) {
+    // After retry attempts have been exhausted we try to use the DOMContentLoaded event as a fallback
+    loadOnDOMContentLoaded(onDomElementFoundCB);
+    return;
+  }
+
+  var element = document.getElementsByTagName('body')[0];
+  if (elementId) {
+    element = document.getElementById(elementId);
+  }
+
+  if (!element) {
+    setTimeout(function () {
+      waitForDOMElement(elementId, onDomElementFoundCB, retriesLeft - 1);
+    }, 200);
+    return;
+  }
+
+  if (onDomElementFoundCB && typeof onDomElementFoundCB === 'function') {
+    onDomElementFoundCB();
+  }
+}
+
 window.__cbapi = function (command, version, callback, parameter) {
-  function mountConsentBanner(nodeId) {
+  function mountConsentBanner(elementId) {
     var bannerParentNode = document.getElementsByTagName('body')[0];
-    if (nodeId) {
-      bannerParentNode = document.getElementById(nodeId);
+    if (elementId) {
+      bannerParentNode = document.getElementById(elementId);
     }
 
     if (!bannerParentNode) {
@@ -133,25 +165,20 @@ window.__cbapi = function (command, version, callback, parameter) {
       bannerParentNode.appendChild(banner);
     }
 
-    if (!nodeId) {
+    if (!elementId) {
       banner.style.zIndex = '9999';
     }
 
     return banner;
   }
 
-  function showConsentBanner(nodeId, callback, retriesLeft) {
-    if (retriesLeft < 0) {
-      callback(undefined);
-      return;
-    }
-
-    var banner = mountConsentBanner(nodeId);
+  function showConsentBanner(elementId, callback) {
+    var banner = mountConsentBanner(elementId);
 
     if (!banner) {
-      setTimeout(function () {
-        showConsentBanner(nodeId, callback, retriesLeft - 1);
-      }, 100);
+      if (callback && typeof callback === 'function') {
+        callback(undefined);
+      }
       return;
     }
 
@@ -209,9 +236,13 @@ window.__cbapi = function (command, version, callback, parameter) {
 
   function handleEnter() {
     if (consBtnAgree && consBtnAgree.className.indexOf('selected') != -1) {
-      !!setConsentCallback && setConsentCallback(true);
+      if (setConsentCallback && typeof setConsentCallback === 'function') {
+        setConsentCallback(true);
+      }
     } else {
-      !!setConsentCallback && setConsentCallback(false);
+      if (setConsentCallback && typeof setConsentCallback === 'function') {
+        setConsentCallback(false);
+      }
     }
     hideConsentBanner();
 
@@ -245,7 +276,13 @@ window.__cbapi = function (command, version, callback, parameter) {
 
   switch (command) {
     case 'showBanner':
-      showConsentBanner(parameter, callback, 3);
+      waitForDOMElement(
+        parameter,
+        function () {
+          showConsentBanner(parameter, callback);
+        },
+        3,
+      );
       break;
     case 'hideBanner':
       hideConsentBanner();
