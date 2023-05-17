@@ -25,6 +25,10 @@ All API endpoints take a query parameter`channelId`, which is used to collect me
 opt-in/out ratio on a specific channel.
 
 - GET `/v2/cmp.js` - Returns the javascript bundle providing the `__cmpapi()` API for client side checking of consent status.
+- GET `/v2/cmp-with-tracking.js`- Returns a javascript bundle like `/cmp.js`, but also integrates the tracking script depending
+  on the consent decision (<https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script>). There is one mandatory
+  query param `cmpId` which has to be given (`4040`), the query parameters for the tracking script are passed through
+  (see <https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script#tracking-script-parameters> for parameters)
 - GET `/v2/banner.js` - Returns the javascript bundle providing the `__cbapi()` API for controlling the consent banner.
 
 ### __cmpapi methods
