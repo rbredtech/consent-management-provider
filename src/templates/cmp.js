@@ -11,9 +11,6 @@
     }
   };
 
-  // fallback for old __tcfapi implementation
-  window.__tcfapi = window.__cmpapi;
-
   function log(event, success, parameters) {
     window.__cmpapi('log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
   }
@@ -86,9 +83,6 @@
         message('cmd', command, version, callback, parameter);
       };
 
-      // fallback for old __tcfapi implementation
-      window.__tcfapi = window.__cmpapi;
-
       function onMessage(event) {
         if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
           return;
@@ -115,19 +109,36 @@
     return iframe;
   }
 
-  function loadIframe(retriesLeft) {
+  function loadOnDOMContentLoaded(onDOMContentLoadedCB) {
+    document.addEventListener('DOMContentLoaded', function () {
+      if (onDOMContentLoadedCB && typeof onDOMContentLoadedCB === 'function') {
+        onDOMContentLoadedCB();
+      }
+    });
+  }
+
+  function waitForDOMElement(elementTagName, onDomElementFoundCB, retriesLeft) {
     if (retriesLeft < 0) {
+      loadOnDOMContentLoaded(onDomElementFoundCB);
       return;
     }
 
-    var body = document.getElementsByTagName('body')[0];
-    if (!body) {
+    var element = document.getElementsByTagName(elementTagName)[0];
+
+    if (!element) {
       setTimeout(function () {
-        loadIframe(retriesLeft - 1);
-      }, 100);
+        waitForDOMElement(elementTagName, onDomElementFoundCB, retriesLeft - 1);
+      }, 200);
       return;
     }
 
+    if (onDomElementFoundCB && typeof onDomElementFoundCB === 'function') {
+      onDomElementFoundCB();
+    }
+  }
+
+  function loadIframe() {
+    var body = document.getElementsByTagName('body')[0];
     iframe = createIframe();
     body.appendChild(iframe);
   }
@@ -167,26 +178,24 @@
     return cmpapiScriptTag;
   }
 
-  function loadCmpApi(retriesLeft) {
-    if (retriesLeft < 0) {
-      return;
-    }
-
+  function loadCmpApi() {
     var head = document.getElementsByTagName('head')[0];
-    if (!head) {
-      setTimeout(function () {
-        loadCmpApi(retriesLeft - 1);
-      }, 100);
-      return;
-    }
-
     var cmpapiScriptTag = createCmpApiScriptTag();
     head.appendChild(cmpapiScriptTag);
   }
 
-  if (isIframeCapable()) {
-    loadIframe(3);
-  } else {
-    loadCmpApi(3);
+  function init() {
+    var waitForDOMElementRetries = 3;
+    if (isIframeCapable()) {
+      // in case of iframe handling, we need to wait for the body element to be available,
+      // as the iframe is mounted to the body
+      waitForDOMElement('body', loadIframe, waitForDOMElementRetries);
+    } else {
+      // in case of non-iframe handling, the cmp is loaded with a script tag, therefore
+      // we need to check for the head to be available, where the script tag is written to
+      waitForDOMElement('head', loadCmpApi, waitForDOMElementRetries);
+    }
   }
+
+  init();
 })();
