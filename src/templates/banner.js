@@ -115,6 +115,14 @@ function buildBannerElement() {
   return bannerOuter;
 }
 
+function getBannerParentNode(elementId) {
+  var element = document.getElementsByTagName('body')[0];
+  if (elementId) {
+    element = document.getElementById(elementId);
+  }
+  return element;
+}
+
 function loadOnDOMContentLoaded(domContentLoadedCB) {
   document.addEventListener('DOMContentLoaded', function () {
     if (domContentLoadedCB && typeof domContentLoadedCB === 'function') {
@@ -130,10 +138,7 @@ function waitForDOMElement(elementId, onDomElementFoundCB, retriesLeft) {
     return;
   }
 
-  var element = document.getElementsByTagName('body')[0];
-  if (elementId) {
-    element = document.getElementById(elementId);
-  }
+  var element = getBannerParentNode(elementId);
 
   if (!element) {
     setTimeout(function () {
@@ -149,10 +154,7 @@ function waitForDOMElement(elementId, onDomElementFoundCB, retriesLeft) {
 
 window.__cbapi = function (command, version, callback, parameter) {
   function mountConsentBanner(elementId) {
-    var bannerParentNode = document.getElementsByTagName('body')[0];
-    if (elementId) {
-      bannerParentNode = document.getElementById(elementId);
-    }
+    var bannerParentNode = getBannerParentNode(elementId);
 
     if (!bannerParentNode) {
       return null;
@@ -191,19 +193,26 @@ window.__cbapi = function (command, version, callback, parameter) {
 
     hideBannerTimeout = setTimeout(function () {
       hideConsentBanner();
-      !!callback && callback();
+      if (callback && typeof callback === 'function') {
+        callback(undefined);
+      }
     }, parseInt('<%-BANNER_TIMEOUT%>'));
   }
 
   function hideConsentBanner() {
-    if (document.getElementById('agttcnstbnnr')) {
-      document.getElementById('agttcnstbnnr').style.display = 'none';
+    var banner = document.getElementById('agttcnstbnnr');
+    if (banner) {
+      banner.style.display = 'none';
       clearTimeout(hideBannerTimeout);
     }
   }
 
   function isConsentBannerVisible() {
-    return !!document.getElementById('agttcnstbnnr') && document.getElementById('agttcnstbnnr').style.display != 'none';
+    var banner = document.getElementById('agttcnstbnnr');
+    if (!banner) {
+      return false;
+    }
+    return banner.style.display === 'block';
   }
 
   function setSelected(element) {
@@ -225,7 +234,7 @@ window.__cbapi = function (command, version, callback, parameter) {
   }
 
   function handleSelectionToggle() {
-    if (consBtnAgree && consBtnAgree.className.indexOf('selected') == -1) {
+    if (consBtnAgree && consBtnAgree.className.indexOf('selected') === -1) {
       setSelected(consBtnAgree);
       setNotSelected(consBtnDecline);
     } else {
@@ -235,7 +244,7 @@ window.__cbapi = function (command, version, callback, parameter) {
   }
 
   function handleEnter() {
-    if (consBtnAgree && consBtnAgree.className.indexOf('selected') != -1) {
+    if (consBtnAgree && consBtnAgree.className.indexOf('selected') !== -1) {
       if (setConsentCallback && typeof setConsentCallback === 'function') {
         setConsentCallback(true);
       }
@@ -256,18 +265,24 @@ window.__cbapi = function (command, version, callback, parameter) {
       return;
     }
 
-    !!parameter.preventDefault && parameter.preventDefault();
+    if (parameter.preventDefault && typeof parameter.preventDefault === 'function') {
+      parameter.preventDefault();
+    }
     var keyCode = parameter.keyCode ? parameter.keyCode : parameter;
 
     switch (keyCode) {
       case KeyEvent.VK_ENTER:
         handleEnter();
-        !!callback && callback(keyCode);
+        if (callback && typeof callback === 'function') {
+          callback(keyCode);
+        }
         break;
       case KeyEvent.VK_LEFT:
       case KeyEvent.VK_RIGHT:
         handleSelectionToggle();
-        !!callback && callback(keyCode);
+        if (callback && typeof callback === 'function') {
+          callback(keyCode);
+        }
         break;
       default:
         break;
@@ -288,7 +303,9 @@ window.__cbapi = function (command, version, callback, parameter) {
       hideConsentBanner();
       break;
     case 'isBannerVisible':
-      !!callback && callback(isConsentBannerVisible());
+      if (callback && typeof callback === 'function') {
+        callback(isConsentBannerVisible());
+      }
       break;
     case 'handleKey':
       handleVK(parameter, callback);
