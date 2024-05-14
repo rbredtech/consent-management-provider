@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { COOKIE_DOMAIN, COOKIE_NAME, COOKIE_MAXAGE } from "../config";
+import { COOKIE_DOMAIN, COOKIE_NAME, COOKIE_MAXAGE, COOKIE_NAME_ADDITIONAL_CHANNELS } from "../config";
 import { consentCounterMetric } from "../util/metrics";
 import { ConsentCookie } from "./util/getTemplateValues";
 
@@ -22,6 +22,11 @@ export const setConsentController = (req: Request, res: Response) => {
     .inc();
 
   res.cookie(COOKIE_NAME, Buffer.from(JSON.stringify(cookie)).toString("base64"), {
+    maxAge: COOKIE_MAXAGE,
+    domain: COOKIE_DOMAIN,
+  });
+
+  res.cookie(COOKIE_NAME_ADDITIONAL_CHANNELS, Buffer.from(JSON.stringify(cookie)).toString("base64"), {
     maxAge: COOKIE_MAXAGE,
     domain: COOKIE_DOMAIN,
   });

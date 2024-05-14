@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { API_VERSION, HTTP_HOST, TECH_COOKIE_NAME, COOKIE_NAME } from "../config";
+import { API_VERSION, HTTP_HOST, TECH_COOKIE_NAME, COOKIE_NAME, COOKIE_NAME_ADDITIONAL_CHANNELS } from "../config";
 
 export const iframeController = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
@@ -10,6 +10,7 @@ export const iframeController = (req: Request, res: Response) => {
     TECH_COOKIE_TIMESTAMP: req.timestamp,
     TECH_COOKIE_NAME,
     COOKIE_NAME,
+    COOKIE_NAME_ADDITIONAL_CHANNELS,
     API_VERSION,
     CONSENT_SERVER_HOST: HTTP_HOST,
     CONSENT_SERVER_PROTOCOL: req.protocol,

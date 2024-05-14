@@ -62,7 +62,7 @@ describe("Debug API", () => {
         expect(queue).toHaveLength(2);
         expect(queue[1]).toEqual({
           event: "getTCData",
-          parameters: { status: "disabled" },
+          parameters: { consent: "undefined", consentAdditionalChannels: "undefined", status: "disabled" },
           success: true,
           ts: expect.any(Number),
         });
@@ -126,13 +126,13 @@ describe("Debug API", () => {
           expect(queue).toHaveLength(5);
           expect(queue[3]).toEqual({
             event: "getTCData",
-            parameters: { status: "disabled", consent: false },
+            parameters: { status: "disabled", consent: false, consentAdditionalChannels: false },
             success: true,
             ts: expect.any(Number),
           });
           expect(queue[4]).toEqual({
             event: "getTCData",
-            parameters: { status: "disabled", consent: false },
+            parameters: { status: "disabled", consent: false, consentAdditionalChannels: false },
             success: true,
             ts: expect.any(Number),
           });

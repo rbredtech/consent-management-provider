@@ -4,6 +4,10 @@ window.__cmpapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
 
   var hasConsent = '<%-TC_CONSENT%>' === 'undefined' ? undefined : '<%-TC_CONSENT%>' === 'true';
+  var hasConsentAdditionalChannels =
+    '<%-TC_CONSENT_ADDITIONAL_CHANNELS%>' === 'undefined'
+      ? undefined
+      : '<%-TC_CONSENT_ADDITIONAL_CHANNELS%>' === 'true';
 
   if (window.localStorage && localStorage.getItem) {
     var localStorageConsent = localStorage.getItem('<%-COOKIE_NAME%>');
@@ -12,6 +16,14 @@ window.__cmpapi = function (command, version, callback, parameter) {
     }
     if (localStorageConsent === 'false') {
       hasConsent = false;
+    }
+
+    var localStorageConsentAdditionalChannels = localStorage.getItem('<%-COOKIE_NAME_ADDITIONAL_CHANNELS%>');
+    if (localStorageConsentAdditionalChannels === 'true') {
+      hasConsentAdditionalChannels = true;
+    }
+    if (localStorageConsentAdditionalChannels === 'false') {
+      hasConsentAdditionalChannels = false;
     }
   }
 
@@ -65,20 +77,27 @@ window.__cmpapi = function (command, version, callback, parameter) {
           purpose: {
             consents: {
               4040: hasConsent,
+              4041: hasConsentAdditionalChannels,
             },
           },
           legitimateInterests: {
             consents: {
               4040: hasConsent,
+              4041: hasConsentAdditionalChannels,
             },
           },
           vendor: {
             consents: {
               4040: hasConsent,
+              4041: hasConsentAdditionalChannels,
             },
           },
         });
-      log(logEvents.GET_TC_DATA, true, { status: '<%-CMP_STATUS%>', consent: hasConsent });
+      log(logEvents.GET_TC_DATA, true, {
+        status: '<%-CMP_STATUS%>',
+        consent: hasConsent ?? 'undefined',
+        consentAdditionalChannels: hasConsentAdditionalChannels ?? 'undefined',
+      });
       break;
     case 'setConsent':
       localStorageAvailable = false;
@@ -91,6 +110,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
 
       if (window.localStorage && localStorage.setItem) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
+        localStorage.setItem('<%-COOKIE_NAME_ADDITIONAL_CHANNELS%>', parameter);
         localStorageAvailable = true;
       }
 
@@ -113,6 +133,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
       image.src = '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent';
       if (window.localStorage && localStorage.removeItem) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
+        localStorage.removeItem('<%-COOKIE_NAME_ADDITIONAL_CHANNELS%>');
         localStorageAvailable = true;
       }
 
