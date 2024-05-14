@@ -146,6 +146,7 @@
   function createCmpApiScriptTag() {
     var techCookieTimestamp = '<%-TECH_COOKIE_TIMESTAMP%>';
     var hasConsent = null;
+    var hasConsentAdditionalChannels = null;
 
     if (window.localStorage && localStorage.getItem && localStorage.setItem) {
       if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
@@ -154,6 +155,7 @@
       } else {
         techCookieTimestamp = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
         hasConsent = localStorage.getItem('<%-COOKIE_NAME%>');
+        hasConsentAdditionalChannels = localStorage.getItem('<%-COOKIE_NAME_ADDITIONAL_CHANNELS%>');
       }
     }
 
@@ -164,6 +166,7 @@
       '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
         techCookieTimestamp +
         (hasConsent !== null ? '&consent=' + hasConsent : '') +
+        (hasConsentAdditionalChannels !== null ? '&consent=' + hasConsentAdditionalChannels : '') +
         (channelId !== '' ? '&channelId=' + channelId : ''),
     );
 

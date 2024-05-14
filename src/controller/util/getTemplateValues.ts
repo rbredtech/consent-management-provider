@@ -40,7 +40,7 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
     }
   }
   logger.debug(
-    `hasCookieV2=${cookieAdditionalChannels !== undefined}; hasConsentAdditionalChannels=${
+    `hasCookieAdditionalChannels=${cookieAdditionalChannels !== undefined}; hasConsentAdditionalChannels=${
       cookieAdditionalChannels?.consent
     }`,
   );
@@ -76,7 +76,6 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
 
   const technicalCookiePassed = CMP_ENABLED && req.timestamp && Date.now() - req.timestamp >= TECH_COOKIE_MIN;
 
-  console.log(technicalCookiePassed, tcConsent, tcConsentAdditionalChannels);
   if (technicalCookiePassed || tcConsent !== undefined || tcConsentAdditionalChannels !== undefined) {
     // if the tech cookie is set and is old enough, the cmp is enabled
     cmpStatus = "loaded";

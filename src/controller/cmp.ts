@@ -6,6 +6,7 @@ import {
   TECH_COOKIE_NAME,
   COOKIE_NAME,
   SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,
+  COOKIE_NAME_ADDITIONAL_CHANNELS,
 } from "../config";
 import { loadedCounterMetric } from "../util/metrics";
 
@@ -20,6 +21,7 @@ export const cmpController = async (req: Request, res: Response) => {
       TECH_COOKIE_TIMESTAMP: Date.now(),
       TECH_COOKIE_NAME,
       COOKIE_NAME,
+      COOKIE_NAME_ADDITIONAL_CHANNELS,
       API_VERSION,
       CONSENT_SERVER_HOST: HTTP_HOST,
       CONSENT_SERVER_PROTOCOL: req.protocol,
