@@ -9,6 +9,64 @@ var setConsentCallback;
 var hideBannerTimeout;
 
 function buildBannerElement() {
+  return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'reject', function (bannerLegalText) {
+    if ('<%-IS_PRO7%>' === 'true') {
+      bannerLegalText.appendChild(
+        document.createTextNode(
+          'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-messung), möchte ' +
+            'die Nutzung der TV-Geräte erfassen (die Daten können ohne Unterstützung der nutzenden Person keinem ' +
+            'konkreten TV-Gerät zugeordnet werden), um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, ' +
+            'deren TV- und Werbeangebot stetig zu verbessern.  Dazu benötigt die AGTT Ihre Einwilligung, nach der ' +
+            'ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:',
+        ),
+      );
+    } else {
+      var bannerLegalTextChannelName = document.createElement('b');
+      bannerLegalTextChannelName.appendChild(document.createTextNode('<%-CHANNEL_NAME%>'));
+
+      bannerLegalText.appendChild(
+        document.createTextNode(
+          'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-messung), deren Mitglied ',
+        ),
+      );
+      bannerLegalText.appendChild(bannerLegalTextChannelName);
+      bannerLegalText.appendChild(
+        document.createTextNode(
+          ' ist, möchte ' +
+            'die Nutzung der TV-Geräte erfassen (die Daten können ohne Unterstützung der nutzenden Person keinem ' +
+            'konkreten TV-Gerät zugeordnet werden), um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, ' +
+            'deren TV- und Werbeangebot stetig zu verbessern.  Dazu benötigt die AGTT Ihre Einwilligung, nach der ' +
+            'ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:',
+        ),
+      );
+
+      bannerLegalText.appendChild(document.createElement('br'));
+      bannerLegalText.appendChild(
+        document.createTextNode(
+          'Geräte ID, IP-Adresse, System- bzw. Browserinformationen, Geräteinformationen (verwendete HbbTV-Version, TV-Hersteller, ' +
+            'Übertragungsweg via Satellit oder Kabel, Geräteauflösung). Nähere Informationen zum Datenschutz finden Sie in der ' +
+            'HbbTV Applikation des Senders, wo Sie den Status Ihrer Einwilligung verwalten bzw. widerrufen können.',
+        ),
+      );
+    }
+  });
+}
+
+function buildBannerAdditionalChannelsElement() {
+  return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'settings', function (bannerLegalText) {
+    bannerLegalText.appendChild(
+      document.createTextNode(
+        'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe www.agtt.at/hbb-messung) führt Messungen des ' +
+          'Nutzungsverhaltens durch. Zu dieser Messung haben Sie bereits Ihre Einwilligung erteilt. Nunmehr möchte die AGTT die ' +
+          'Messung auch auf andere Sender ausdehnen. Dies möchten wir Ihnen hiermit zur Kenntnis bringen. Die aktuelle Liste aller ' +
+          'Sender, bei denen das Nutzungsverhalten durch die AGTT gemessen wird, finden Sie unter www.agtt.at/hbb-messung. Falls ' +
+          'Sie Ihre Einstellungen ändern möchten, können Sie dies in den „Einstellungen“ tun. Vielen Dank für Ihre Unterstützung.',
+      ),
+    );
+  });
+}
+
+function buildBanner(header, secondaryButtonType, bodyBuilder) {
   var bannerOuter = document.createElement('div');
   bannerOuter.id = 'agttcnstbnnr';
   bannerOuter.style.position = 'absolute';
@@ -35,48 +93,11 @@ function buildBannerElement() {
   bannerHeader.style.fontWeight = '500';
   bannerHeader.style.color = '#76b642';
   bannerHeader.style.marginBottom = '16px';
-  bannerHeader.appendChild(document.createTextNode('Datenschutzeinwilligung zur Reichweitenmessung'));
+  bannerHeader.appendChild(document.createTextNode(header));
 
   var bannerLegalText = document.createElement('span');
 
-  if ('<%-IS_PRO7%>' === 'true') {
-    bannerLegalText.appendChild(
-      document.createTextNode(
-        'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-messung), möchte ' +
-          'die Nutzung der TV-Geräte erfassen (die Daten können ohne Unterstützung der nutzenden Person keinem ' +
-          'konkreten TV-Gerät zugeordnet werden), um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, ' +
-          'deren TV- und Werbeangebot stetig zu verbessern.  Dazu benötigt die AGTT Ihre Einwilligung, nach der ' +
-          'ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:',
-      ),
-    );
-  } else {
-    var bannerLegalTextChannelName = document.createElement('b');
-    bannerLegalTextChannelName.appendChild(document.createTextNode('<%-CHANNEL_NAME%>'));
-
-    bannerLegalText.appendChild(
-      document.createTextNode(
-        'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-messung), deren Mitglied ',
-      ),
-    );
-    bannerLegalText.appendChild(bannerLegalTextChannelName);
-    bannerLegalText.appendChild(
-      document.createTextNode(
-        ' ist, möchte ' +
-          'die Nutzung der TV-Geräte erfassen (die Daten können ohne Unterstützung der nutzenden Person keinem ' +
-          'konkreten TV-Gerät zugeordnet werden), um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, ' +
-          'deren TV- und Werbeangebot stetig zu verbessern.  Dazu benötigt die AGTT Ihre Einwilligung, nach der ' +
-          'ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:',
-      ),
-    );
-  }
-  bannerLegalText.appendChild(document.createElement('br'));
-  bannerLegalText.appendChild(
-    document.createTextNode(
-      'Geräte ID, IP-Adresse, System- bzw. Browserinformationen, Geräteinformationen (verwendete HbbTV-Version, TV-Hersteller, ' +
-        'Übertragungsweg via Satellit oder Kabel, Geräteauflösung). Nähere Informationen zum Datenschutz finden Sie in der ' +
-        'HbbTV Applikation des Senders, wo Sie den Status Ihrer Einwilligung verwalten bzw. widerrufen können.',
-    ),
-  );
+  bodyBuilder(bannerLegalText);
 
   var bannerActionsWrapper = document.createElement('div');
   bannerActionsWrapper.style.color = '#76b642';
@@ -91,7 +112,13 @@ function buildBannerElement() {
   bannerActionAccept.style.borderRadius = '8px';
   bannerActionAccept.style.backgroundColor = '#76b642';
   bannerActionAccept.style.color = '#ffffff';
-  bannerActionAccept.appendChild(document.createTextNode('Zustimmen'));
+  switch (secondaryButtonType) {
+    case 'settings':
+      bannerActionAccept.appendChild(document.createTextNode('OK'));
+      break;
+    default:
+      bannerActionAccept.appendChild(document.createTextNode('Zustimmen'));
+  }
 
   var bannerActionDecline = document.createElement('span');
   bannerActionDecline.id = 'consBtnDecline';
@@ -101,7 +128,14 @@ function buildBannerElement() {
   bannerActionDecline.style.borderRadius = '8px';
   bannerActionDecline.style.backgroundColor = '#ffffff';
   bannerActionDecline.style.color = '#76b642';
-  bannerActionDecline.appendChild(document.createTextNode('Ablehnen'));
+  bannerActionDecline.value = secondaryButtonType;
+  switch (secondaryButtonType) {
+    case 'settings':
+      bannerActionDecline.appendChild(document.createTextNode('Einstellungen ändern'));
+      break;
+    default:
+      bannerActionDecline.appendChild(document.createTextNode('Ablehnen'));
+  }
 
   bannerActionsWrapper.appendChild(bannerActionAccept);
   bannerActionsWrapper.appendChild(bannerActionDecline);
@@ -148,7 +182,7 @@ function waitForDOMElement(elementId, onDomElementFoundCB, retriesLeft) {
 }
 
 window.__cbapi = function (command, version, callback, parameter) {
-  function mountConsentBanner(elementId) {
+  function mountConsentBanner(elementId, bannerType) {
     var bannerParentNode = document.getElementsByTagName('body')[0];
     if (elementId) {
       bannerParentNode = document.getElementById(elementId);
@@ -161,7 +195,11 @@ window.__cbapi = function (command, version, callback, parameter) {
     var banner = document.getElementById('agttcnstbnnr');
 
     if (!banner) {
-      banner = buildBannerElement();
+      if (bannerType == 'additional-channels') {
+        banner = buildBannerAdditionalChannelsElement();
+      } else {
+        banner = buildBannerElement();
+      }
       bannerParentNode.appendChild(banner);
     }
 
@@ -172,8 +210,8 @@ window.__cbapi = function (command, version, callback, parameter) {
     return banner;
   }
 
-  function showConsentBanner(elementId, callback) {
-    var banner = mountConsentBanner(elementId);
+  function showConsentBanner(elementId, callback, bannerType) {
+    var banner = mountConsentBanner(elementId, bannerType);
 
     if (!banner) {
       if (callback && typeof callback === 'function') {
@@ -235,13 +273,11 @@ window.__cbapi = function (command, version, callback, parameter) {
   }
 
   function handleEnter() {
-    if (consBtnAgree && consBtnAgree.className.indexOf('selected') != -1) {
-      if (setConsentCallback && typeof setConsentCallback === 'function') {
+    if (setConsentCallback && typeof setConsentCallback === 'function') {
+      if (consBtnAgree && consBtnAgree.className.indexOf('selected') != -1) {
         setConsentCallback(true);
-      }
-    } else {
-      if (setConsentCallback && typeof setConsentCallback === 'function') {
-        setConsentCallback(false);
+      } else {
+        setConsentCallback(false, consBtnDecline.value);
       }
     }
     hideConsentBanner();
@@ -279,7 +315,16 @@ window.__cbapi = function (command, version, callback, parameter) {
       waitForDOMElement(
         parameter,
         function () {
-          showConsentBanner(parameter, callback);
+          showConsentBanner(parameter, callback, 'basic');
+        },
+        3,
+      );
+      break;
+    case 'showAdditionalChannelsBanner':
+      waitForDOMElement(
+        parameter,
+        function () {
+          showConsentBanner(parameter, callback, 'additional-channels');
         },
         3,
       );
