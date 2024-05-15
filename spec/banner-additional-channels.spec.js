@@ -67,7 +67,9 @@ describe("Consent Management with banner", () => {
       describe("When banner is requested again", () => {
         beforeAll(async () => {
           await page.evaluate(function () {
-            window.__cbapi("showAdditionalChannelsBanner", 2, function (consentDecision) {
+            window.bannerCloseReason = "no-reason";
+            window.__cbapi("showAdditionalChannelsBanner", 2, function (consentDecision, reason) {
+              window.bannerCloseReason = reason;
               if (typeof consentDecision === "boolean") {
                 window.__cmpapi("setConsent", 2, undefined, consentDecision);
               }
@@ -75,19 +77,19 @@ describe("Consent Management with banner", () => {
           });
         });
 
-        describe("And Dismiss is selected", () => {
-          let consentSent;
-
+        describe("And 'go to settings' is selected", () => {
           beforeAll(async () => {
-            consentSent = page.waitForRequest((request) => request.url().includes("set-consent"));
             await page.evaluate(() => {
-              window.__cbapi("handleKey", 2, console.log, 37);
+              window.__cbapi("handleKey", 2, console.log, 39);
               window.__cbapi("handleKey", 2, console.log, 13);
             });
           });
 
-          test("Consent revoke is sent", async () => {
-            expect((await consentSent).url()).toContain("set-consent?consent=0");
+          test("banner close reason should be 'go-to-settings'", async () => {
+            const reason = await page.evaluate(function () {
+              return Promise.resolve(window.bannerCloseReason);
+            });
+            expect(reason).toBe("go-to-settings");
           });
         });
       });
