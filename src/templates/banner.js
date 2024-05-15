@@ -6,11 +6,11 @@
 
   var consBtnAgree;
   var consBtnDecline;
-  var setConsentCallback;
+  var bannerCloseCallback;
   var hideBannerTimeout;
 
   function buildBannerElement() {
-    return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'reject', function (bannerLegalText) {
+    return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'noconsent', function (bannerLegalText) {
       if ('<%-IS_PRO7%>' === 'true') {
         bannerLegalText.appendChild(
           document.createTextNode(
@@ -54,7 +54,7 @@
   }
 
   function buildBannerAdditionalChannelsElement() {
-    return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'settings', function (bannerLegalText) {
+    return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'go-to-settings', function (bannerLegalText) {
       bannerLegalText.appendChild(
         document.createTextNode(
           'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe www.agtt.at/hbb-messung) führt Messungen des ' +
@@ -108,13 +108,14 @@
     bannerActionAccept.id = 'consBtnAgree';
     bannerActionAccept.className = 'selected';
     bannerActionAccept.style.marginRight = '10px';
-    bannerActionAccept.style.padding = '10px';
+    bannerActionAccept.style.padding = secondaryButtonType === 'go-to-settings' ? '10px 30px' : '10px';
     bannerActionAccept.style.border = '1px solid #76b642';
     bannerActionAccept.style.borderRadius = '8px';
     bannerActionAccept.style.backgroundColor = '#76b642';
     bannerActionAccept.style.color = '#ffffff';
+    bannerActionAccept.setAttribute('data-reason', 'consent');
     switch (secondaryButtonType) {
-      case 'settings':
+      case 'go-to-settings':
         bannerActionAccept.appendChild(document.createTextNode('OK'));
         break;
       default:
@@ -129,9 +130,9 @@
     bannerActionDecline.style.borderRadius = '8px';
     bannerActionDecline.style.backgroundColor = '#ffffff';
     bannerActionDecline.style.color = '#76b642';
-    bannerActionDecline.value = secondaryButtonType;
+    bannerActionDecline.setAttribute('data-reason', secondaryButtonType);
     switch (secondaryButtonType) {
-      case 'settings':
+      case 'go-to-settings':
         bannerActionDecline.appendChild(document.createTextNode('Einstellungen ändern'));
         break;
       default:
@@ -218,12 +219,12 @@
 
       if (!banner) {
         if (callback && typeof callback === 'function') {
-          callback(undefined);
+          callback(undefined, 'not-mounted');
         }
         return;
       }
 
-      setConsentCallback = callback;
+      bannerCloseCallback = callback;
 
       consBtnAgree = document.getElementById('consBtnAgree');
       consBtnDecline = document.getElementById('consBtnDecline');
@@ -233,7 +234,7 @@
       hideBannerTimeout = setTimeout(function () {
         hideConsentBanner();
         if (callback && typeof callback === 'function') {
-          callback(undefined);
+          callback(undefined, 'timeout');
         }
       }, parseInt('<%-BANNER_TIMEOUT%>'));
     }
@@ -282,11 +283,14 @@
     }
 
     function handleEnter() {
-      if (setConsentCallback && typeof setConsentCallback === 'function') {
+      if (bannerCloseCallback && typeof bannerCloseCallback === 'function') {
         if (consBtnAgree && consBtnAgree.className.indexOf('selected') !== -1) {
-          setConsentCallback(true);
+          bannerCloseCallback(true, consBtnAgree['data-reason']);
         } else {
-          setConsentCallback(false, consBtnDecline.value);
+          bannerCloseCallback(
+            consBtnDecline['data-reason'] === 'go-to-settings' ? undefined : false,
+            consBtnDecline['data-reason'],
+          );
         }
       }
       hideConsentBanner();
