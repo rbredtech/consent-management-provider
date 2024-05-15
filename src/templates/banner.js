@@ -285,11 +285,11 @@
     function handleEnter() {
       if (bannerCloseCallback && typeof bannerCloseCallback === 'function') {
         if (consBtnAgree && consBtnAgree.className.indexOf('selected') !== -1) {
-          bannerCloseCallback(true, consBtnAgree['data-reason']);
+          bannerCloseCallback(true, consBtnAgree.getAttribute('data-reason'));
         } else {
           bannerCloseCallback(
-            consBtnDecline['data-reason'] === 'go-to-settings' ? undefined : false,
-            consBtnDecline['data-reason'],
+            consBtnDecline.getAttribute('data-reason') === 'go-to-settings' ? undefined : false,
+            consBtnDecline.getAttribute('data-reason'),
           );
         }
       }
