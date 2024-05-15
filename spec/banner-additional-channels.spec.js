@@ -12,7 +12,6 @@ afterAll(async () => {
 
 describe("Consent Management with banner", () => {
   beforeAll(async () => {
-    await page.setUserAgent("useragent Presto1.2 version");
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     await pageHelper.initLoader(page, 0, true);
   });
@@ -29,7 +28,7 @@ describe("Consent Management with banner", () => {
   describe("When showBanner API method is called", () => {
     beforeAll(async () => {
       await page.evaluate(function () {
-        window.__cbapi("showBanner", 2, function (consentDecision) {
+        window.__cbapi("showAdditionalChannelsBanner", 2, function (consentDecision) {
           if (typeof consentDecision === "boolean") {
             window.__cmpapi("setConsent", 2, undefined, consentDecision);
           }
@@ -46,14 +45,9 @@ describe("Consent Management with banner", () => {
       ).resolves.toBeDefined();
     });
 
-    test("Channel specific information should be present", async () => {
+    test("Previously given consent should be mentioned", async () => {
       const bannerText = await page.$eval("div#agttcnstbnnr", (node) => node.innerText);
-      expect(bannerText).toContain("deren Mitglied");
-    });
-
-    test("Channel Name is replaced in legal text", async () => {
-      const bannerText = await page.$eval("div#agttcnstbnnr", (node) => node.innerText);
-      expect(bannerText).toContain("ServusTV");
+      expect(bannerText).toContain("Sie bereits Ihre Einwilligung");
     });
 
     describe("When OK button is hit", () => {
@@ -73,7 +67,7 @@ describe("Consent Management with banner", () => {
       describe("When banner is requested again", () => {
         beforeAll(async () => {
           await page.evaluate(function () {
-            window.__cbapi("showBanner", 2, function (consentDecision) {
+            window.__cbapi("showAdditionalChannelsBanner", 2, function (consentDecision) {
               if (typeof consentDecision === "boolean") {
                 window.__cmpapi("setConsent", 2, undefined, consentDecision);
               }
@@ -99,6 +93,4 @@ describe("Consent Management with banner", () => {
       });
     });
   });
-
- 
 });
