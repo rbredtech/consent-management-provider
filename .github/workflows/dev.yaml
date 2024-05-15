@@ -12,14 +12,19 @@ jobs:
     name: Build and test
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     timeout-minutes: 30
 
     steps:
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Checkout repository
         id: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependencies
         id: install
@@ -69,7 +74,7 @@ jobs:
       - name: Set snapshot tag
         id: set-snapshot-tag
         if: github.ref == 'refs/heads/develop'
-        uses: actions/github-script@v5
+        uses: actions/github-script@v7
         with:
           script: |
             github.rest.git.createRef({
@@ -79,28 +84,28 @@ jobs:
               sha: context.sha
             })
 
-      - name: Log in to the Container registry
+      - name: Log in to container registry
         id: registry-login
         if: github.ref == 'refs/heads/develop'
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata for Docker
+      - name: Extract metadata for docker
         id: docker-meta
         if: github.ref == 'refs/heads/develop'
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=raw,value=${{ steps.get-latest-version.outputs.tag }}_snapshot_${{ github.run_number }}
 
-      - name: Build and push Docker image
+      - name: Build and push docker image
         id: docker-build-push
         if: github.ref == 'refs/heads/develop'
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           context: .
           push: true
