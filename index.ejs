@@ -5,6 +5,31 @@
   <meta http-equiv='content-type' content='application/vnd.hbbtv.xhtml+xml; charset=utf-8'>
   </meta>
   <title>Consent Management Test</title>
+  <style>
+    #redbutton {
+      position: absolute;
+      bottom: 36px;
+      right: 64px;
+      width: 235px;
+      height: 84px;
+      background-color: #ccc;
+      border-radius: 10px;
+      padding: 10px;
+    }
+  
+    .redbutton__menu-item {
+      margin-bottom: 15px;
+    }
+  
+    .redbutton__menu-item-button-icon {
+      float: left;
+      display: block;
+      width: 20px;
+      height: 10px;
+      padding: 3px;
+      margin-right: 5px;
+    }
+  </style>
   <script>
     //<![CDATA[
     // tracking script api mock with delayed availability
@@ -19,8 +44,8 @@
     }, 200);
     //]]>
   </script>
-  <script type='text/javascript' src='http://localhost:3000/v2/cmp.js?channelId=0'></script>
-  <script type='text/javascript' src='http://localhost:3000/v2/banner.js?channelId=0'></script>
+  <script type='text/javascript' src='http://localhost:3000/v2/cmp.js?channelId=9999'></script>
+  <script type='text/javascript' src='http://localhost:3000/v2/banner.js?channelId=9999'></script>
   <script>
     //<![CDATA[
     var isShowingBanner = false;
@@ -49,14 +74,28 @@
     // example for extending existing key handler of app to allow for control of buttons of the banner
     function keyHandler(event) {
       window['KeyEvent'] = window['KeyEvent'] || {};
+      KeyEvent['VK_GREEN'] = KeyEvent.VK_GREEN || window['VK_GREEN'] || 404;
+      KeyEvent['VK_YELLOW'] = KeyEvent.VK_YELLOW || window['VK_YELLOW'] || 405;
       KeyEvent['VK_BLUE'] = KeyEvent.VK_BLUE || window['VK_BLUE'] || 406;
 
       if (isShowingBanner) {
         // pass on key events to library while consent banner is displayed
-        window.__cbapi('handleKey', 2, undefined, event);
+        window.__cbapi('handleKey', 2, function () {
+          console.log(event.keyCode);
+        }, event);
         return;
       } else {
         switch (event.keyCode) {
+          case KeyEvent.VK_GREEN:
+            window.__cmpapi('removeConsentDecision', 2, function () {
+              console.log('Consent decision removed');
+            });
+            break;
+          case KeyEvent.VK_YELLOW:
+            setTimeout(function () {
+              document.location = document.location;
+            }, 300);
+            break;
           case KeyEvent.VK_BLUE:
             showAgttConsentBanner();
             break;
@@ -92,15 +131,30 @@
   </script>
 </head>
 
-<body>
+<body
+  style='width: 1280px; height: 720px; margin: 0; padding: 0; position: relative; overflow: hidden; font-family: "Tiresias", sans-serif'>
   <object id='video' type='video/broadcast' fullscreen='true' width='1280' height='720'
     style='position:absolute; top: 0px; left: 0px; width: 1280px; height: 720px;'></object>
   <div style='visibility: hidden; width: 0; height: 0; position: absolute;'>
     <object id='oipfAppMngr' type='application/oipfApplicationManager'></object>
     <object id='oipfCfg' type='application/oipfConfiguration'></object>
   </div>
-  <script src='<%-BROWSER_REFRESH_URL%>'></script>
+  <div id="redbutton">
+    <div class="redbutton__menu-item">
+      <div class="redbutton__menu-item-button-icon" style="background-color: #3993D9;"></div>
+      <div>Open consent banner</div>
+    </div>
+    <div class="redbutton__menu-item">
+      <div class="redbutton__menu-item-button-icon" style="background-color: #3FCD7F;"></div>
+      <div>Delete consent decision</div>
+    </div>
+    <div class="redbutton__menu-item">
+      <div class="redbutton__menu-item-button-icon" style="background-color: #F3D07C;"></div>
+      <div>Reload app</div>
+    </div>
+  </div>
   <div id='cmp'></div>
+  <script src='<%-BROWSER_REFRESH_URL%>'></script>
 </body>
 
 </html>
