@@ -99,6 +99,4 @@ describe("Consent Management with banner", () => {
       });
     });
   });
-
- 
 });
