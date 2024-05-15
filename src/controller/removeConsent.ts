@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { COOKIE_DOMAIN, COOKIE_NAME, COOKIE_NAME_ADDITIONAL_CHANNELS } from "../config";
+import { CONSENT_COOKIE_NAME, COOKIE_DOMAIN, COOKIE_NAME } from "../config";
 import { consentCounterMetric } from "../util/metrics";
 
 const img = Buffer.from(
@@ -15,7 +15,7 @@ export const removeConsentController = (req: Request, res: Response) => {
     maxAge: 0,
     domain: COOKIE_DOMAIN,
   });
-  res.cookie(COOKIE_NAME_ADDITIONAL_CHANNELS, "{}", {
+  res.cookie(CONSENT_COOKIE_NAME, "{}", {
     maxAge: 0,
     domain: COOKIE_DOMAIN,
   });

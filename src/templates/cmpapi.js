@@ -4,10 +4,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
 
   var hasConsent = '<%-TC_CONSENT%>' === 'undefined' ? undefined : '<%-TC_CONSENT%>' === 'true';
-  var hasConsentAdditionalChannels =
-    '<%-TC_CONSENT_ADDITIONAL_CHANNELS%>' === 'undefined'
-      ? undefined
-      : '<%-TC_CONSENT_ADDITIONAL_CHANNELS%>' === 'true';
+  var consentVendorIds = '<%-TC_CONSENT_VENDER_IDS%>';
 
   if (window.localStorage && localStorage.getItem) {
     var localStorageConsent = localStorage.getItem('<%-COOKIE_NAME%>');
@@ -18,12 +15,9 @@ window.__cmpapi = function (command, version, callback, parameter) {
       hasConsent = false;
     }
 
-    var localStorageConsentAdditionalChannels = localStorage.getItem('<%-COOKIE_NAME_ADDITIONAL_CHANNELS%>');
-    if (localStorageConsentAdditionalChannels === 'true') {
-      hasConsentAdditionalChannels = true;
-    }
-    if (localStorageConsentAdditionalChannels === 'false') {
-      hasConsentAdditionalChannels = false;
+    var lcConsentVendorIds = localStorage.getItem('<%-CONSENT_COOKIE_NAME%>');
+    if (lcConsentVendorIds) {
+      consentVendorIds = lcConsentVendorIds;
     }
   }
 
@@ -77,26 +71,41 @@ window.__cmpapi = function (command, version, callback, parameter) {
           purpose: {
             consents: {
               4040: hasConsent,
-              4041: hasConsentAdditionalChannels,
+              4041:
+                consentVendorIds.indexOf('4041+true') !== -1
+                  ? true
+                  : consentVendorIds.indexOf('4041+false') !== -1
+                  ? false
+                  : undefined,
             },
           },
           legitimateInterests: {
             consents: {
               4040: hasConsent,
-              4041: hasConsentAdditionalChannels,
+              4041:
+                consentVendorIds.indexOf('4041+true') !== -1
+                  ? true
+                  : consentVendorIds.indexOf('4041+false') !== -1
+                  ? false
+                  : undefined,
             },
           },
           vendor: {
             consents: {
               4040: hasConsent,
-              4041: hasConsentAdditionalChannels,
+              4041:
+                consentVendorIds.indexOf('4041+true') !== -1
+                  ? true
+                  : consentVendorIds.indexOf('4041+false') !== -1
+                  ? false
+                  : undefined,
             },
           },
         });
       log(logEvents.GET_TC_DATA, true, {
         status: '<%-CMP_STATUS%>',
         consent: hasConsent ?? 'undefined',
-        consentAdditionalChannels: hasConsentAdditionalChannels ?? 'undefined',
+        consentVendorIds,
       });
       break;
     case 'setConsent':
@@ -110,7 +119,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
 
       if (window.localStorage && localStorage.setItem) {
         localStorage.setItem('<%-COOKIE_NAME%>', parameter);
-        localStorage.setItem('<%-COOKIE_NAME_ADDITIONAL_CHANNELS%>', parameter);
+        localStorage.setItem('<%-CONSENT_COOKIE_NAME%>', parameter ? '4040+true,4041+true' : '4040+false,4041+false');
         localStorageAvailable = true;
       }
 
@@ -133,7 +142,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
       image.src = '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent';
       if (window.localStorage && localStorage.removeItem) {
         localStorage.removeItem('<%-COOKIE_NAME%>');
-        localStorage.removeItem('<%-COOKIE_NAME_ADDITIONAL_CHANNELS%>');
+        localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
         localStorageAvailable = true;
       }
 
