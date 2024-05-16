@@ -28,6 +28,7 @@ describe("Consent Management with technical cookie", () => {
       expect(apiResponse.cmpStatus).toBe("loaded");
       expect(apiResponse.vendor["consents"]).toBeDefined();
       expect(apiResponse.vendor["consents"]["4040"]).toBeUndefined();
+      expect(apiResponse.vendor["consents"]["4041"]).toBeUndefined();
     });
 
     describe("When consent is declined", () => {
@@ -43,6 +44,7 @@ describe("Consent Management with technical cookie", () => {
         expect(apiResponse.cmpStatus).toBe("loaded");
         expect(apiResponse.vendor["consents"]).toBeDefined();
         expect(apiResponse.vendor["consents"]["4040"]).toBe(false);
+        expect(apiResponse.vendor["consents"]["4041"]).toBe(false);
       });
     });
   });
