@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { COOKIE_DOMAIN, COOKIE_NAME, COOKIE_MAXAGE, CONSENT_COOKIE_NAME } from "../config";
 import { consentCounterMetric } from "../util/metrics";
-import { ConsentCookie, ConsentVendorIdsCookie } from "./util/getTemplateValues";
+import { ConsentCookie, ConsentByVendorIdCookie } from "./util/getTemplateValues";
 
 const img = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNiYAAAAAkAAxkR2eQAAAAASUVORK5CYII=",
@@ -14,7 +14,7 @@ export const setConsentController = (req: Request, res: Response) => {
     consent: req.query?.consent === "1",
   };
 
-  const consentCookie: ConsentVendorIdsCookie = {
+  const consentCookie: ConsentByVendorIdCookie = {
     consent: req.query?.consent === "1" ? "4040+true,4041+true" : "",
   };
 

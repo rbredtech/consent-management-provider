@@ -4,7 +4,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
 
   var hasConsent = '<%-TC_CONSENT%>' === 'undefined' ? undefined : '<%-TC_CONSENT%>' === 'true';
-  var consentVendorIds = '<%-TC_CONSENT_VENDER_IDS%>';
+  var consentByVendorId = '<%-TC_CONSENT_BY_VENDOR_ID%>';
 
   if (window.localStorage && localStorage.getItem) {
     var localStorageConsent = localStorage.getItem('<%-COOKIE_NAME%>');
@@ -15,9 +15,9 @@ window.__cmpapi = function (command, version, callback, parameter) {
       hasConsent = false;
     }
 
-    var lcConsentVendorIds = localStorage.getItem('<%-CONSENT_COOKIE_NAME%>');
-    if (lcConsentVendorIds) {
-      consentVendorIds = lcConsentVendorIds;
+    var lsConsentByVendorId = localStorage.getItem('<%-CONSENT_COOKIE_NAME%>');
+    if (lsConsentByVendorId) {
+      consentByVendorId = lsConsentByVendorId;
     }
   }
 
@@ -72,9 +72,9 @@ window.__cmpapi = function (command, version, callback, parameter) {
             consents: {
               4040: hasConsent,
               4041:
-                consentVendorIds.indexOf('4041+true') !== -1
+                consentByVendorId.indexOf('4041+true') !== -1
                   ? true
-                  : consentVendorIds.indexOf('4041+false') !== -1
+                  : consentByVendorId.indexOf('4041+false') !== -1
                   ? false
                   : undefined,
             },
@@ -83,9 +83,9 @@ window.__cmpapi = function (command, version, callback, parameter) {
             consents: {
               4040: hasConsent,
               4041:
-                consentVendorIds.indexOf('4041+true') !== -1
+                consentByVendorId.indexOf('4041+true') !== -1
                   ? true
-                  : consentVendorIds.indexOf('4041+false') !== -1
+                  : consentByVendorId.indexOf('4041+false') !== -1
                   ? false
                   : undefined,
             },
@@ -94,9 +94,9 @@ window.__cmpapi = function (command, version, callback, parameter) {
             consents: {
               4040: hasConsent,
               4041:
-                consentVendorIds.indexOf('4041+true') !== -1
+                consentByVendorId.indexOf('4041+true') !== -1
                   ? true
-                  : consentVendorIds.indexOf('4041+false') !== -1
+                  : consentByVendorId.indexOf('4041+false') !== -1
                   ? false
                   : undefined,
             },
@@ -105,7 +105,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
       log(logEvents.GET_TC_DATA, true, {
         status: '<%-CMP_STATUS%>',
         consent: hasConsent ?? 'undefined',
-        consentVendorIds,
+        consentByVendorId,
       });
       break;
     case 'setConsent':

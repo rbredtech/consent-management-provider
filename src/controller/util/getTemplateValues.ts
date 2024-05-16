@@ -18,7 +18,7 @@ export interface ConsentCookie {
   consent: boolean;
 }
 
-export interface ConsentVendorIdsCookie {
+export interface ConsentByVendorIdCookie {
   consent: string;
 }
 
@@ -33,15 +33,17 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
   }
   logger.debug(`hasCookie=${cookie !== undefined}; hasConsent=${cookie?.consent}`);
 
-  let cookieConsentVendorIds: ConsentVendorIdsCookie | undefined;
+  let cookieConsentByVendorId: ConsentByVendorIdCookie | undefined;
   if (req.cookies[CONSENT_COOKIE_NAME]) {
     try {
-      cookieConsentVendorIds = JSON.parse(Buffer.from(req.cookies[CONSENT_COOKIE_NAME], "base64").toString());
+      cookieConsentByVendorId = JSON.parse(Buffer.from(req.cookies[CONSENT_COOKIE_NAME], "base64").toString());
     } catch (e) {
       logger.info(`Error parsing cookie ${CONSENT_COOKIE_NAME}`, e);
     }
     logger.debug(
-      `hasCookieConsentVendorIds=${cookieConsentVendorIds !== undefined}; consentVendorIds=${cookieConsentVendorIds}`,
+      `hasCookieConsentByVendorId=${
+        cookieConsentByVendorId !== undefined
+      }; consentByVendorId=${cookieConsentByVendorId}`,
     );
   }
 
@@ -56,14 +58,14 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
     if (req.query.consent === "true") tcConsent = true;
   }
 
-  let tcConsentVendorIds: string | undefined;
-  if (cookieConsentVendorIds) {
-    tcConsentVendorIds = cookieConsentVendorIds.consent || undefined;
+  let tcConsentByVendorId: string | undefined;
+  if (cookieConsentByVendorId) {
+    tcConsentByVendorId = cookieConsentByVendorId.consent || undefined;
   }
   if (req.query.vendorConsents) {
     // consent from url param comes from localStorage on device and takes preference over cookie
     logger.debug(`consent in url param found ${req.query.vendorConsents.toString()}`);
-    tcConsentVendorIds = req.query.vendorConsents.toString();
+    tcConsentByVendorId = req.query.vendorConsents.toString();
   }
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
@@ -75,7 +77,7 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
 
   const technicalCookiePassed = CMP_ENABLED && req.timestamp && Date.now() - req.timestamp >= TECH_COOKIE_MIN;
 
-  if (technicalCookiePassed || tcConsent !== undefined || tcConsentVendorIds !== undefined) {
+  if (technicalCookiePassed || tcConsent !== undefined || tcConsentByVendorId !== undefined) {
     // if the tech cookie is set and is old enough, the cmp is enabled
     cmpStatus = "loaded";
   }
@@ -83,7 +85,7 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
   if (
     cmpStatus === "loaded" &&
     tcConsent === undefined &&
-    tcConsentVendorIds === undefined &&
+    tcConsentByVendorId === undefined &&
     Math.floor(Math.random() * 100 + 1) > CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT
   ) {
     // request randomly chosen to be outside the configured sampling threshold,
@@ -100,7 +102,7 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
     TC_STRING: "tcstr",
     CMP_STATUS: cmpStatus,
     TC_CONSENT: tcConsent ?? "undefined",
-    TC_CONSENT_VENDER_IDS: tcConsentVendorIds || "",
+    TC_CONSENT_BY_VENDOR_ID: tcConsentByVendorId || "",
     CONSENT_SERVER_HOST: HTTP_HOST,
     CONSENT_SERVER_PROTOCOL: req.protocol,
     CHANNEL_ID: req.query.channelId ? req.query.channelId.toString() : "",
