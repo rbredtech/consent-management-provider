@@ -40,7 +40,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
 
   switch (command) {
     case 'ping':
-      !!callback &&
+      if (callback && typeof callback === 'function') {
         callback({
           gdprApplies: true,
           cmpLoaded: true,
@@ -52,9 +52,10 @@ window.__cmpapi = function (command, version, callback, parameter) {
           gvlVersion: 1,
           tcfPolicyVersion: 2,
         });
+      }
       break;
     case 'getTCData':
-      !!callback &&
+      if (callback && typeof callback === 'function') {
         callback({
           tcString: '<%-TC_STRING%>',
           tcfPolicyVersion: 2,
@@ -102,6 +103,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
             },
           },
         });
+      }
       log(logEvents.GET_TC_DATA, true, {
         status: '<%-CMP_STATUS%>',
         consent: hasConsent ?? 'undefined',
@@ -133,7 +135,9 @@ window.__cmpapi = function (command, version, callback, parameter) {
         log(logEvents.SET_CONSENT, false, {});
       };
 
-      !!callback && callback(parameter);
+      if (callback && typeof callback === 'function') {
+        callback(parameter);
+      }
       break;
     case 'removeConsentDecision':
       localStorageAvailable = false;
@@ -153,10 +157,14 @@ window.__cmpapi = function (command, version, callback, parameter) {
         log(logEvents.REMOVE_CONSENT_DECISION, false, {});
       };
 
-      !!callback && callback();
+      if (callback && typeof callback === 'function') {
+        callback();
+      }
       break;
     case 'onLogEvent':
-      logCallbacks[logCallbacks.length] = callback;
+      if (callback && typeof callback === 'function') {
+        logCallbacks[logCallbacks.length] = callback;
+      }
       break;
     case 'log':
       if (parameter) {
