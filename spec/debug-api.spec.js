@@ -62,7 +62,7 @@ describe("Debug API", () => {
         expect(queue).toHaveLength(2);
         expect(queue[1]).toEqual({
           event: "getTCData",
-          parameters: { consent: "undefined", consentByVendorId: "", status: "disabled" },
+          parameters: { consentByVendorId: {}, status: "disabled" },
           success: true,
           ts: expect.any(Number),
         });
@@ -90,7 +90,7 @@ describe("Debug API", () => {
           expect(queue[2]).toEqual({
             event: "setConsent",
             parameters: {
-              consent: false,
+              consentByVendorId: "4040+false,4041+false",
               localStorageAvailable: true,
             },
             success: true,
@@ -126,13 +126,13 @@ describe("Debug API", () => {
           expect(queue).toHaveLength(5);
           expect(queue[3]).toEqual({
             event: "getTCData",
-            parameters: { status: "disabled", consent: false, consentByVendorId: "4040+false,4041+false" },
+            parameters: { status: "disabled", consentByVendorId: { 4040: false, 4041: false } },
             success: true,
             ts: expect.any(Number),
           });
           expect(queue[4]).toEqual({
             event: "getTCData",
-            parameters: { status: "disabled", consent: false, consentByVendorId: "4040+false,4041+false" },
+            parameters: { status: "disabled", consentByVendorId: { 4040: false, 4041: false } },
             success: true,
             ts: expect.any(Number),
           });

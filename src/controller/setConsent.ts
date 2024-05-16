@@ -14,13 +14,13 @@ export const setConsentController = (req: Request, res: Response) => {
     consent: req.query?.consent === "1",
   };
 
-  const consentCookie: ConsentByVendorIdCookie = {
-    consent: req.query?.consent === "1" ? "4040+true,4041+true" : "",
+  const consentByVendorIdCookie: ConsentByVendorIdCookie = {
+    consent: req.query?.consentByVendorId?.toString() ?? "",
   };
 
   consentCounterMetric
     .labels({
-      consent: cookie.consent.toString(),
+      consent: consentByVendorIdCookie.consent,
       channel: req.channelName,
     })
     .inc();
@@ -30,7 +30,7 @@ export const setConsentController = (req: Request, res: Response) => {
     domain: COOKIE_DOMAIN,
   });
 
-  res.cookie(CONSENT_COOKIE_NAME, Buffer.from(JSON.stringify(consentCookie)).toString("base64"), {
+  res.cookie(CONSENT_COOKIE_NAME, Buffer.from(JSON.stringify(consentByVendorIdCookie)).toString("base64"), {
     maxAge: COOKIE_MAXAGE,
     domain: COOKIE_DOMAIN,
   });

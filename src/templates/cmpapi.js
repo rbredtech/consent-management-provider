@@ -4,7 +4,7 @@ window.__cmpapi = function (command, version, callback, parameter) {
   var channelId = '<%-CHANNEL_ID%>';
 
   var hasConsent = '<%-TC_CONSENT%>' === 'undefined' ? undefined : '<%-TC_CONSENT%>' === 'true';
-  var consentByVendorId = '<%-TC_CONSENT_BY_VENDOR_ID%>';
+  var consentByVendorIdSerialized = '<%-TC_CONSENT_BY_VENDOR_ID%>' || undefined;
 
   if (window.localStorage && localStorage.getItem) {
     var localStorageConsent = localStorage.getItem('<%-COOKIE_NAME%>');
@@ -17,8 +17,23 @@ window.__cmpapi = function (command, version, callback, parameter) {
 
     var lsConsentByVendorId = localStorage.getItem('<%-CONSENT_COOKIE_NAME%>');
     if (lsConsentByVendorId) {
-      consentByVendorId = lsConsentByVendorId;
+      consentByVendorIdSerialized = lsConsentByVendorId;
     }
+  }
+
+  var consentByVendorId = {};
+
+  if (consentByVendorIdSerialized) {
+    var parsed = consentByVendorIdSerialized.split(',');
+    for (var x = 0; x < parsed.length; x++) {
+      var split = parsed[x].split('+');
+      consentByVendorId[split[0]] = split[1] === 'true';
+    }
+  }
+
+  // backwards compatibility with old cookie
+  if (consentByVendorId[4040] === undefined && hasConsent !== undefined) {
+    consentByVendorId[4040] = hasConsent;
   }
 
   var logEvents = {
@@ -70,64 +85,43 @@ window.__cmpapi = function (command, version, callback, parameter) {
           publisherCC: 'AT',
           purposeOneTreatment: true,
           purpose: {
-            consents: {
-              4040: hasConsent,
-              4041:
-                consentByVendorId.indexOf('4041+true') !== -1
-                  ? true
-                  : consentByVendorId.indexOf('4041+false') !== -1
-                  ? false
-                  : undefined,
-            },
+            consents: consentByVendorId,
           },
           legitimateInterests: {
-            consents: {
-              4040: hasConsent,
-              4041:
-                consentByVendorId.indexOf('4041+true') !== -1
-                  ? true
-                  : consentByVendorId.indexOf('4041+false') !== -1
-                  ? false
-                  : undefined,
-            },
+            consents: consentByVendorId,
           },
           vendor: {
-            consents: {
-              4040: hasConsent,
-              4041:
-                consentByVendorId.indexOf('4041+true') !== -1
-                  ? true
-                  : consentByVendorId.indexOf('4041+false') !== -1
-                  ? false
-                  : undefined,
-            },
+            consents: consentByVendorId,
           },
         });
       }
       log(logEvents.GET_TC_DATA, true, {
         status: '<%-CMP_STATUS%>',
-        consent: hasConsent ?? 'undefined',
-        consentByVendorId,
+        consentByVendorId: consentByVendorId,
       });
       break;
     case 'setConsent':
+      var consentDecision = parameter;
       localStorageAvailable = false;
+
+      var consentDecisionByVendorId = consentDecision + '' === 'true' ? '4040+true,4041+true' : '4040+false,4041+false';
 
       image = document.createElement('img');
       image.src =
         '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consent=' +
-        (parameter + '' === 'true' ? 1 : 0) +
+        (consentDecision + '' === 'true' ? 1 : 0) +
+        ('&consentByVendorId=' + consentDecisionByVendorId) +
         (channelId !== '' ? '&channelId=' + channelId : '');
 
       if (window.localStorage && localStorage.setItem) {
-        localStorage.setItem('<%-COOKIE_NAME%>', parameter);
-        localStorage.setItem('<%-CONSENT_COOKIE_NAME%>', parameter ? '4040+true,4041+true' : '4040+false,4041+false');
+        localStorage.setItem('<%-COOKIE_NAME%>', consentDecision);
+        localStorage.setItem('<%-CONSENT_COOKIE_NAME%>', consentDecisionByVendorId);
         localStorageAvailable = true;
       }
 
       image.onload = function () {
         log(logEvents.SET_CONSENT, true, {
-          consent: parameter,
+          consentByVendorId: consentDecisionByVendorId,
           localStorageAvailable: localStorageAvailable,
         });
       };
