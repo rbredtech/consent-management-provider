@@ -90,7 +90,7 @@ describe("Debug API", () => {
           expect(queue[2]).toEqual({
             event: "setConsent",
             parameters: {
-              consentByVendorId: "4040+false,4041+false",
+              consentByVendorId: { 4040: false, 4041: false },
               localStorageAvailable: true,
             },
             success: true,

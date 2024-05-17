@@ -12,7 +12,7 @@
   };
 
   function log(event, success, parameters) {
-    window.__cmpapi('log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
+    window.__cmpapi('_log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
   }
 
   function callQueue(type) {
@@ -243,6 +243,9 @@
       } catch (e) {}
     }
   });
+
+  //migrate consent to new cookie
+  window.__cmpapi('_migrateConsent');
 
   init();
 })();
