@@ -13,7 +13,7 @@
     var serialized = '';
     var vendorIds = objectKeys(consentByVendorId);
     for (var i = 0; i < vendorIds.length; i++) {
-      serialized = serialized + vendorIds[i] + '+' + consentByVendorId[vendorIds[i]];
+      serialized = serialized + vendorIds[i] + '~' + consentByVendorId[vendorIds[i]];
       if (i < vendorIds.length - 1) {
         serialized = serialized + ',';
       }
@@ -26,7 +26,7 @@
     if (serializedConsentByVendorId) {
       var parsed = serializedConsentByVendorId.split(',');
       for (var x = 0; x < parsed.length; x++) {
-        var split = parsed[x].split('+');
+        var split = parsed[x].split('~');
         consentByVendorId[split[0]] = split[1] === 'true';
       }
     }
@@ -218,7 +218,7 @@
         }
         break;
       case '_migrateConsent':
-        if (hasConsent !== undefined && '<%-TC_CONSENT_BY_VENDOR_ID%>'.indexOf('4040+') === -1) {
+        if (hasConsent !== undefined && (!lsConsentByVendorId || lsConsentByVendorId.indexOf('4040~') === -1)) {
           var migratedConsent = {
             4040: hasConsent,
           };
