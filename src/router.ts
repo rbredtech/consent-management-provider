@@ -28,7 +28,7 @@ router.get("/cmp.js", cmpController);
 router.get("/cmp-with-tracking.js", cmpWithTrackingController);
 router.get("/iframe.html", iframeController);
 router.get("/remove-consent", removeConsentController);
-router.get("/set-consent", setConsentController);
+router.get(["/set-consent", "/migrate"], setConsentController);
 router.get("/cmpapi.js", cmpapiController);
 router.get("/cmpapi-iframe.js", cmpapiIframeController);
 

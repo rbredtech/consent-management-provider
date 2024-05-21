@@ -22,17 +22,18 @@ describe("Consent Management with technical cookie", () => {
       await pageHelper.initLoader(page);
     });
 
-    test("Storage status is enabled and consent is false", async () => {
+    test("Storage status is enabled and consent is not defined", async () => {
       const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 2, resolve)}))`);
 
       expect(apiResponse.cmpStatus).toBe("loaded");
       expect(apiResponse.vendor["consents"]).toBeDefined();
       expect(apiResponse.vendor["consents"]["4040"]).toBeUndefined();
+      expect(apiResponse.vendor["consents"]["4041"]).toBeUndefined();
     });
 
     describe("When consent is given", () => {
       beforeAll(async () => {
-        await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('setConsent', 1, resolve, true);}))`);
+        await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('setConsent', 2, resolve, true);}))`);
         await pageHelper.initLoader(page);
       });
 
@@ -43,6 +44,24 @@ describe("Consent Management with technical cookie", () => {
         expect(apiResponse.cmpStatus).toBe("loaded");
         expect(apiResponse.vendor["consents"]).toBeDefined();
         expect(apiResponse.vendor["consents"]["4040"]).toBe(true);
+        expect(apiResponse.vendor["consents"]["4041"]).toBe(true);
+      });
+    });
+
+    describe("When consent is deleted", () => {
+      beforeAll(async () => {
+        await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('removeConsentDecision', 2, resolve, true);}))`);
+        await pageHelper.initLoader(page);
+      });
+
+      test("Storage status is enabled and consent is not defined", async () => {
+        const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 2, resolve)}))`);
+
+        console.log(JSON.stringify(apiResponse));
+        expect(apiResponse.cmpStatus).toBe("loaded");
+        expect(apiResponse.vendor["consents"]).toBeDefined();
+        expect(apiResponse.vendor["consents"]["4040"]).toBeUndefined();
+        expect(apiResponse.vendor["consents"]["4041"]).toBeUndefined();
       });
     });
   });

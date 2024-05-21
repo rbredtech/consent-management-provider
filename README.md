@@ -74,13 +74,13 @@ type TCData = {
   publisherCC: string,
   purposeOneTreatment: boolean,
   purpose: {
-    consents: Record<number, string>,
+    consents: Record<number, boolean>,
   },
   legitimateInterests: {
-    consents: Record<number, string>,
+    consents: Record<number, boolean>,
   },
   vendor: {
-    consents: Record<number, string>,
+    consents: Record<number, boolean>,
   }
 }
 ```

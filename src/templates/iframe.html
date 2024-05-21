@@ -12,6 +12,7 @@
 
       var techCookieTimestamp = '<%-TECH_COOKIE_TIMESTAMP%>';
       var hasConsent = null;
+      var consentByVendorId = null;
 
       if (window.localStorage && localStorage.getItem && localStorage.setItem) {
         if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
@@ -20,11 +21,12 @@
         } else {
           techCookieTimestamp = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
           hasConsent = localStorage.getItem('<%-COOKIE_NAME%>');
+          consentByVendorId = localStorage.getItem('<%-CONSENT_COOKIE_NAME%>');
         }
       }
 
       var cmpApiScriptTag = document.createElement('script');
-      cmpApiScriptTag.setAttribute('src', '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi-iframe.js?<%-TECH_COOKIE_NAME%>=' + techCookieTimestamp + (hasConsent !== null ? '&consent=' + hasConsent : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
+      cmpApiScriptTag.setAttribute('src', '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi-iframe.js?<%-TECH_COOKIE_NAME%>=' + techCookieTimestamp + (hasConsent !== null ? '&consent=' + hasConsent : '') + (consentByVendorId !== null ? '&vendorConsents=' + consentByVendorId : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
       cmpApiScriptTag.setAttribute('type', 'text/javascript');
       document.getElementsByTagName('head')[0].appendChild(cmpApiScriptTag);
     } catch (e) { }

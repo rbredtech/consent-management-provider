@@ -35,6 +35,7 @@ describe("Consent Management with Presto user agent", () => {
       expect(apiResponse.cmpStatus).toBe("loaded");
       expect(apiResponse.vendor["consents"]).toBeDefined();
       expect(apiResponse.vendor["consents"]["4040"]).toBeUndefined();
+      expect(apiResponse.vendor["consents"]["4041"]).toBeUndefined();
     });
   });
 });
