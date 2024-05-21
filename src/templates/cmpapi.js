@@ -51,6 +51,7 @@
   function removeLocalStorageConsent() {
     if (window.localStorage && localStorage.removeItem) {
       localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
+      localStorage.removeItem('<%-COOKIE_NAME%>');
       return true;
     }
     return false;
@@ -75,7 +76,7 @@
     var channelId = '<%-CHANNEL_ID%>';
 
     var hasConsent = '<%-TC_CONSENT%>' === 'undefined' ? undefined : '<%-TC_CONSENT%>' === 'true';
-    var consentByVendorIdSerialized = '<%-TC_CONSENT_BY_VENDOR_ID%>' || undefined;
+    var consentByVendorIdSerialized = '<%-TC_CONSENT_BY_VENDOR_ID%>';
 
     if (window.localStorage && localStorage.getItem) {
       var localStorageConsent = localStorage.getItem('<%-COOKIE_NAME%>');
@@ -218,7 +219,7 @@
         }
         break;
       case '_migrateConsent':
-        if (hasConsent !== undefined && (!lsConsentByVendorId || lsConsentByVendorId.indexOf('4040~') === -1)) {
+        if (hasConsent !== undefined && consentByVendorIdSerialized.indexOf('4040~') === -1) {
           var migratedConsent = {
             4040: hasConsent,
           };
