@@ -67,7 +67,7 @@ describe("Consent Management with banner", () => {
       });
 
       test("Consent is sent", async () => {
-        expect((await consentSent).url()).toContain("set-consent?consentByVendorId=4040+true,4041+true");
+        expect((await consentSent).url()).toContain("set-consent?consentByVendorId=4040~true,4041~true");
       });
 
       describe("When banner is requested again", () => {
@@ -93,7 +93,7 @@ describe("Consent Management with banner", () => {
           });
 
           test("Consent revoke is sent", async () => {
-            expect((await consentSent).url()).toContain("set-consent?consentByVendorId=4040+false,4041+false");
+            expect((await consentSent).url()).toContain("set-consent?consentByVendorId=4040~false,4041~false");
           });
         });
       });

@@ -1,90 +1,90 @@
-const { describe, beforeAll, beforeEach, afterAll, test, expect } = require("@jest/globals");
+const { describe, test, expect } = require("@jest/globals");
 const pageHelper = require("./helper/page");
-const { wait } = require("./helper/wait");
-let page;
-
-beforeAll(async () => {
-  page = await pageHelper.get();
-}, 20000);
-
-afterAll(async () => {
-  await page.browser().close();
-}, 20000);
 
 describe("Consent cookie migration", () => {
-  beforeAll(async () => {
-    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page, 0);
-    await page.evaluate(function () {
-      localStorage.setItem("xconsent", true);
+  describe("new cookie is not yet present", () => {
+    let page;
+
+    beforeEach(async () => {
+      page = await pageHelper.get();
+      await page.setUserAgent("useragent Presto1.2 version"); // use no-iframe useragent to be able to read/write localStorage
+      await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
+    }, 20000);
+
+    afterEach(async () => {
+      await page.browser().close();
+    }, 20000);
+
+    test("_migrateConsent method writes existing consent to new cookie", async () => {
+      await page.evaluate(function () {
+        return new Promise((resolve) => {
+          localStorage.setItem("xconsent", false);
+          localStorage.removeItem("agttconsent");
+          resolve();
+        });
+      });
+      await pageHelper.initLoader(page, 0);
+
+      const tcData = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 2, resolve)}))`);
+      const localStorage = await page.evaluate(function () {
+        return Promise.resolve(localStorage.getItem("agttconsent"));
+      });
+
+      expect(tcData.vendor.consents[4040]).toBe(false);
+      expect(localStorage).toBe("4040~false");
     });
   });
 
-  afterEach(async () => {
-    await page.evaluate(function () {
-      localStorage.removeItem("agttconsent");
-    });
-  });
+  describe("new cookie is already set", () => {
+    let page;
 
-  describe("_migrateCookie api method", () => {
-    describe("new cookie is not yet present", () => {
-      test("_migrateCookie method writes existing consent to new cookie", async () => {
-        await page.evaluate(function () {
-          window.__cmpapi("_migrateCookie");
+    beforeEach(async () => {
+      page = await pageHelper.get();
+      await page.setUserAgent("useragent Presto1.2 version"); // use no-iframe useragent to be able to read/write localStorage
+      await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
+    }, 20000);
+
+    afterEach(async () => {
+      await page.browser().close();
+    }, 20000);
+
+    test("_migrateConsent method should not change an already existing consent decision", async () => {
+      await page.evaluate(function () {
+        return new Promise((resolve) => {
+          localStorage.setItem("xconsent", false);
+          localStorage.setItem("agttconsent", "4040~true");
+          resolve();
         });
-        await wait(1000);
-        const tcData = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 2, resolve)}))`);
-        expect(tcData.vendor.consents[4040]).toBe(true);
       });
-    });
+      await pageHelper.initLoader(page, 0);
 
-    describe("new cookie is already set", () => {
-      test("_migrateCookie method should not change an already existing consent decision", async () => {
-        await page.evaluate(function () {
-          localStorage.setItem("agttconsent", "4040+false");
+      const tcData = await page.evaluate(function () {
+        return new Promise((resolve) => {
+          window.__cmpapi("getTCData", 2, resolve);
         });
-        await page.evaluate(function () {
-          window.__cmpapi("_migrateCookie");
-        });
-        await wait(1000);
-        const tcData = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 2, resolve)}))`);
-        expect(tcData.vendor.consents[4040]).toBe(false);
       });
 
-      test("_migrateCookie method should not remove an already existing consent decision", async () => {
-        await page.evaluate(function () {
-          localStorage.setItem("agttconsent", "4041+true");
-        });
-        await page.evaluate(function () {
-          window.__cmpapi("_migrateCookie");
-        });
-        await wait(1000);
-        const tcData = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 2, resolve)}))`);
-        expect(tcData.vendor.consents[4040]).toBe(true);
-        expect(tcData.vendor.consents[4041]).toBe(true);
-      });
-    });
-  });
-
-  describe("getTCDate api method", () => {
-    describe("with only old cookie present", () => {
-      test("consent value is correctly evaluated", async () => {
-        var apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 2, resolve)}))`);
-        expect(apiResponse.vendor.consents[4040]).toBe(true);
-      });
+      expect(tcData.vendor.consents[4040]).toBe(true);
     });
 
-    describe("with both cookies present", () => {
-      beforeEach(async () => {
-        await page.evaluate(function () {
-          localStorage.setItem("agttconsent", "4040+false");
+    test("_migrateConsent method should not remove an already existing consent decision", async () => {
+      await page.evaluate(function () {
+        return new Promise((resolve) => {
+          localStorage.setItem("xconsent", false);
+          localStorage.setItem("agttconsent", "4041~true");
+          resolve();
+        });
+      });
+      await pageHelper.initLoader(page, 0);
+
+      const tcData = await page.evaluate(function () {
+        return new Promise((resolve) => {
+          window.__cmpapi("getTCData", 2, resolve);
         });
       });
 
-      test("new cookie overrules old cookie", async () => {
-        var apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 2, resolve)}))`);
-        expect(apiResponse.vendor.consents[4040]).toBe(false);
-      });
+      expect(tcData.vendor.consents[4040]).toBe(false);
+      expect(tcData.vendor.consents[4041]).toBe(true);
     });
   });
 });

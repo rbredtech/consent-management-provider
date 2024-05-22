@@ -41,9 +41,9 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
       logger.info(`Error parsing cookie ${CONSENT_COOKIE_NAME}`, e);
     }
     logger.debug(
-      `hasCookieConsentByVendorId=${
-        cookieConsentByVendorId !== undefined
-      }; consentByVendorId=${cookieConsentByVendorId}`,
+      `hasCookieConsentByVendorId=${cookieConsentByVendorId?.consent !== undefined}; consentByVendorId=${
+        cookieConsentByVendorId?.consent
+      }`,
     );
   }
 
@@ -65,7 +65,7 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
   if (req.query.vendorConsents) {
     // consent from url param comes from localStorage on device and takes preference over cookie
     logger.debug(`consent in url param found ${req.query.vendorConsents.toString()}`);
-    tcConsentByVendorId = req.query.vendorConsents.toString();
+    tcConsentByVendorId = req.query.vendorConsents.toString() || undefined;
   }
 
   let cmpStatus: "loaded" | "disabled" = "disabled";
