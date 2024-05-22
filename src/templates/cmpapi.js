@@ -60,6 +60,7 @@
   var logEvents = {
     GET_TC_DATA: 'getTCData',
     SET_CONSENT: 'setConsent',
+    SET_CONSENT_BY_VENDOR_ID: 'setConsentByVendorId',
     REMOVE_CONSENT_DECISION: 'removeConsentDecision',
     MIGRATE_CONSENT: 'migrateConsent',
   };
@@ -162,12 +163,11 @@
           4040: consent,
           4041: consent,
         };
-        var consentDecisionByVendorIdSerialized = serializeConsentByVendorId(consentDecisionByVendorId);
 
         image = document.createElement('img');
         image.src =
           '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
-          consentDecisionByVendorIdSerialized +
+          serializeConsentByVendorId(consentDecisionByVendorId) +
           (channelId !== '' ? '&channelId=' + channelId : '');
 
         localStorageAvailable = updateLocalStorageConsent(consentDecisionByVendorId);
@@ -183,7 +183,32 @@
         };
 
         if (callback && typeof callback === 'function') {
-          callback(parameter);
+          callback(consent);
+        }
+        break;
+      case `setConsentByVendorId`:
+        localStorageAvailable = false;
+        var consentByVendorIdParam = parameter;
+        image = document.createElement('img');
+        image.src =
+          '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
+          serializeConsentByVendorId(consentByVendorIdParam) +
+          (channelId !== '' ? '&channelId=' + channelId : '');
+
+        localStorageAvailable = updateLocalStorageConsent(consentByVendorIdParam);
+
+        image.onload = function () {
+          log(logEvents.SET_CONSENT_BY_VENDOR_ID, true, {
+            consentByVendorId: consentByVendorIdParam,
+            localStorageAvailable: localStorageAvailable,
+          });
+        };
+        image.onerror = function () {
+          log(logEvents.SET_CONSENT_BY_VENDOR_ID, false, {});
+        };
+
+        if (callback && typeof callback === 'function') {
+          callback(consentByVendorIdParam);
         }
         break;
       case 'removeConsentDecision':

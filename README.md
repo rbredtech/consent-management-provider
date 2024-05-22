@@ -12,9 +12,7 @@ the consent management `getTCData` callback.
 
 ## Compliance
 
-At this time no actually encoded TC String is used. This service uses an with
-IAB unregistered vendor ID of `4040`.
-
+At this time no actually encoded TC String is used. Currently the unregistered vendor IDs `4040` and `4041` are used.
 ## Usage
 
 Usage/Integration examples can be found in the `/examples` folder of this repository.
@@ -45,6 +43,7 @@ __cmpapi(method, version, callback?, parameter?)
 | ping   |Wait until API is available. Optional. | none | `(status: TCStatus) => void` |
 | getTCData | Retrieve consent decision | none | `(data: TCData) => void` |
 | setConsent | Alter consent decision | `boolean` | `(consent: boolean) => void` |
+| setConsentByVendorId | Alter consent decision for specific vendor IDs | `Record<number, boolean>` | `(consent: Record<number, boolean>) => void` |
 | removeConsentDecision | Delete any saved consent decision | none | `() => void` |
 
 ```js
