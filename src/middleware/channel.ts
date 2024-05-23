@@ -3,7 +3,7 @@ import { GENERIC_CHANNEL_NAME } from "../config";
 import { logger } from "../util/logger";
 
 enum ChannelGroupLabel {
-  GOLDBACH = "die Goldbach MEDIA",
+  GOLDBACH = "die Goldbach Media",
   IP = "die IP Österreich",
   ORF = "der ORF",
   P7S1 = "ProSiebenSat.1PULS4",
