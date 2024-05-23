@@ -12,7 +12,7 @@
   function buildBannerElement() {
     return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'noconsent', function (bannerLegalText) {
       var bannerLegalTextChannelName = document.createElement('b');
-      bannerLegalTextChannelName.appendChild(document.createTextNode('<%-CHANNEL_NAME%>'));
+      bannerLegalTextChannelName.appendChild(document.createTextNode('<%-CHANNEL_GROUP%>'));
 
       bannerLegalText.appendChild(
         document.createTextNode(

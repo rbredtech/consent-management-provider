@@ -4,7 +4,7 @@ declare global {
     interface Request {
       timestamp: number;
       channelId: number | undefined;
-      channelName: string | undefined;
+      channelGroup: string | undefined;
     }
   }
 }

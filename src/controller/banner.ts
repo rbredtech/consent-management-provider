@@ -9,7 +9,7 @@ export const bannerController = async (req: Request, res: Response) => {
 
   try {
     res.render("banner.js", {
-      CHANNEL_NAME: req.channelName,
+      CHANNEL_GROUP: req.channelGroup,
       BANNER_TIMEOUT,
     });
   } catch (e) {
