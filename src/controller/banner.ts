@@ -10,7 +10,6 @@ export const bannerController = async (req: Request, res: Response) => {
   try {
     res.render("banner.js", {
       CHANNEL_NAME: req.channelName,
-      IS_PRO7: req.isp7,
       BANNER_TIMEOUT,
     });
   } catch (e) {
