@@ -14,7 +14,7 @@ export const cmpController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "no-store");
 
-  loadedCounterMetric.labels({ channel: req.channelId }).inc();
+  loadedCounterMetric.labels({ channel: req.channelName }).inc();
 
   try {
     res.render("cmp.js", {

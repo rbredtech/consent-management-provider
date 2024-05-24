@@ -67,7 +67,7 @@ export const setConsentController = (req: Request, res: Response) => {
   consentCounterMetric
     .labels({
       consent: consentByVendorIdCookie.consent,
-      channel: req.channelId,
+      channel: req.channelName,
     })
     .inc();
 

@@ -10,47 +10,47 @@ enum ChannelGroupLabel {
   SERVUS_TV = "ServusTV",
 }
 
-const channelIdToChannelGroupMap: Record<number, ChannelGroupLabel> = {
-  0: ChannelGroupLabel.SERVUS_TV, // ServusTV
-  1701: ChannelGroupLabel.GOLDBACH, // Kurier TV
-  3100: ChannelGroupLabel.ORF, // ORF1
-  3101: ChannelGroupLabel.ORF, // ORF2
-  3102: ChannelGroupLabel.ORF, // ORF III
-  3103: ChannelGroupLabel.ORF, // ORF Sport+
-  3200: ChannelGroupLabel.GOLDBACH, // DMAX Austria
-  3201: ChannelGroupLabel.GOLDBACH, // Comedy Central AT
-  3202: ChannelGroupLabel.GOLDBACH, // TLC
-  3203: ChannelGroupLabel.IP, // Sport1 Austria
-  3204: ChannelGroupLabel.GOLDBACH, // Nickelodeon Austria
-  3205: ChannelGroupLabel.IP, // Canal+ First
-  3206: ChannelGroupLabel.GOLDBACH, // Laola1
-  3300: ChannelGroupLabel.P7S1, // ProSieben Austria
-  3301: ChannelGroupLabel.P7S1, // Sat.1 Österreich
-  3302: ChannelGroupLabel.P7S1, // Kabel Eins Austria
-  3303: ChannelGroupLabel.P7S1, // sixx Austria
-  3304: ChannelGroupLabel.P7S1, // Sat.1 Gold Österreich
-  3305: ChannelGroupLabel.P7S1, // ProSieben MAXX Austria
-  3306: ChannelGroupLabel.P7S1, // Kabel Eins Doku Austria
-  3400: ChannelGroupLabel.P7S1, // Puls4
-  3401: ChannelGroupLabel.P7S1, // Puls24
-  3402: ChannelGroupLabel.P7S1, // ATV
-  3403: ChannelGroupLabel.P7S1, // ATV2
-  3404: ChannelGroupLabel.P7S1, // Cafe Puls
-  3500: ChannelGroupLabel.IP, // RTLZWEI Austria
-  3501: ChannelGroupLabel.IP, // Krone.tv
-  3510: ChannelGroupLabel.IP, // RTL Austria
-  3511: ChannelGroupLabel.IP, // VOX Austria
-  3512: ChannelGroupLabel.IP, // NITRO
-  3513: ChannelGroupLabel.IP, // Super RTL
-  3514: ChannelGroupLabel.IP, // RTLup
-  3515: ChannelGroupLabel.IP, // ntv
-  3600: ChannelGroupLabel.IP, // oe24
-  3601: ChannelGroupLabel.IP, // R9
+const channelIdToLabelsMap: Record<number, { name: string; group: ChannelGroupLabel }> = {
+  0: { name: "ServusTV", group: ChannelGroupLabel.SERVUS_TV },
+  1701: { name: "Kurier TV", group: ChannelGroupLabel.GOLDBACH },
+  3100: { name: "ORF1", group: ChannelGroupLabel.ORF },
+  3101: { name: "ORF2", group: ChannelGroupLabel.ORF },
+  3102: { name: "ORF3", group: ChannelGroupLabel.ORF },
+  3103: { name: "ORF Sport+", group: ChannelGroupLabel.ORF },
+  3200: { name: "DMAX Austria", group: ChannelGroupLabel.GOLDBACH },
+  3201: { name: "Comedy Central AT", group: ChannelGroupLabel.GOLDBACH },
+  3202: { name: "TLC", group: ChannelGroupLabel.GOLDBACH },
+  3203: { name: "Sport1 Austria", group: ChannelGroupLabel.IP },
+  3204: { name: "Nickelodeon Austria", group: ChannelGroupLabel.GOLDBACH },
+  3205: { name: "CANAL+FIRST", group: ChannelGroupLabel.IP },
+  3206: { name: "LAOLA1", group: ChannelGroupLabel.GOLDBACH },
+  3300: { name: "ProSieben Austria", group: ChannelGroupLabel.P7S1 },
+  3301: { name: "SAT.1 Österreich", group: ChannelGroupLabel.P7S1 },
+  3302: { name: "Kabel Eins Austria", group: ChannelGroupLabel.P7S1 },
+  3303: { name: "sixx Austria", group: ChannelGroupLabel.P7S1 },
+  3304: { name: "SAT.1 GOLD Österreich", group: ChannelGroupLabel.P7S1 },
+  3305: { name: "ProSieben MAXX Austria", group: ChannelGroupLabel.P7S1 },
+  3306: { name: "Kabel Eins Doku Austria", group: ChannelGroupLabel.P7S1 },
+  3400: { name: "Puls 4", group: ChannelGroupLabel.P7S1 },
+  3401: { name: "PULS 24", group: ChannelGroupLabel.P7S1 },
+  3402: { name: "ATV", group: ChannelGroupLabel.P7S1 },
+  3403: { name: "ATV2", group: ChannelGroupLabel.P7S1 },
+  3500: { name: "RTLZWEI Austria", group: ChannelGroupLabel.IP },
+  3501: { name: "Krone.tv", group: ChannelGroupLabel.IP },
+  3510: { name: "RTL Austria", group: ChannelGroupLabel.IP },
+  3511: { name: "VOX Austria", group: ChannelGroupLabel.IP },
+  3512: { name: "NITRO", group: ChannelGroupLabel.IP },
+  3513: { name: "Super RTL", group: ChannelGroupLabel.IP },
+  3514: { name: "RTLup", group: ChannelGroupLabel.IP },
+  3515: { name: "ntv", group: ChannelGroupLabel.IP },
+  3600: { name: "oe24.tv", group: ChannelGroupLabel.IP },
+  3601: { name: "R9", group: ChannelGroupLabel.IP },
 };
 
 export function channelMiddleware(req: Request, res: Response, next: NextFunction) {
   if (req.query.channelId === undefined) {
     req.channelId = undefined;
+    req.channelName = GENERIC_CHANNEL_NAME;
     req.channelGroup = GENERIC_CHANNEL_NAME;
     next();
     return;
@@ -64,7 +64,8 @@ export function channelMiddleware(req: Request, res: Response, next: NextFunctio
   }
 
   req.channelId = channelId;
-  req.channelGroup = channelIdToChannelGroupMap[channelId] ?? GENERIC_CHANNEL_NAME;
-  logger.debug(`Channel: ${JSON.stringify(req.query)} ::: ${req.channelId} - ${req.channelGroup}`);
+  req.channelName = channelIdToLabelsMap[channelId].name ?? GENERIC_CHANNEL_NAME;
+  req.channelGroup = channelIdToLabelsMap[channelId].group ?? GENERIC_CHANNEL_NAME;
+  logger.debug(`Channel: ${JSON.stringify(req.query)} ::: ${req.channelId} - ${req.channelName} - ${req.channelGroup}`);
   next();
 }

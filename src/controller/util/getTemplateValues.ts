@@ -71,9 +71,9 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
   let cmpStatus: "loaded" | "disabled" = "disabled";
 
   configuredCounterMetric
-    .labels({ type, channel: req.channelId, consent: tcConsent === undefined ? "undefined" : tcConsent.toString() })
+    .labels({ type, channel: req.channelName, consent: tcConsent === undefined ? "undefined" : tcConsent.toString() })
     .inc();
-  technicalAgeMetric.labels({ type, channel: req.channelId }).observe(Date.now() - req.timestamp);
+  technicalAgeMetric.labels({ type, channel: req.channelName }).observe(Date.now() - req.timestamp);
 
   const technicalCookiePassed = CMP_ENABLED && req.timestamp && Date.now() - req.timestamp >= TECH_COOKIE_MIN;
 
