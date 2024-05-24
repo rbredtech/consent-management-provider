@@ -64,8 +64,8 @@ export function channelMiddleware(req: Request, res: Response, next: NextFunctio
   }
 
   req.channelId = channelId;
-  req.channelName = channelIdToLabelsMap[channelId].name ?? GENERIC_CHANNEL_NAME;
-  req.channelGroup = channelIdToLabelsMap[channelId].group ?? GENERIC_CHANNEL_NAME;
+  req.channelName = channelIdToLabelsMap[channelId]?.name ?? GENERIC_CHANNEL_NAME;
+  req.channelGroup = channelIdToLabelsMap[channelId]?.group ?? GENERIC_CHANNEL_NAME;
   logger.debug(`Channel: ${JSON.stringify(req.query)} ::: ${req.channelId} - ${req.channelName} - ${req.channelGroup}`);
   next();
 }
