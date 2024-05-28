@@ -5,6 +5,7 @@ export const HTTP_HOST = new EnvVar("HTTP_HOST").getStringOrFail();
 export const API_VERSION = new EnvVar("API_VERSION").getStringOrFail();
 export const COOKIE_DOMAIN = new EnvVar("COOKIE_DOMAIN").getStringOrFail();
 export const COOKIE_NAME = new EnvVar("COOKIE_NAME").getStringOrDefault("xconsent");
+export const CONSENT_COOKIE_NAME = new EnvVar("CONSENT_COOKIE_NAME").getStringOrDefault("agttconsent");
 export const COOKIE_MAXAGE = new EnvVar("COOKIE_MAXAGE").getNumberOrDefault(
   1000 * 60 * 60 * 24 * 365 * 2, // 2 years
 );
