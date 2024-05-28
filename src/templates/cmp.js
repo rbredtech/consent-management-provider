@@ -244,8 +244,8 @@
     }
   });
 
-  //migrate consent to new cookie
-  window.__cmpapi('_migrateConsent');
+  //migrate consent to new cookie if necessary
+  window.__cmpapi('_migrateConsentIfNecessary');
 
   init();
 })();

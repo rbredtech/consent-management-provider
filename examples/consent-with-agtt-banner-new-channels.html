@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC '-//HbbTV//1.1.1//EN' 'http://www.hbbtv.org/dtd/HbbTV-1.1.1.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+  <meta http-equiv='content-type' content='application/vnd.hbbtv.xhtml+xml; charset=utf-8'>
+  </meta>
+  <title>Consent Management Test</title>
+  <script type='text/javascript' src='http://consent.tvping.com/v2/cmp.js?channelId=1234'></script>
+  <script type='text/javascript' src='http://consent.tvping.com/v2/banner.js?channelId=1234'></script>
+  <script>
+    //<![CDATA[
+    var isShowingBanner = false;
+    var previousConsentAvailable = false;
+
+    // when banner is closed, __cmpapi is used to save the user's consent decision
+    function bannerClosedCallback(consentDecision, bannerClosedReason) {
+      if (consentDecision === true || consentDecision === false) {
+        window.__cmpapi('setConsent', 2, function (consent) {
+          if (consent === true) {
+            console.log('Consent accepted');
+          }
+          if (consent === false) {
+            console.log('Consent declined');
+          }
+        }, consentDecision);
+      } else {
+        if (bannerClosedReason === 'not-mounted') {
+          console.log('Banner could not be mounted');
+        }
+        if (bannerClosedReason === 'timeout') {
+          console.log('Banner closed due to user inactivity');
+        }
+        if (bannerClosedReason === 'go-to-settings') {
+          console.log('User wants to go to privacy page');
+        }
+      }
+      isShowingBanner = false;
+    }
+
+    function showAgttConsentBanner() {
+      isShowingBanner = true;
+      var showBannerMethod = previousConsentAvailable ? 'showAdditionalChannelsBanner' : 'showBanner';
+      window.__cbapi(showBannerMethod, 2, bannerClosedCallback, 'cmp'); // mount banner to dom-node with id 'cmp'
+    }
+
+    // example for extending existing key handler of app to allow for control of buttons of the banner
+    function keyHandler(event) {
+      window['KeyEvent'] = window['KeyEvent'] || {};
+      KeyEvent['VK_BLUE'] = KeyEvent.VK_BLUE || window['VK_BLUE'] || 406;
+
+      if (isShowingBanner) {
+        // pass on key events to library while consent banner is displayed
+        window.__cbapi('handleKey', 2, undefined, event);
+        return;
+      } else {
+        switch (event.keyCode) {
+          case KeyEvent.VK_BLUE:
+            showAgttConsentBanner();
+            break;
+          default:
+            console.log(event.keyCode);
+            break;
+        }
+      }
+    }
+
+    window.addEventListener('keydown', keyHandler);
+
+    // we load consent data on page load and show the banner if no consent decision is saved yet
+    window.__cmpapi('getTCData', 2, function (tcData) {
+      if (tcData.cmpStatus === 'loaded') {
+        var consent = tcData.vendor.consents[4041]; // vendor id for this channel
+        var prevConsent = tcData.vendor.consents[4040] // vendor id for pre-existing channels
+
+        if (prevConsent !== undefined) {
+          previousConsentAvailable = true;
+        }
+
+        if (prevConsent === undefined || prevConsent === true && consent === undefined) {
+          showAgttConsentBanner();
+        }
+        if (consent === true) {
+          console.log("Consent already given");
+        }
+        if (consent === false) {
+          console.log("Consent already declined");
+        }
+      }
+    });
+    //]]>
+  </script>
+</head>
+
+<body>
+  <div id='cmp'></div>
+  <object id='video' type='video/broadcast' fullscreen='true' width='1280' height='720'
+    style='position:absolute; top: 0px; left: 0px; width: 1280px; height: 720px;'></object>
+  <div style='visibility: hidden; width: 0; height: 0; position: absolute;'>
+    <object id='oipfAppMngr' type='application/oipfApplicationManager'></object>
+    <object id='oipfCfg' type='application/oipfConfiguration'></object>
+  </div>
+</body>
+
+</html>
