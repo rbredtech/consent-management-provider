@@ -13,7 +13,7 @@ afterAll(async () => {
 describe("Consent Management with banner", () => {
   beforeAll(async () => {
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page, 0, true);
+    await pageHelper.initLoader(page, 3100, true);
   });
 
   test("Banner pop-up is NOT displayed", async () => {
@@ -50,9 +50,9 @@ describe("Consent Management with banner", () => {
       expect(bannerText).toContain("deren Mitglied");
     });
 
-    test("Channel Name is replaced in legal text", async () => {
+    test("Channel group name is replaced in legal text", async () => {
       const bannerText = await page.$eval("div#agttcnstbnnr", (node) => node.innerText);
-      expect(bannerText).toContain("ServusTV");
+      expect(bannerText).toContain("ORF");
     });
 
     describe("When OK button is hit", () => {
