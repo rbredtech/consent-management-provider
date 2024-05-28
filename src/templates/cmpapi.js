@@ -243,7 +243,7 @@
           }
         }
         break;
-      case '_migrateConsent':
+      case '_migrateConsentIfNecessary':
         if (hasConsent !== undefined && consentByVendorIdSerialized.indexOf('4040~') === -1) {
           var migratedConsent = {
             4040: hasConsent,

@@ -26,7 +26,7 @@ describe("Consent cookie migration", () => {
       await pageHelper.initLoader(page, 0);
     });
 
-    test("_migrateConsent method writes existing consent to new cookie", async () => {
+    test("_migrateConsentIfNecessary method writes existing consent to new cookie", async () => {
       const tcData = await page.evaluate(function () {
         return new Promise((resolve) => {
           window.__cmpapi("getTCData", 2, resolve);
@@ -54,7 +54,7 @@ describe("Consent cookie migration", () => {
         await pageHelper.initLoader(page, 0);
       });
 
-      test("_migrateConsent method should not change an already existing consent decision", async () => {
+      test("_migrateConsentIfNecessary method should not change an already existing consent decision", async () => {
         const tcData = await page.evaluate(function () {
           return new Promise((resolve) => {
             window.__cmpapi("getTCData", 2, resolve);
@@ -77,7 +77,7 @@ describe("Consent cookie migration", () => {
         await pageHelper.initLoader(page, 0);
       });
 
-      test("_migrateConsent method should not remove an already existing consent decision", async () => {
+      test("_migrateConsentIfNecessary method should not remove an already existing consent decision", async () => {
         const tcData = await page.evaluate(function () {
           return new Promise((resolve) => {
             window.__cmpapi("getTCData", 2, resolve);
