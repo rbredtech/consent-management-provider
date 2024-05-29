@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { API_VERSION, HTTP_HOST, TECH_COOKIE_NAME, COOKIE_NAME } from "../config";
+import { API_VERSION, HTTP_HOST, TECH_COOKIE_NAME, COOKIE_NAME, CONSENT_COOKIE_NAME } from "../config";
 import { loadedCounterMetric } from "../util/metrics";
 
 export const cmpController = async (req: Request, res: Response) => {
@@ -14,6 +14,7 @@ export const cmpController = async (req: Request, res: Response) => {
       TECH_COOKIE_TIMESTAMP: Date.now(),
       TECH_COOKIE_NAME,
       COOKIE_NAME,
+      CONSENT_COOKIE_NAME,
       API_VERSION,
       CONSENT_SERVER_HOST: HTTP_HOST,
       CONSENT_SERVER_PROTOCOL: req.protocol,

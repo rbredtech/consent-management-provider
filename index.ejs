@@ -5,6 +5,31 @@
   <meta http-equiv='content-type' content='application/vnd.hbbtv.xhtml+xml; charset=utf-8'>
   </meta>
   <title>Consent Management Test</title>
+  <style>
+    #redbutton {
+      position: absolute;
+      bottom: 36px;
+      right: 64px;
+      width: 235px;
+      height: 114px;
+      background-color: #ccc;
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .redbutton__menu-item {
+      margin-bottom: 15px;
+    }
+
+    .redbutton__menu-item-button-icon {
+      float: left;
+      display: block;
+      width: 20px;
+      height: 10px;
+      padding: 3px;
+      margin-right: 5px;
+    }
+  </style>
   <script>
     //<![CDATA[
     // tracking script api mock with delayed availability
@@ -17,25 +42,50 @@
         }
       }
     }, 200);
+
+    // overwriting the browser's user agent with this one will disable the iFrame capabilities
+    const vieraUserAgent = "HbbTV/1.1.1 (;Panasonic;VIERA 2011;3.252;4e01-0003 0080-0000;)";
+    var originalUserAgent = navigator.userAgent;
+
+    const uaSessionStorageKey = "ua";
+    var sessionUserAgent = sessionStorage.getItem(uaSessionStorageKey);
+
+    if (!sessionUserAgent) {
+      sessionUserAgent = originalUserAgent;
+    }
+
+    Object.defineProperty(navigator, 'userAgent', {
+      get: function () { return sessionUserAgent; }
+    });
     //]]>
   </script>
-  <script type='text/javascript' src='http://localhost:3000/v2/cmp.js?channelId=0'></script>
-  <script type='text/javascript' src='http://localhost:3000/v2/banner.js?channelId=0'></script>
+  <script type='text/javascript' src='http://localhost:3000/v2/cmp.js?channelId=9999'></script>
+  <script type='text/javascript' src='http://localhost:3000/v2/banner.js?channelId=9999'></script>
   <script>
     //<![CDATA[
     var isShowingBanner = false;
+    var previousConsentAvailable = false;
 
-    function bannerClosedCallback(consentDecision) {
+    function bannerClosedCallback(consentDecision, bannerClosedReason) {
       if (consentDecision === true || consentDecision === false) {
-        window.__cmpapi('setConsent', 2, function (consent) {
+        window.__cmpapi('setConsentByVendorId', 2, function (consent) {
           if (consent === true) {
             console.log('Consent accepted');
           }
           if (consent === false) {
             console.log('Consent declined');
           }
-        }, consentDecision);
+        }, { 4040: consentDecision, 4041: consentDecision });
       } else {
+        if (bannerClosedReason === 'not-mounted') {
+          console.log('Banner could not be mounted');
+        }
+        if (bannerClosedReason === 'timeout') {
+          console.log('Banner closed due to user inactivity');
+        }
+        if (bannerClosedReason === 'go-to-settings') {
+          console.log('User wants to go to privacy page');
+        }
         console.log('No consent decision');
       }
       isShowingBanner = false;
@@ -43,20 +93,42 @@
 
     function showAgttConsentBanner() {
       isShowingBanner = true;
+      var showBannerMethod = previousConsentAvailable ? 'showAdditionalChannelsBanner' : 'showBanner';
       window.__cbapi('showBanner', 2, bannerClosedCallback, 'cmp'); // mount banner to dom-node with id 'cmp'
     }
 
     // example for extending existing key handler of app to allow for control of buttons of the banner
     function keyHandler(event) {
       window['KeyEvent'] = window['KeyEvent'] || {};
+      KeyEvent['VK_RED'] = KeyEvent.VK_RED || window['VK_RED'] || 403;
+      KeyEvent['VK_GREEN'] = KeyEvent.VK_GREEN || window['VK_GREEN'] || 404;
+      KeyEvent['VK_YELLOW'] = KeyEvent.VK_YELLOW || window['VK_YELLOW'] || 405;
       KeyEvent['VK_BLUE'] = KeyEvent.VK_BLUE || window['VK_BLUE'] || 406;
 
       if (isShowingBanner) {
         // pass on key events to library while consent banner is displayed
-        window.__cbapi('handleKey', 2, undefined, event);
+        window.__cbapi('handleKey', 2, function () {
+          console.log(event.keyCode);
+        }, event);
         return;
       } else {
         switch (event.keyCode) {
+          case KeyEvent.VK_RED:
+            toggleIFrame();
+            setTimeout(function () {
+              document.location = document.location;
+            }, 300);
+            break;
+          case KeyEvent.VK_GREEN:
+            window.__cmpapi('removeConsentDecision', 2, function () {
+              console.log('Consent decision removed');
+            });
+            break;
+          case KeyEvent.VK_YELLOW:
+            setTimeout(function () {
+              document.location = document.location;
+            }, 300);
+            break;
           case KeyEvent.VK_BLUE:
             showAgttConsentBanner();
             break;
@@ -69,11 +141,16 @@
 
     window.addEventListener('keydown', keyHandler);
 
-    var CMP_VENDOR_ID = 4040;
     window.__cmpapi('getTCData', 2, function (tcData) {
       if (tcData.cmpStatus === 'loaded') {
-        var consent = tcData.vendor.consents[CMP_VENDOR_ID];
-        if (consent === undefined) {
+        var consent = tcData.vendor.consents[4041];
+        var previousConsent = tcData.vendor.consents[4040];
+
+        if(previousConsent !== undefined) {
+          previousConsentAvailable = true;
+        }
+
+        if (previousConsent === undefined || previousConsent === true && consent === undefined) {
           showAgttConsentBanner();
         }
         if (consent === true) {
@@ -92,15 +169,52 @@
   </script>
 </head>
 
-<body>
+<body
+  style='width: 1280px; height: 720px; margin: 0; padding: 0; position: relative; overflow: hidden; font-family: "Tiresias", sans-serif'>
   <object id='video' type='video/broadcast' fullscreen='true' width='1280' height='720'
     style='position:absolute; top: 0px; left: 0px; width: 1280px; height: 720px;'></object>
   <div style='visibility: hidden; width: 0; height: 0; position: absolute;'>
     <object id='oipfAppMngr' type='application/oipfApplicationManager'></object>
     <object id='oipfCfg' type='application/oipfConfiguration'></object>
   </div>
-  <script src='<%-BROWSER_REFRESH_URL%>'></script>
+  <div id="redbutton">
+    <div class="redbutton__menu-item">
+      <div class="redbutton__menu-item-button-icon" style="background-color: #c43939;"></div>
+      <div id="iframe-toggle-label">Disable iFrame</div>
+    </div>
+    <div class="redbutton__menu-item">
+      <div class="redbutton__menu-item-button-icon" style="background-color: #3FCD7F;"></div>
+      <div>Delete consent decision</div>
+    </div>
+    <div class="redbutton__menu-item">
+      <div class="redbutton__menu-item-button-icon" style="background-color: #3993D9;"></div>
+      <div>Open consent banner</div>
+    </div>
+    <div class="redbutton__menu-item">
+      <div class="redbutton__menu-item-button-icon" style="background-color: #F3D07C;"></div>
+      <div>Reload app</div>
+    </div>
+  </div>
   <div id='cmp'></div>
+  <script type="text/javascript">
+    //<![CDATA[
+    const toggleLabel = document.getElementById("iframe-toggle-label");
+    if (sessionUserAgent === vieraUserAgent) {
+      toggleLabel.replaceChildren(document.createTextNode("Enable iFrame"));
+    } else {
+      toggleLabel.replaceChildren(document.createTextNode("Disable iFrame"))
+    }
+
+    function toggleIFrame() {
+      if (sessionUserAgent === vieraUserAgent) {
+        sessionStorage.setItem(uaSessionStorageKey, originalUserAgent);
+      } else {
+        sessionStorage.setItem(uaSessionStorageKey, vieraUserAgent);
+      }
+    }
+    //]]>
+  </script>
+  <script src='<%-BROWSER_REFRESH_URL%>'></script>
 </body>
 
 </html>

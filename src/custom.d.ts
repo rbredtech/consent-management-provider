@@ -5,7 +5,7 @@ declare global {
       timestamp: number;
       channelId: number | undefined;
       channelName: string | undefined;
-      isp7: boolean;
+      channelGroup: string | undefined;
     }
   }
 }
