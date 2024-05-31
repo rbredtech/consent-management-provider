@@ -63,6 +63,7 @@
     SET_CONSENT_BY_VENDOR_ID: 'setConsentByVendorId',
     REMOVE_CONSENT_DECISION: 'removeConsentDecision',
     MIGRATE_CONSENT: 'migrateConsent',
+    RESET_OLD_CONSENT: 'resetOldConsent',
   };
 
   function log(event, success, parameters) {
@@ -264,6 +265,34 @@
 
           updateLocalStorageConsent(migratedConsent);
         }
+        break;
+      // api method for testing migration path, resets old consent and removes new consent
+      case '__testing__resetOldConsent':
+        localStorageAvailable = false;
+
+        image = document.createElement('img');
+        image.src =
+          '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/reset-old-consent?consent=' +
+          (parameter + '' === 'true' ? 1 : 0) +
+          (channelId !== '' ? '&channelId=' + channelId : '');
+
+        if (window.localStorage && localStorage.setItem && localStorage.removeItem) {
+          localStorage.setItem('<%-COOKIE_NAME%>', parameter);
+          localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
+          localStorageAvailable = true;
+        }
+
+        image.onload = function () {
+          log(logEvents.RESET_OLD_CONSENT, true, {
+            consent: parameter,
+            localStorageAvailable: localStorageAvailable,
+          });
+        };
+        image.onerror = function () {
+          log(logEvents.RESET_OLD_CONSENT, false, {});
+        };
+
+        !!callback && callback(parameter);
         break;
       default:
         break;

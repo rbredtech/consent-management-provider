@@ -11,6 +11,7 @@ import {
   setConsentController,
   cmpapiController,
   cmpapiIframeController,
+  resetOldConsentController,
 } from "./controller";
 
 import { loggerMiddleware, techCookieMiddleware, channelMiddleware } from "./middleware";
@@ -31,5 +32,6 @@ router.get("/remove-consent", removeConsentController);
 router.get(["/set-consent", "/migrate"], setConsentController);
 router.get("/cmpapi.js", cmpapiController);
 router.get("/cmpapi-iframe.js", cmpapiIframeController);
+router.get("/reset-old-consent", resetOldConsentController);
 
 export default router;
