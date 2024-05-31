@@ -51,7 +51,7 @@
   function removeLocalStorageConsent() {
     if (window.localStorage && localStorage.removeItem) {
       localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
-      localStorage.removeItem('<%-COOKIE_NAME%>');
+      localStorage.removeItem('<%-LEGACY_COOKIE_NAME%>');
       return true;
     }
     return false;
@@ -81,7 +81,7 @@
     var consentByVendorIdSerialized = '<%-TC_CONSENT_BY_VENDOR_ID%>';
 
     if (window.localStorage && localStorage.getItem) {
-      var localStorageConsent = localStorage.getItem('<%-COOKIE_NAME%>');
+      var localStorageConsent = localStorage.getItem('<%-LEGACY_COOKIE_NAME%>');
       if (localStorageConsent === 'true') {
         hasConsent = true;
       }
@@ -277,7 +277,7 @@
           (channelId !== '' ? '&channelId=' + channelId : '');
 
         if (window.localStorage && localStorage.setItem && localStorage.removeItem) {
-          localStorage.setItem('<%-COOKIE_NAME%>', parameter);
+          localStorage.setItem('<%-LEGACY_COOKIE_NAME%>', parameter);
           localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
           localStorageAvailable = true;
         }

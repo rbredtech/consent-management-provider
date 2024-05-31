@@ -6,7 +6,7 @@ import {
   CMP_ENABLED,
   CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
   CONSENT_COOKIE_NAME,
-  COOKIE_NAME,
+  LEGACY_COOKIE_NAME,
   TECH_COOKIE_MIN,
   HTTP_HOST,
 } from "../../config";
@@ -24,11 +24,11 @@ export interface ConsentByVendorIdCookie {
 
 export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
   let cookie: ConsentCookie | undefined;
-  if (req.cookies[COOKIE_NAME]) {
+  if (req.cookies[LEGACY_COOKIE_NAME]) {
     try {
-      cookie = JSON.parse(Buffer.from(req.cookies[COOKIE_NAME], "base64").toString());
+      cookie = JSON.parse(Buffer.from(req.cookies[LEGACY_COOKIE_NAME], "base64").toString());
     } catch (e) {
-      logger.info(`Error parsing cookie ${COOKIE_NAME}`, e);
+      logger.info(`Error parsing cookie ${LEGACY_COOKIE_NAME}`, e);
     }
   }
   logger.debug(`hasCookie=${cookie !== undefined}; hasConsent=${cookie?.consent}`);
@@ -97,7 +97,7 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
 
   return {
     API_VERSION,
-    COOKIE_NAME,
+    LEGACY_COOKIE_NAME,
     CONSENT_COOKIE_NAME,
     TC_STRING: "tcstr",
     CMP_STATUS: cmpStatus,
