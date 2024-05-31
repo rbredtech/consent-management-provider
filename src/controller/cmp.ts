@@ -4,7 +4,7 @@ import {
   API_VERSION,
   HTTP_HOST,
   TECH_COOKIE_NAME,
-  COOKIE_NAME,
+  LEGACY_COOKIE_NAME,
   CONSENT_COOKIE_NAME,
   SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,
 } from "../config";
@@ -20,7 +20,7 @@ export const cmpController = async (req: Request, res: Response) => {
     res.render("cmp.js", {
       TECH_COOKIE_TIMESTAMP: Date.now(),
       TECH_COOKIE_NAME,
-      COOKIE_NAME,
+      LEGACY_COOKIE_NAME,
       CONSENT_COOKIE_NAME,
       API_VERSION,
       CONSENT_SERVER_HOST: HTTP_HOST,

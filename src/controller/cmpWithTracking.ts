@@ -4,7 +4,7 @@ import path from "path";
 
 import {
   API_VERSION,
-  COOKIE_NAME,
+  LEGACY_COOKIE_NAME,
   HTTP_HOST,
   TECH_COOKIE_NAME,
   TRACKING_HOST_CONSENT,
@@ -31,7 +31,7 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
     const cmpJs = await renderFile(path.join(__dirname, "../templates/cmp.js"), {
       TECH_COOKIE_TIMESTAMP: Date.now(),
       TECH_COOKIE_NAME,
-      COOKIE_NAME,
+      LEGACY_COOKIE_NAME,
       API_VERSION,
       CONSENT_SERVER_HOST: HTTP_HOST,
       CONSENT_SERVER_PROTOCOL: req.protocol,

@@ -154,7 +154,7 @@
         localStorage.setItem('<%-TECH_COOKIE_NAME%>', techCookieTimestamp);
       } else {
         techCookieTimestamp = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
-        hasConsent = localStorage.getItem('<%-COOKIE_NAME%>');
+        hasConsent = localStorage.getItem('<%-LEGACY_COOKIE_NAME%>');
         consentByVendorId = localStorage.getItem('<%-CONSENT_COOKIE_NAME%>');
       }
     }
