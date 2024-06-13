@@ -35,14 +35,11 @@
 
   function updateLocalStorageConsent(consentByVendorId) {
     if (window.localStorage && localStorage.setItem && localStorage.getItem) {
-      const currentConsentByVendorId = parseSerializedConsentByVendorId(
-        localStorage.getItem('<%-CONSENT_COOKIE_NAME%>'),
-      );
-      const updatedConsentByVendorId = Object.assign({}, currentConsentByVendorId);
+      const lsConsentByVendorId = parseSerializedConsentByVendorId(localStorage.getItem('<%-CONSENT_COOKIE_NAME%>'));
       for (var vendorId in consentByVendorId) {
-        updatedConsentByVendorId[vendorId] = consentByVendorId[vendorId];
+        lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
       }
-      localStorage.setItem('<%-CONSENT_COOKIE_NAME%>', serializeConsentByVendorId(updatedConsentByVendorId));
+      localStorage.setItem('<%-CONSENT_COOKIE_NAME%>', serializeConsentByVendorId(lsConsentByVendorId));
       return true;
     }
     return false;
