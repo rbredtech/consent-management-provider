@@ -184,7 +184,7 @@
           callback(consent);
         }
         break;
-      case `setConsentByVendorId`:
+      case 'setConsentByVendorId':
         localStorageAvailable = false;
         var consentByVendorIdParam = parameter;
         image = document.createElement('img');
