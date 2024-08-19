@@ -12,7 +12,7 @@
   };
 
   function log(event, success, parameters) {
-    window.__cmpapi('log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
+    window.__cmpapi('_log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
   }
 
   function callQueue(type) {
@@ -146,6 +146,7 @@
   function createCmpApiScriptTag() {
     var techCookieTimestamp = '<%-TECH_COOKIE_TIMESTAMP%>';
     var hasConsent = null;
+    var consentByVendorId = null;
 
     if (window.localStorage && localStorage.getItem && localStorage.setItem) {
       if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
@@ -153,7 +154,8 @@
         localStorage.setItem('<%-TECH_COOKIE_NAME%>', techCookieTimestamp);
       } else {
         techCookieTimestamp = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
-        hasConsent = localStorage.getItem('<%-COOKIE_NAME%>');
+        hasConsent = localStorage.getItem('<%-LEGACY_COOKIE_NAME%>');
+        consentByVendorId = localStorage.getItem('<%-CONSENT_COOKIE_NAME%>');
       }
     }
 
@@ -164,6 +166,7 @@
       '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
         techCookieTimestamp +
         (hasConsent !== null ? '&consent=' + hasConsent : '') +
+        (consentByVendorId !== null ? '&vendorConsents=' + consentByVendorId : '') +
         (channelId !== '' ? '&channelId=' + channelId : ''),
     );
 
@@ -240,6 +243,9 @@
       } catch (e) {}
     }
   });
+
+  //migrate consent to new cookie if necessary
+  window.__cmpapi('_migrateConsentIfNecessary');
 
   init();
 })();

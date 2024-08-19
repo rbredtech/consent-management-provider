@@ -12,9 +12,7 @@ the consent management `getTCData` callback.
 
 ## Compliance
 
-At this time no actually encoded TC String is used. This service uses an with
-IAB unregistered vendor ID of `4040`.
-
+At this time no actually encoded TC String is used. Currently the unregistered vendor IDs `4040` and `4041` are used.
 ## Usage
 
 Usage/Integration examples can be found in the `/examples` folder of this repository.
@@ -45,6 +43,7 @@ __cmpapi(method, version, callback?, parameter?)
 | ping   |Wait until API is available. Optional. | none | `(status: TCStatus) => void` |
 | getTCData | Retrieve consent decision | none | `(data: TCData) => void` |
 | setConsent | Alter consent decision | `boolean` | `(consent: boolean) => void` |
+| setConsentByVendorId | Alter consent decision for specific vendor IDs | `Record<number, boolean>` | `(consent: Record<number, boolean>) => void` |
 | removeConsentDecision | Delete any saved consent decision | none | `() => void` |
 
 ```js
@@ -74,13 +73,13 @@ type TCData = {
   publisherCC: string,
   purposeOneTreatment: boolean,
   purpose: {
-    consents: Record<number, string>,
+    consents: Record<number, boolean>,
   },
   legitimateInterests: {
-    consents: Record<number, string>,
+    consents: Record<number, boolean>,
   },
   vendor: {
-    consents: Record<number, string>,
+    consents: Record<number, boolean>,
   }
 }
 ```
@@ -155,12 +154,32 @@ __cbapi(method, version, callback?, parameter?)
 
 | Method | Description  | Parameter | Callback  |
 |--------|--------------|------------|----------|
-| showBanner | displays a consent banner to the user | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean | undefined) => void` |
+| showBanner | displays a consent banner to the user | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean \| undefined, bannerCloseReason?: string) => void` |
+| showAdditionalChannelsBanner | this method is used to display the consent banner, if there was already a previous consent decision, but the list of channels has changed (if you were instructed to not use 4040 as CMP_VENDOR_ID) | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean \| undefined, bannerCloseReason: string) => void` |
 | hideBanner | hides the consent banner | none | none |
 | isBannerVisible | Callback parameter shows if banner is currently shown | none | `(visible: boolean) => void`
 | handleKey | Allows for key handling of banner. Call for every key event after app called `showBanner` method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the host app. | `KeyboardEvent` | `(keyCode: number) => void` |
 
-### Banner interaction
+Possible values for `bannerCloseReason` of the `showBanner` callback, are
+ - `consent` (consent was given, `consent` param will be `true`)
+ - `noconsent` (consent was declined, `consent` param will be `false`)
+ - `go-to-settings` (data privacy settings page of the host application should be shown, `consent` param will be `undefined`)
+ - `not-mounted` (in case `showBanner` was called with a dom-node id to mount the banner to, element was not found, `consent` param will be `undefined`)
+ - `timeout` (banner was closed due to no user action, `consent` param will be `undefined`)
+
+### Banner display and interaction
+
+```js
+// use only in case consent from tcData method is undefined
+var isShowingBanner = true;
+__cbapi('showBanner', 2, function(consentDecision) {
+  if (consentDecision === true || consentDecision === false) {
+    __cmpapi('setConsent', 2, undefined, consentDecision);
+  }
+  // if consentDecision is `undefined`, the second param of the callback can give hints to why
+  isShowingBanner = false;
+});
+```
 
 The banner implementation relies on the app to forward any key events from the key handler of the application by
 using the `handleKey` method while the banner is being displayed.
@@ -168,11 +187,11 @@ using the `handleKey` method while the banner is being displayed.
 ```js
 // use only in case consent from tcData method is undefined
 var isShowingBanner = true;
-__cbapi('showBanner', 2, function(consent) {
-  // user has closed the banner by remote control or the banner timeout was reached
+__cbapi('showBanner', 2, function(consentDecision) {
   if (consentDecision === true || consentDecision === false) {
     __cmpapi('setConsent', 2, undefined, consentDecision);
   }
+  // if consentDecision is `undefined`, the second param of the callback can give hints to why
   isShowingBanner = false;
 });
 
