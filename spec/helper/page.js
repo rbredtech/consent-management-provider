@@ -22,8 +22,20 @@ async function initLoader(page, channelId = undefined, withBanner = false) {
         : ""
     }`,
   );
-  const isLoaded = page.waitForFunction(() => document.readyState === "complete");
-  return isLoaded;
+  await page.waitForFunction(() => document.readyState === "complete");
 }
 
-module.exports = { get, initLoader, HTTP_HOST, HTTP_PROTOCOL };
+async function initLoaderWithTracking(page, channelId = 9999, withBanner = false) {
+  await page.setContent(
+    `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}/${API_VERSION}/cmp-with-tracking.js?channelId=${channelId}&cmpId=4040"></script>${
+      withBanner
+        ? `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}/${API_VERSION}/banner.js${
+            channelId !== undefined ? "?channelId=" + channelId : ""
+          }"></script>`
+        : ""
+    }`,
+  );
+  await page.waitForFunction(() => document.readyState === "complete");
+}
+
+module.exports = { get, initLoader, initLoaderWithTracking, HTTP_HOST, HTTP_PROTOCOL };

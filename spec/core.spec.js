@@ -10,14 +10,18 @@ afterAll(async () => {
   await page.browser().close();
 }, 20000);
 
-describe("Consent Management is loaded", () => {
+describe.each([false, true])("Consent Management is loaded - with tracking script integration: %s", (withTracking) => {
   beforeAll(async () => {
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page);
+    await (withTracking ? pageHelper.initLoaderWithTracking(page) : pageHelper.initLoader(page));
   });
 
   test("Ping API call returns basic configuration", async () => {
-    const result = page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('ping', 1, resolve)}))`);
+    const result = page.evaluate(() => {
+      return new Promise((resolve) => {
+        window.__cmpapi("ping", 1, resolve);
+      });
+    });
 
     return expect(result).resolves.toEqual({
       apiVersion: "2.0",
@@ -33,11 +37,28 @@ describe("Consent Management is loaded", () => {
   });
 
   test("Storage status is disabled", async () => {
-    const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 1, resolve)}))`);
+    const apiResponse = await page.evaluate(() => {
+      return new Promise((resolve) => {
+        window.__cmpapi("getTCData", 1, resolve);
+      });
+    });
 
     expect(apiResponse.cmpStatus).toBe("disabled");
     expect(apiResponse.vendor["consents"]).toBeDefined();
     expect(apiResponse.vendor["consents"]["4040"]).toBeUndefined();
     expect(apiResponse.vendor["consents"]["4041"]).toBeUndefined();
   });
+
+  if (withTracking) {
+    test("Tracking script api is available", async () => {
+      const did = await page.evaluate(() => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            window.__hbb_tracking_tgt.getDID(resolve);
+          }, 1000);
+        });
+      });
+      expect(did).not.toBeUndefined();
+    });
+  }
 });
