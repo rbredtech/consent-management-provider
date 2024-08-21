@@ -10,10 +10,10 @@ afterAll(async () => {
   await page.browser().close();
 }, 20000);
 
-describe("Consent Management is loaded", () => {
+describe.each([false, true])("Consent Management is loaded - with tracking script integration: %s", (withTracking) => {
   beforeAll(async () => {
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page);
+    await (withTracking ? pageHelper.initLoaderWithTracking(page) : pageHelper.initLoader(page));
   });
 
   test("Ping API call returns basic configuration", async () => {
