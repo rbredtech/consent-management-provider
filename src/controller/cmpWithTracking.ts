@@ -36,7 +36,6 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
       CONSENT_COOKIE_NAME,
       API_VERSION,
       CONSENT_SERVER_HOST: HTTP_HOST,
-      CONSENT_SERVER_PROTOCOL: req.protocol,
       CHANNEL_ID: req.channelId,
       SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,
     });

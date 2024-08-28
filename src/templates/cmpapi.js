@@ -125,7 +125,7 @@
       case 'getTCData':
         if (callback && typeof callback === 'function') {
           callback({
-            tcString: '<%-TC_STRING%>',
+            tcString: 'tcstr',
             tcfPolicyVersion: 2,
             cmpId: 4040,
             cmpVersion: 1,
@@ -164,7 +164,7 @@
 
         image = document.createElement('img');
         image.src =
-          '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
+          window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
           serializeConsentByVendorId(consentDecisionByVendorId) +
           (channelId !== '' ? '&channelId=' + channelId : '');
 
@@ -189,7 +189,7 @@
         var consentByVendorIdParam = parameter;
         image = document.createElement('img');
         image.src =
-          '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
+          window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
           serializeConsentByVendorId(consentByVendorIdParam) +
           (channelId !== '' ? '&channelId=' + channelId : '');
 
@@ -213,7 +213,7 @@
         localStorageAvailable = false;
 
         image = document.createElement('img');
-        image.src = '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent';
+        image.src = window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent';
 
         localStorageAvailable = removeLocalStorageConsent();
 
@@ -249,7 +249,7 @@
           var migratedConsentSerialized = serializeConsentByVendorId(migratedConsent);
           image = document.createElement('img');
           image.src =
-            '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/migrate?consentByVendorId=' +
+            window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/migrate?consentByVendorId=' +
             migratedConsentSerialized +
             (channelId !== '' ? '&channelId=' + channelId : '');
 
@@ -269,7 +269,7 @@
 
         image = document.createElement('img');
         image.src =
-          '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/reset-old-consent?consent=' +
+          window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/reset-old-consent?consent=' +
           (parameter + '' === 'true' ? 1 : 0) +
           (channelId !== '' ? '&channelId=' + channelId : '');
 

@@ -40,7 +40,7 @@
   function message(type, command, version, callback, parameter) {
     callbackMap[++callbackCount] = callback;
     var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
-    iframe.contentWindow.postMessage(msg, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
+    iframe.contentWindow.postMessage(msg, window.location.protocol + '//<%-CONSENT_SERVER_HOST%>');
   }
 
   var channelId = '<%-CHANNEL_ID%>';
@@ -66,7 +66,7 @@
 
     iframe.setAttribute(
       'src',
-      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
+      window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
         (channelId !== '' ? '?channelId=' + channelId : ''),
     );
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
@@ -84,7 +84,7 @@
       };
 
       function onMessage(event) {
-        if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
+        if (window.location.protocol + '//<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
           return;
         }
 
@@ -163,7 +163,7 @@
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
     cmpapiScriptTag.setAttribute(
       'src',
-      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
+      window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
         techCookieTimestamp +
         (hasConsent !== null ? '&consent=' + hasConsent : '') +
         (consentByVendorId !== null ? '&vendorConsents=' + consentByVendorId : '') +
