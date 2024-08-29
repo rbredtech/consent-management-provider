@@ -7,6 +7,38 @@
   <title></title>
   <script type='text/javascript'>
     //<![CDATA[
+    function _message(msg) {
+      if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage(msg, '*');
+      }
+    }
+
+    function messageEventHandler(event) {
+      if (!event.data || typeof event.data !== "string") {
+        return;
+      }
+
+      var message = event.data.split(';');
+      if (message[1] === 'cmd') {
+        var id = message[0];
+        var cmd = message[2];
+        var version = message[3];
+        var param = JSON.parse(message[4]);
+        __cmpapi(
+          cmd,
+          version,
+          function (cbParam) {
+            _message(id + ';' + JSON.stringify({ param: cbParam }));
+          },
+          param.param,
+        );
+      }
+    }
+
+    if (window['addEventListener']) {
+      window.addEventListener('message', messageEventHandler, false);
+    }
+
     try {
       var channelId = '<%-CHANNEL_ID%>';
 
@@ -26,7 +58,7 @@
       }
 
       var cmpApiScriptTag = document.createElement('script');
-      cmpApiScriptTag.setAttribute('src', window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi-iframe.js?<%-TECH_COOKIE_NAME%>=' + techCookieTimestamp + (hasConsent !== null ? '&consent=' + hasConsent : '') + (consentByVendorId !== null ? '&vendorConsents=' + consentByVendorId : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
+      cmpApiScriptTag.setAttribute('src', window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' + techCookieTimestamp + (hasConsent !== null ? '&consent=' + hasConsent : '') + (consentByVendorId !== null ? '&vendorConsents=' + consentByVendorId : '') + (channelId !== '' ? '&channelId=' + channelId : ''));
       cmpApiScriptTag.setAttribute('type', 'text/javascript');
       document.getElementsByTagName('head')[0].appendChild(cmpApiScriptTag);
     } catch (e) { }

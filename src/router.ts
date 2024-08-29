@@ -10,7 +10,6 @@ import {
   removeConsentController,
   setConsentController,
   cmpapiController,
-  cmpapiIframeController,
   resetOldConsentController,
 } from "./controller";
 
@@ -27,11 +26,10 @@ router.use(channelMiddleware);
 router.get("/banner.js", bannerController);
 router.get("/cmp.js", cmpController);
 router.get("/cmp-with-tracking.js", cmpWithTrackingController);
+router.get("/cmpapi.js", cmpapiController);
 router.get("/iframe.html", iframeController);
 router.get("/remove-consent", removeConsentController);
 router.get(["/set-consent", "/migrate"], setConsentController);
-router.get("/cmpapi.js", cmpapiController);
-router.get("/cmpapi-iframe.js", cmpapiIframeController);
 router.get("/reset-old-consent", resetOldConsentController);
 
 export default router;
