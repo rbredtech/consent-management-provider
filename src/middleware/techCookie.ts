@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { COOKIE_DOMAIN, COOKIE_MAXAGE, TECH_COOKIE_NAME } from "../config";
+import { COOKIE_MAXAGE, TECH_COOKIE_NAME } from "../config";
 import { logger } from "../util/logger";
 
 export type TechCookie = number | undefined;
@@ -20,7 +20,6 @@ export function techCookieMiddleware(req: Request, res: Response, next: NextFunc
   logger.debug(`setting new tech cookie ${timestamp}`);
   res.cookie(TECH_COOKIE_NAME, timestamp, {
     maxAge: COOKIE_MAXAGE,
-    domain: COOKIE_DOMAIN,
   });
   req.timestamp = timestamp;
   return next();

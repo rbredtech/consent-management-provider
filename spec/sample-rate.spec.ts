@@ -5,7 +5,6 @@ process.env.HTTP_PORT = "3000";
 process.env.HTTP_HOST = "localhost:3000";
 process.env.HTTP_PROTOCOL = "http";
 process.env.API_VERSION = "v2";
-process.env.COOKIE_DOMAIN = "localhost";
 process.env.CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT = "0";
 process.env.TECH_COOKIE_MIN = "120";
 process.env.BANNER_TIMEOUT = "120000";

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { COOKIE_DOMAIN, LEGACY_COOKIE_NAME, COOKIE_MAXAGE, CONSENT_COOKIE_NAME } from "../config";
+import { LEGACY_COOKIE_NAME, COOKIE_MAXAGE, CONSENT_COOKIE_NAME } from "../config";
 import { consentCounterMetric } from "../util/metrics";
 import { ConsentCookie } from "./util/getTemplateValues";
 
@@ -23,12 +23,10 @@ export const resetOldConsentController = (req: Request, res: Response) => {
 
   res.cookie(LEGACY_COOKIE_NAME, Buffer.from(JSON.stringify(cookie)).toString("base64"), {
     maxAge: COOKIE_MAXAGE,
-    domain: COOKIE_DOMAIN,
   });
 
   res.cookie(CONSENT_COOKIE_NAME, "{}", {
     maxAge: 0,
-    domain: COOKIE_DOMAIN,
   });
 
   res.setHeader("Cache-Control", "no-store");
