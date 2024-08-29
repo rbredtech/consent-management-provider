@@ -10,7 +10,6 @@ import {
   CONSENT_COOKIE_NAME,
   TRACKING_HOST_CONSENT,
   TRACKING_HOST_NO_CONSENT,
-  TRACKING_PROTOCOL,
   SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,
 } from "../config";
 
@@ -42,7 +41,6 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
     const trackingJs = await renderFile(path.join(__dirname, "../templates/cmpWithTracking.js"), {
       CHANNEL_ID: req.channelId,
       CMP_ID: req.query.cmpId,
-      TRACKING_PROTOCOL,
       TRACKING_HOST_CONSENT,
       TRACKING_HOST_NO_CONSENT,
       TRACKING_RESOLUTION: req.query.r,
