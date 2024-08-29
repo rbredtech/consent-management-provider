@@ -61,12 +61,31 @@
     return !userAgentIsExcluded;
   }
 
+  function onIframeMessage(event) {
+    if (
+      window.location.protocol + '//<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 ||
+      !event.data ||
+      typeof event.data !== 'string'
+    ) {
+      return;
+    }
+
+    var message = event.data.split(';');
+    var id = message[0];
+    var callbackParameter = JSON.parse(message[1]);
+    if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
+      return;
+    }
+    callbackMap[id](callbackParameter.param);
+  }
+
   function createIframe() {
     var iframe = document.createElement('iframe');
 
     iframe.setAttribute(
       'src',
-      window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
+      window.location.protocol +
+        '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
         (channelId !== '' ? '?channelId=' + channelId : ''),
     );
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
@@ -83,21 +102,7 @@
         message('cmd', command, version, callback, parameter);
       };
 
-      function onMessage(event) {
-        if (window.location.protocol + '//<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
-          return;
-        }
-
-        var message = event.data.split(';');
-        var id = message[0];
-        var callbackParameter = JSON.parse(message[1]);
-        if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
-          return;
-        }
-        callbackMap[id](callbackParameter.param);
-      }
-
-      window.addEventListener('message', onMessage);
+      window.addEventListener('message', onIframeMessage);
 
       onAPILoaded('iframe');
     };
@@ -163,7 +168,8 @@
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
     cmpapiScriptTag.setAttribute(
       'src',
-      window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
+      window.location.protocol +
+        '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
         techCookieTimestamp +
         (hasConsent !== null ? '&consent=' + hasConsent : '') +
         (consentByVendorId !== null ? '&vendorConsents=' + consentByVendorId : '') +

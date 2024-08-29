@@ -164,7 +164,8 @@
 
         image = document.createElement('img');
         image.src =
-          window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
+          window.location.protocol +
+          '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
           serializeConsentByVendorId(consentDecisionByVendorId) +
           (channelId !== '' ? '&channelId=' + channelId : '');
 
@@ -189,7 +190,8 @@
         var consentByVendorIdParam = parameter;
         image = document.createElement('img');
         image.src =
-          window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
+          window.location.protocol +
+          '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
           serializeConsentByVendorId(consentByVendorIdParam) +
           (channelId !== '' ? '&channelId=' + channelId : '');
 
@@ -249,7 +251,8 @@
           var migratedConsentSerialized = serializeConsentByVendorId(migratedConsent);
           image = document.createElement('img');
           image.src =
-            window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/migrate?consentByVendorId=' +
+            window.location.protocol +
+            '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/migrate?consentByVendorId=' +
             migratedConsentSerialized +
             (channelId !== '' ? '&channelId=' + channelId : '');
 
@@ -269,7 +272,8 @@
 
         image = document.createElement('img');
         image.src =
-          window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/reset-old-consent?consent=' +
+          window.location.protocol +
+          '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/reset-old-consent?consent=' +
           (parameter + '' === 'true' ? 1 : 0) +
           (channelId !== '' ? '&channelId=' + channelId : '');
 
