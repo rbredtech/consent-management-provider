@@ -18,7 +18,7 @@ export const cmpController = async (req: Request, res: Response) => {
 
   try {
     res.render("cmp.js", {
-      TECH_COOKIE_TIMESTAMP: Date.now(),
+      TECH_COOKIE_TIMESTAMP: req.timestamp,
       TECH_COOKIE_NAME,
       LEGACY_COOKIE_NAME,
       CONSENT_COOKIE_NAME,
