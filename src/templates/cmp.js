@@ -149,31 +149,13 @@
   }
 
   function createCmpApiScriptTag() {
-    var techCookieTimestamp = '<%-TECH_COOKIE_TIMESTAMP%>';
-    var hasConsent = null;
-    var consentByVendorId = null;
-
-    if (window.localStorage && localStorage.getItem && localStorage.setItem) {
-      if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
-        // no tech info yet, need to store
-        localStorage.setItem('<%-TECH_COOKIE_NAME%>', techCookieTimestamp);
-      } else {
-        techCookieTimestamp = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
-        hasConsent = localStorage.getItem('<%-LEGACY_COOKIE_NAME%>');
-        consentByVendorId = localStorage.getItem('<%-CONSENT_COOKIE_NAME%>');
-      }
-    }
-
     var cmpapiScriptTag = document.createElement('script');
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
     cmpapiScriptTag.setAttribute(
       'src',
       window.location.protocol +
-        '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
-        techCookieTimestamp +
-        (hasConsent !== null ? '&consent=' + hasConsent : '') +
-        (consentByVendorId !== null ? '&vendorConsents=' + consentByVendorId : '') +
-        (channelId !== '' ? '&channelId=' + channelId : ''),
+        '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?' +
+        (channelId !== '' ? '?channelId=' + channelId : ''),
     );
 
     cmpapiScriptTag.onload = function () {

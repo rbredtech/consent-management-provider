@@ -1,6 +1,36 @@
 (function () {
   var logCallbacks = [];
 
+  function getCookie(name) {
+    try {
+      var cname = name + '=';
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) === ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(cname) === 0) {
+          return c.substring(cname.length, c.length);
+        }
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function readStorage(key) {
+    var value = null;
+    if (window.localStorage && localStorage.getItem) {
+      value = localStorage.getItem(key);
+      if (value) {
+        return value;
+      }
+    }
+    value = getCookie(key);
+    return value;
+  }
+
   function objectKeys(obj) {
     var keys = [];
     for (var key in obj) {
@@ -11,25 +41,29 @@
 
   function serializeConsentByVendorId(consentByVendorId) {
     var serialized = '';
-    var vendorIds = objectKeys(consentByVendorId);
-    for (var i = 0; i < vendorIds.length; i++) {
-      serialized = serialized + vendorIds[i] + '~' + consentByVendorId[vendorIds[i]];
-      if (i < vendorIds.length - 1) {
-        serialized = serialized + ',';
+    try {
+      var vendorIds = objectKeys(consentByVendorId);
+      for (var i = 0; i < vendorIds.length; i++) {
+        serialized = serialized + vendorIds[i] + '~' + consentByVendorId[vendorIds[i]];
+        if (i < vendorIds.length - 1) {
+          serialized = serialized + ',';
+        }
       }
-    }
+    } catch (e) {}
     return serialized;
   }
 
   function parseSerializedConsentByVendorId(serializedConsentByVendorId) {
     var consentByVendorId = {};
-    if (serializedConsentByVendorId) {
-      var parsed = serializedConsentByVendorId.split(',');
-      for (var x = 0; x < parsed.length; x++) {
-        var split = parsed[x].split('~');
-        consentByVendorId[split[0]] = split[1] === 'true';
+    try {
+      if (serializedConsentByVendorId) {
+        var parsed = serializedConsentByVendorId.split(',');
+        for (var x = 0; x < parsed.length; x++) {
+          var split = parsed[x].split('~');
+          consentByVendorId[split[0]] = split[1] === 'true';
+        }
       }
-    }
+    } catch (e) {}
     return consentByVendorId;
   }
 
@@ -71,36 +105,52 @@
     }
   }
 
-  window.__cmpapi = function (command, version, callback, parameter) {
+  window.__cmpapi = function (command, _version, callback, parameter) {
     var channelId = '<%-CHANNEL_ID%>';
 
-    var hasConsent = '<%-TC_CONSENT%>' === 'undefined' ? undefined : '<%-TC_CONSENT%>' === 'true';
-    var consentByVendorIdSerialized = '<%-TC_CONSENT_BY_VENDOR_ID%>';
+    var technicalCookie = parseInt(readStorage('<%-TECH_COOKIE_NAME%>'));
+    var hasConsentSerialized = readStorage('<%-LEGACY_COOKIE_NAME%>');
+    var consentByVendorIdSerialized = readStorage('<%-CONSENT_COOKIE_NAME%>');
 
-    if (window.localStorage && localStorage.getItem) {
-      var localStorageConsent = localStorage.getItem('<%-LEGACY_COOKIE_NAME%>');
-      if (localStorageConsent === 'true') {
-        hasConsent = true;
+    var hasConsent = undefined;
+    try {
+      if (hasConsentSerialized === 'undefined' || hasConsentSerialized === 'true' || hasConsentSerialized === 'false') {
+        // old consent came from localStorage (not base64 encoded)
+        hasConsent = hasConsentSerialized === 'undefined' ? undefined : hasConsentSerialized === 'true';
+      } else {
+        // old consent came from cookie (base64 encoded)
+        hasConsent = JSON.parse(atob(hasConsentSerialized)).consent;
       }
-      if (localStorageConsent === 'false') {
-        hasConsent = false;
-      }
+    } catch (e) {}
 
-      var lsConsentByVendorId = localStorage.getItem('<%-CONSENT_COOKIE_NAME%>');
-      if (lsConsentByVendorId) {
-        consentByVendorIdSerialized = lsConsentByVendorId;
-      }
-    }
-
-    var consentByVendorId = {};
-
+    var consentByVendorId = undefined;
     if (consentByVendorIdSerialized) {
       consentByVendorId = parseSerializedConsentByVendorId(consentByVendorIdSerialized);
     }
 
     // backwards compatibility with old cookie
-    if (consentByVendorId[4040] === undefined && hasConsent !== undefined) {
+    if (consentByVendorId && consentByVendorId[4040] === undefined && hasConsent !== undefined) {
       consentByVendorId[4040] = hasConsent;
+    }
+
+    var cmpStatus = 'disabled';
+    var technicalCookiePassed =
+      '<%-CMP_ENABLED%>' === 'true' &&
+      technicalCookie &&
+      Date.now() - technicalCookie >= parseInt('<%-TECH_COOKIE_MIN%>');
+
+    if (technicalCookiePassed || hasConsent !== undefined || consentByVendorId !== undefined) {
+      // if the tech cookie is set and is old enough, or there is already a consent saved, the cmp is enabled
+      cmpStatus = 'loaded';
+    }
+
+    if (
+      cmpStatus === 'loaded' &&
+      Math.floor(Math.random() * 100) + 1 > parseInt('<%-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT%>')
+    ) {
+      // request randomly chosen to be outside the configured sampling threshold,
+      // so disable consent status
+      cmpStatus = 'disabled';
     }
 
     var image;
@@ -112,7 +162,7 @@
           callback({
             gdprApplies: true,
             cmpLoaded: true,
-            cmpStatus: '<%-CMP_STATUS%>',
+            cmpStatus: cmpStatus,
             displayStatus: 'hidden',
             apiVersion: '2.0',
             cmpVersion: 1,
@@ -131,27 +181,27 @@
             cmpVersion: 1,
             gdprApplies: true,
             eventStatus: 'tcloaded',
-            cmpStatus: '<%-CMP_STATUS%>',
+            cmpStatus: cmpStatus,
             listenerId: undefined,
             isServiceSpecific: true,
             useNonStandardStacks: false,
             publisherCC: 'AT',
             purposeOneTreatment: true,
             purpose: {
-              consents: consentByVendorId,
+              consents: consentByVendorId || {},
             },
             legitimateInterests: {
-              consents: consentByVendorId,
+              consents: consentByVendorId || {},
             },
             vendor: {
-              consents: consentByVendorId,
+              consents: consentByVendorId || {},
             },
           });
         }
 
         log(logEvents.GET_TC_DATA, true, {
-          status: '<%-CMP_STATUS%>',
-          consentByVendorId: consentByVendorId,
+          status: cmpStatus,
+          consentByVendorId: consentByVendorId || {},
         });
         break;
       case 'setConsent':
@@ -244,7 +294,10 @@
         }
         break;
       case '_migrateConsentIfNecessary':
-        if (hasConsent !== undefined && consentByVendorIdSerialized.indexOf('4040~') === -1) {
+        if (
+          hasConsent !== undefined &&
+          (!consentByVendorIdSerialized || consentByVendorIdSerialized.indexOf('4040~') === -1)
+        ) {
           var migratedConsent = {
             4040: hasConsent,
           };
@@ -278,7 +331,7 @@
           (channelId !== '' ? '&channelId=' + channelId : '');
 
         if (window.localStorage && localStorage.setItem && localStorage.removeItem) {
-          localStorage.setItem('<%-LEGACY_COOKIE_NAME%>', parameter);
+          localStorage.setItem('<%-LEGACY_COOKIE_NAME%>', parameter + '' === 'true' ? 'true' : 'false');
           localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
           localStorageAvailable = true;
         }
