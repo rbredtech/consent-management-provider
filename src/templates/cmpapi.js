@@ -19,6 +19,12 @@
     return null;
   }
 
+  function setCookie(name, value) {
+    var maxAge = 60 * 60 * 24 * 365 * 2; // 2 years
+    var cookie = name + '=' + value + ';max-age=' + maxAge + ';path=/;domain=<%-COOKIE_DOMAIN%>';
+    document.cookie = cookie;
+  }
+
   function readStorage(key) {
     var value = null;
     if (window.localStorage && localStorage.getItem) {
@@ -29,6 +35,13 @@
     }
     value = getCookie(key);
     return value;
+  }
+
+  function writeStorage(key, value) {
+    setCookie(key, value + '');
+    if (window.localStorage && localStorage.setItem) {
+      localStorage.setItem(key, value + '');
+    }
   }
 
   function objectKeys(obj) {
@@ -109,6 +122,10 @@
     var channelId = '<%-CHANNEL_ID%>';
 
     var technicalCookie = parseInt(readStorage('<%-TECH_COOKIE_NAME%>'));
+    if (!technicalCookie) {
+      technicalCookie = Date.now();
+      writeStorage('<%-TECH_COOKIE_NAME%>', technicalCookie);
+    }
     var hasConsentSerialized = readStorage('<%-LEGACY_COOKIE_NAME%>');
     var consentByVendorIdSerialized = readStorage('<%-CONSENT_COOKIE_NAME%>');
 

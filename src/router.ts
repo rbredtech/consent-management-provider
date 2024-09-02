@@ -13,7 +13,7 @@ import {
   resetOldConsentController,
 } from "./controller";
 
-import { loggerMiddleware, techCookieMiddleware, channelMiddleware } from "./middleware";
+import { loggerMiddleware, channelMiddleware } from "./middleware";
 
 const router = Router();
 
@@ -25,7 +25,7 @@ router.use(channelMiddleware);
 router.get("/banner.js", bannerController);
 router.get("/cmp.js", cmpController);
 router.get("/cmp-with-tracking.js", cmpWithTrackingController);
-router.get("/cmpapi.js", techCookieMiddleware, cmpapiController);
+router.get("/cmpapi.js", cmpapiController);
 router.get("/iframe.html", iframeController);
 router.get("/remove-consent", removeConsentController);
 router.get(["/set-consent", "/migrate"], setConsentController);
