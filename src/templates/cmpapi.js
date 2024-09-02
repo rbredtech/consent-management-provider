@@ -118,16 +118,22 @@
     }
   }
 
+  var channelId = '<%-CHANNEL_ID%>';
+
   var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('<%-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT%>');
 
-  window.__cmpapi = function (command, _version, callback, parameter) {
-    var channelId = '<%-CHANNEL_ID%>';
+  var technicalCookie = parseInt(readStorage('<%-TECH_COOKIE_NAME%>'));
+  if (!technicalCookie) {
+    technicalCookie = Date.now();
+    writeStorage('<%-TECH_COOKIE_NAME%>', technicalCookie);
+  }
 
-    var technicalCookie = parseInt(readStorage('<%-TECH_COOKIE_NAME%>'));
-    if (!technicalCookie) {
-      technicalCookie = Date.now();
-      writeStorage('<%-TECH_COOKIE_NAME%>', technicalCookie);
-    }
+  var technicalCookiePassed =
+    '<%-CMP_ENABLED%>' === 'true' &&
+    technicalCookie &&
+    Date.now() - technicalCookie >= parseInt('<%-TECH_COOKIE_MIN%>');
+
+  window.__cmpapi = function (command, _version, callback, parameter) {
     var hasConsentSerialized = readStorage('<%-LEGACY_COOKIE_NAME%>');
     var consentByVendorIdSerialized = readStorage('<%-CONSENT_COOKIE_NAME%>');
 
@@ -153,10 +159,6 @@
     }
 
     var cmpStatus = 'disabled';
-    var technicalCookiePassed =
-      '<%-CMP_ENABLED%>' === 'true' &&
-      technicalCookie &&
-      Date.now() - technicalCookie >= parseInt('<%-TECH_COOKIE_MIN%>');
 
     if (technicalCookiePassed || hasConsent !== undefined || consentByVendorId !== undefined) {
       // if the tech cookie is set and is old enough, or there is already a consent saved, the cmp is enabled
