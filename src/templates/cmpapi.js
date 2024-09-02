@@ -118,6 +118,8 @@
     }
   }
 
+  var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('<%-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT%>');
+
   window.__cmpapi = function (command, _version, callback, parameter) {
     var channelId = '<%-CHANNEL_ID%>';
 
@@ -161,11 +163,8 @@
       cmpStatus = 'loaded';
     }
 
-    if (
-      cmpStatus === 'loaded' &&
-      Math.floor(Math.random() * 100) + 1 > parseInt('<%-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT%>')
-    ) {
-      // request randomly chosen to be outside the configured sampling threshold,
+    if (cmpStatus === 'loaded' && hasConsent === undefined && consentByVendorId === undefined && outOfSample) {
+      // cmp instance randomly chosen to be outside the configured sampling threshold,
       // so disable consent status
       cmpStatus = 'disabled';
     }
