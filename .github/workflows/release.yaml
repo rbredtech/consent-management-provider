@@ -27,19 +27,19 @@ jobs:
 
       - name: Install dependencies
         id: install
-        run: npm install
+        run: yarn install
 
       - name: Lint
         id: lint
-        run: npm run lint
+        run: yarn lint
 
       - name: Build app
         id: build
-        run: npm run build
+        run: yarn build
 
       - name: Test app
         id: test
-        run: npm run ci
+        run: yarn ci
         env:
           HTTP_PORT: 3000
           HTTP_HOST: localhost:3000
@@ -61,7 +61,7 @@ jobs:
           CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT: 100
           API_VERSION: v2
         run: |
-          npm start & npx wait-on http://localhost:3000/health
+          yarn start & npx wait-on http://localhost:3000/health
           ./k6 run ./load_test/core.js --vus 50 --iterations 1000
 
       - name: Log in to container registry

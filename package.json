@@ -5,9 +5,9 @@
   "main": "dist/app.js",
   "scripts": {
     "open": "browser-refresh express --port 8080",
-    "dev": "concurrently \"ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
-    "watch": "concurrently \"nodemon -e ts -w ./src -i './src/templates/*' -x ts-node -r dotenv/config ./src/app.ts\" \"npm run open\"",
-    "start": "npm run prod",
+    "dev": "concurrently \"ts-node -r dotenv/config ./src/app.ts\" \"yarn open\"",
+    "watch": "concurrently \"nodemon -e ts -w ./src -i './src/templates/*' -x ts-node -r dotenv/config ./src/app.ts\" \"yarn open\"",
+    "start": "yarn prod",
     "build": "rm -rf ./dist/* && gulp",
     "prod": "node ./dist/app.js",
     "test": "jest --verbose=true --silent",
