@@ -245,14 +245,19 @@
             consentByVendorId: consentDecisionByVendorId,
             localStorageAvailable: localStorageAvailable,
           });
-        };
-        image.onerror = function () {
-          log(logEvents.SET_CONSENT, false, {});
+
+          if (callback && typeof callback === 'function') {
+            callback(consent);
+          }
         };
 
-        if (callback && typeof callback === 'function') {
-          callback(consent);
-        }
+        image.onerror = function () {
+          log(logEvents.SET_CONSENT, false, {});
+
+          if (callback && typeof callback === 'function') {
+            callback();
+          }
+        };
         break;
       case 'setConsentByVendorId':
         localStorageAvailable = false;
@@ -272,14 +277,19 @@
             consentByVendorId: consentByVendorIdParam,
             localStorageAvailable: localStorageAvailable,
           });
-        };
-        image.onerror = function () {
-          log(logEvents.SET_CONSENT_BY_VENDOR_ID, false, {});
+
+          if (callback && typeof callback === 'function') {
+            callback(consentByVendorIdParam);
+          }
         };
 
-        if (callback && typeof callback === 'function') {
-          callback(consentByVendorIdParam);
-        }
+        image.onerror = function () {
+          log(logEvents.SET_CONSENT_BY_VENDOR_ID, false, {});
+
+          if (callback && typeof callback === 'function') {
+            callback();
+          }
+        };
         break;
       case 'removeConsentDecision':
         localStorageAvailable = false;
@@ -290,15 +300,21 @@
 
         image.onload = function () {
           localStorageAvailable = removeLocalStorageConsent();
+
           log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
-        };
-        image.onerror = function () {
-          log(logEvents.REMOVE_CONSENT_DECISION, false, {});
+
+          if (callback && typeof callback === 'function') {
+            callback();
+          }
         };
 
-        if (callback && typeof callback === 'function') {
-          callback();
-        }
+        image.onerror = function () {
+          log(logEvents.REMOVE_CONSENT_DECISION, false, {});
+
+          if (callback && typeof callback === 'function') {
+            callback();
+          }
+        };
         break;
       case 'onLogEvent':
         if (callback && typeof callback === 'function') {
@@ -322,6 +338,7 @@
             4040: hasConsent,
           };
           var migratedConsentSerialized = serializeConsentByVendorId(migratedConsent);
+
           image = document.createElement('img');
           image.src =
             window.location.protocol +
@@ -334,6 +351,7 @@
             updateLocalStorageConsent(migratedConsent);
             log(logEvents.MIGRATE_CONSENT, true, migratedConsent);
           };
+
           image.onerror = function () {
             log(logEvents.MIGRATE_CONSENT, false, {});
           };
@@ -351,23 +369,30 @@
           (channelId !== '' ? '&channelId=' + channelId : '') +
           ('&t=' + Date.now());
 
-        if (window.localStorage && localStorage.setItem && localStorage.removeItem) {
-          localStorage.setItem('<%-LEGACY_COOKIE_NAME%>', parameter + '' === 'true' ? 'true' : 'false');
-          localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
-          localStorageAvailable = true;
-        }
-
         image.onload = function () {
+          if (window.localStorage && localStorage.setItem && localStorage.removeItem) {
+            localStorage.setItem('<%-LEGACY_COOKIE_NAME%>', parameter + '' === 'true' ? 'true' : 'false');
+            localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
+            localStorageAvailable = true;
+          }
+
           log(logEvents.RESET_OLD_CONSENT, true, {
             consent: parameter,
             localStorageAvailable: localStorageAvailable,
           });
-        };
-        image.onerror = function () {
-          log(logEvents.RESET_OLD_CONSENT, false, {});
+
+          if (callback && typeof callback === 'function') {
+            callback(parameter);
+          }
         };
 
-        !!callback && callback(parameter);
+        image.onerror = function () {
+          log(logEvents.RESET_OLD_CONSENT, false, {});
+
+          if (callback && typeof callback === 'function') {
+            callback(parameter);
+          }
+        };
         break;
       default:
         break;
