@@ -17,8 +17,6 @@ export const resetOldConsentController = (req: Request, res: Response) => {
     consent: req.query?.consent === "1",
   };
 
-  console.log(cookie);
-
   consentCounterMetric
     .labels({
       consent: cookie.consent.toString(),
