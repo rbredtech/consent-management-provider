@@ -235,7 +235,8 @@
           window.location.protocol +
           '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
           serializeConsentByVendorId(consentDecisionByVendorId) +
-          (channelId !== '' ? '&channelId=' + channelId : '');
+          (channelId !== '' ? '&channelId=' + channelId : '') +
+          ('&t=' + Date.now());
 
         image.onload = function () {
           localStorageAvailable = updateLocalStorageConsent(consentDecisionByVendorId);
@@ -261,7 +262,8 @@
           window.location.protocol +
           '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
           serializeConsentByVendorId(consentByVendorIdParam) +
-          (channelId !== '' ? '&channelId=' + channelId : '');
+          (channelId !== '' ? '&channelId=' + channelId : '') +
+          ('&t=' + Date.now());
 
         image.onload = function () {
           localStorageAvailable = updateLocalStorageConsent(consentByVendorIdParam);
@@ -283,7 +285,8 @@
         localStorageAvailable = false;
 
         image = document.createElement('img');
-        image.src = window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent';
+        image.src =
+          window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent?t=' + Date.now();
 
         image.onload = function () {
           localStorageAvailable = removeLocalStorageConsent();
@@ -324,7 +327,8 @@
             window.location.protocol +
             '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/migrate?consentByVendorId=' +
             migratedConsentSerialized +
-            (channelId !== '' ? '&channelId=' + channelId : '');
+            (channelId !== '' ? '&channelId=' + channelId : '') +
+            ('&t=' + Date.now());
 
           image.onload = function () {
             updateLocalStorageConsent(migratedConsent);
@@ -344,7 +348,8 @@
           window.location.protocol +
           '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/reset-old-consent?consent=' +
           (parameter + '' === 'true' ? 1 : 0) +
-          (channelId !== '' ? '&channelId=' + channelId : '');
+          (channelId !== '' ? '&channelId=' + channelId : '') +
+          ('&t=' + Date.now());
 
         if (window.localStorage && localStorage.setItem && localStorage.removeItem) {
           localStorage.setItem('<%-LEGACY_COOKIE_NAME%>', parameter + '' === 'true' ? 'true' : 'false');
