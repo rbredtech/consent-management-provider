@@ -25,7 +25,7 @@
     document.cookie = cookie;
   }
 
-  function readStorage(key) {
+  function readStorageOrCookie(key) {
     var value = null;
     if (window.localStorage && localStorage.getItem) {
       value = localStorage.getItem(key);
@@ -37,7 +37,7 @@
     return value;
   }
 
-  function writeStorage(key, value) {
+  function writeStorageAndCookie(key, value) {
     setCookie(key, value + '');
     if (window.localStorage && localStorage.setItem) {
       localStorage.setItem(key, value + '');
@@ -122,10 +122,10 @@
 
   var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('<%-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT%>');
 
-  var technicalCookie = parseInt(readStorage('<%-TECH_COOKIE_NAME%>'));
+  var technicalCookie = parseInt(readStorageOrCookie('<%-TECH_COOKIE_NAME%>'));
   if (!technicalCookie) {
     technicalCookie = Date.now();
-    writeStorage('<%-TECH_COOKIE_NAME%>', technicalCookie);
+    writeStorageAndCookie('<%-TECH_COOKIE_NAME%>', technicalCookie);
   }
 
   var technicalCookiePassed =
@@ -134,8 +134,8 @@
     Date.now() - technicalCookie >= parseInt('<%-TECH_COOKIE_MIN%>');
 
   window.__cmpapi = function (command, _version, callback, parameter) {
-    var hasConsentSerialized = readStorage('<%-LEGACY_COOKIE_NAME%>');
-    var consentByVendorIdSerialized = readStorage('<%-CONSENT_COOKIE_NAME%>');
+    var hasConsentSerialized = readStorageOrCookie('<%-LEGACY_COOKIE_NAME%>');
+    var consentByVendorIdSerialized = readStorageOrCookie('<%-CONSENT_COOKIE_NAME%>');
 
     var hasConsent = undefined;
     try {
