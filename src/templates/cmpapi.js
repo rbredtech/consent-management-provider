@@ -237,9 +237,9 @@
           serializeConsentByVendorId(consentDecisionByVendorId) +
           (channelId !== '' ? '&channelId=' + channelId : '');
 
-        localStorageAvailable = updateLocalStorageConsent(consentDecisionByVendorId);
-
         image.onload = function () {
+          localStorageAvailable = updateLocalStorageConsent(consentDecisionByVendorId);
+
           log(logEvents.SET_CONSENT, true, {
             consentByVendorId: consentDecisionByVendorId,
             localStorageAvailable: localStorageAvailable,
@@ -263,9 +263,9 @@
           serializeConsentByVendorId(consentByVendorIdParam) +
           (channelId !== '' ? '&channelId=' + channelId : '');
 
-        localStorageAvailable = updateLocalStorageConsent(consentByVendorIdParam);
-
         image.onload = function () {
+          localStorageAvailable = updateLocalStorageConsent(consentByVendorIdParam);
+
           log(logEvents.SET_CONSENT_BY_VENDOR_ID, true, {
             consentByVendorId: consentByVendorIdParam,
             localStorageAvailable: localStorageAvailable,
@@ -285,9 +285,8 @@
         image = document.createElement('img');
         image.src = window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent';
 
-        localStorageAvailable = removeLocalStorageConsent();
-
         image.onload = function () {
+          localStorageAvailable = removeLocalStorageConsent();
           log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
         };
         image.onerror = function () {
@@ -328,13 +327,12 @@
             (channelId !== '' ? '&channelId=' + channelId : '');
 
           image.onload = function () {
+            updateLocalStorageConsent(migratedConsent);
             log(logEvents.MIGRATE_CONSENT, true, migratedConsent);
           };
           image.onerror = function () {
             log(logEvents.MIGRATE_CONSENT, false, {});
           };
-
-          updateLocalStorageConsent(migratedConsent);
         }
         break;
       // api method for testing migration path, resets old consent and removes new consent
