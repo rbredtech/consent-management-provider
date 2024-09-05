@@ -4,7 +4,7 @@ import { API_VERSION, HTTP_HOST } from "../config";
 
 export const iframeController = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
-  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Cache-Control", "public, max-age=3600");
 
   res.render("iframe.html", {
     API_VERSION,

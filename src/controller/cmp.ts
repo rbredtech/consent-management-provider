@@ -5,7 +5,7 @@ import { loadedCounterMetric } from "../util/metrics";
 
 export const cmpController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
-  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Cache-Control", "public, max-age=3600");
 
   loadedCounterMetric.labels({ channel: req.channelName }).inc();
 
