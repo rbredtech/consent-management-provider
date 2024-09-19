@@ -70,13 +70,15 @@
       return;
     }
 
-    var message = event.data.split(';');
-    var id = message[0];
-    var callbackParameter = JSON.parse(message[1]);
-    if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
-      return;
-    }
-    callbackMap[id](callbackParameter.param);
+    try {
+      var message = event.data.split(';');
+      var id = message[0];
+      var callbackParameter = JSON.parse(message[1]);
+      if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
+        return;
+      }
+      callbackMap[id](callbackParameter.param);
+    } catch (e) {}
   }
 
   function createIframe() {

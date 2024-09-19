@@ -323,10 +323,12 @@
         break;
       case '_log':
         if (parameter) {
-          var logParameters = JSON.parse(parameter);
-          if (logParameters && logParameters.event) {
-            log(logParameters.event, !!logParameters.success, logParameters.parameters);
-          }
+          try {
+            var logParameters = JSON.parse(parameter);
+            if (logParameters && logParameters.event) {
+              log(logParameters.event, !!logParameters.success, logParameters.parameters);
+            }
+          } catch (e) {}
         }
         break;
       case '_migrateConsentIfNecessary':
