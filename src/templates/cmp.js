@@ -70,10 +70,13 @@
       return;
     }
 
+    var message = event.data.split(';');
+    if (message[0] !== 'tvicmp') {
+      return;
+    }
     try {
-      var message = event.data.split(';');
-      var id = message[0];
-      var callbackParameter = JSON.parse(message[1]);
+      var id = message[1];
+      var callbackParameter = JSON.parse(message[2]);
       if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
         return;
       }
