@@ -6,10 +6,10 @@ WORKDIR /usr/src/app
 
 COPY --chown=node:node ./dist/ ./dist
 COPY --chown=node:node ./package.json .
-COPY --chown=node:node ./package-lock.json .
+COPY --chown=node:node ./yarn.lock .
 
 ENV NODE_ENV=production
-RUN npm install
+RUN yarn install
 USER node
 
 ENTRYPOINT [ "dumb-init", "node", "dist/app.js" ]

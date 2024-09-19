@@ -27,7 +27,7 @@
     var trackingScriptTag = document.createElement('script');
     trackingScriptTag.type = 'text/javascript';
     trackingScriptTag.src =
-      '<%-TRACKING_PROTOCOL%>://' + trackingHost + '/v2/<%-CHANNEL_ID%>/tracking.js' + queryParamsJoined;
+      window.location.protocol + '//' + trackingHost + '/v2/<%-CHANNEL_ID%>/tracking.js' + queryParamsJoined;
     document.getElementsByTagName('head')[0].appendChild(trackingScriptTag);
   };
 

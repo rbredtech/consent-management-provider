@@ -2,8 +2,11 @@ import { Request, Response } from "express";
 
 import { COOKIE_DOMAIN, COOKIE_MAXAGE, CONSENT_COOKIE_NAME } from "../config";
 import { consentCounterMetric } from "../util/metrics";
-import { ConsentByVendorIdCookie } from "./util/getTemplateValues";
 import { logger } from "../util/logger";
+
+export interface ConsentByVendorIdCookie {
+  consent: string;
+}
 
 const img = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNiYAAAAAkAAxkR2eQAAAAASUVORK5CYII=",

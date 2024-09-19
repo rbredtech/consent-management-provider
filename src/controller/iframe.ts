@@ -1,19 +1,14 @@
 import { Request, Response } from "express";
 
-import { API_VERSION, CONSENT_COOKIE_NAME, LEGACY_COOKIE_NAME, HTTP_HOST, TECH_COOKIE_NAME } from "../config";
+import { API_VERSION, HTTP_HOST } from "../config";
 
 export const iframeController = (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
-  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Cache-Control", "public, max-age=3600");
 
   res.render("iframe.html", {
-    TECH_COOKIE_TIMESTAMP: req.timestamp,
-    TECH_COOKIE_NAME,
-    LEGACY_COOKIE_NAME,
-    CONSENT_COOKIE_NAME,
     API_VERSION,
     CONSENT_SERVER_HOST: HTTP_HOST,
-    CONSENT_SERVER_PROTOCOL: req.protocol,
     CHANNEL_ID: req.channelId,
   });
 };

@@ -40,7 +40,7 @@
   function message(type, command, version, callback, parameter) {
     callbackMap[++callbackCount] = callback;
     var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
-    iframe.contentWindow.postMessage(msg, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
+    iframe.contentWindow.postMessage(msg, window.location.protocol + '//<%-CONSENT_SERVER_HOST%>');
   }
 
   var channelId = '<%-CHANNEL_ID%>';
@@ -61,12 +61,31 @@
     return !userAgentIsExcluded;
   }
 
+  function onIframeMessage(event) {
+    if (
+      window.location.protocol + '//<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 ||
+      !event.data ||
+      typeof event.data !== 'string'
+    ) {
+      return;
+    }
+
+    var message = event.data.split(';');
+    var id = message[0];
+    var callbackParameter = JSON.parse(message[1]);
+    if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
+      return;
+    }
+    callbackMap[id](callbackParameter.param);
+  }
+
   function createIframe() {
     var iframe = document.createElement('iframe');
 
     iframe.setAttribute(
       'src',
-      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
+      window.location.protocol +
+        '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
         (channelId !== '' ? '?channelId=' + channelId : ''),
     );
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
@@ -83,21 +102,7 @@
         message('cmd', command, version, callback, parameter);
       };
 
-      function onMessage(event) {
-        if ('<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 || !event.data) {
-          return;
-        }
-
-        var message = event.data.split(';');
-        var id = message[0];
-        var callbackParameter = JSON.parse(message[1]);
-        if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
-          return;
-        }
-        callbackMap[id](callbackParameter.param);
-      }
-
-      window.addEventListener('message', onMessage);
+      window.addEventListener('message', onIframeMessage);
 
       onAPILoaded('iframe');
     };
@@ -144,30 +149,13 @@
   }
 
   function createCmpApiScriptTag() {
-    var techCookieTimestamp = '<%-TECH_COOKIE_TIMESTAMP%>';
-    var hasConsent = null;
-    var consentByVendorId = null;
-
-    if (window.localStorage && localStorage.getItem && localStorage.setItem) {
-      if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
-        // no tech info yet, need to store
-        localStorage.setItem('<%-TECH_COOKIE_NAME%>', techCookieTimestamp);
-      } else {
-        techCookieTimestamp = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
-        hasConsent = localStorage.getItem('<%-LEGACY_COOKIE_NAME%>');
-        consentByVendorId = localStorage.getItem('<%-CONSENT_COOKIE_NAME%>');
-      }
-    }
-
     var cmpapiScriptTag = document.createElement('script');
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
     cmpapiScriptTag.setAttribute(
       'src',
-      '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?<%-TECH_COOKIE_NAME%>=' +
-        techCookieTimestamp +
-        (hasConsent !== null ? '&consent=' + hasConsent : '') +
-        (consentByVendorId !== null ? '&vendorConsents=' + consentByVendorId : '') +
-        (channelId !== '' ? '&channelId=' + channelId : ''),
+      window.location.protocol +
+        '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?' +
+        (channelId !== '' ? '?channelId=' + channelId : ''),
     );
 
     cmpapiScriptTag.onload = function () {

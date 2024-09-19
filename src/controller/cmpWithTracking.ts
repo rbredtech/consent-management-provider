@@ -4,13 +4,9 @@ import path from "path";
 
 import {
   API_VERSION,
-  LEGACY_COOKIE_NAME,
   HTTP_HOST,
-  TECH_COOKIE_NAME,
-  CONSENT_COOKIE_NAME,
   TRACKING_HOST_CONSENT,
   TRACKING_HOST_NO_CONSENT,
-  TRACKING_PROTOCOL,
   SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,
 } from "../config";
 
@@ -26,24 +22,18 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
   }
 
   res.setHeader("Content-Type", "application/javascript");
-  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Cache-Control", "public, max-age=3600");
 
   try {
     const cmpJs = await renderFile(path.join(__dirname, "../templates/cmp.js"), {
-      TECH_COOKIE_TIMESTAMP: Date.now(),
-      TECH_COOKIE_NAME,
-      LEGACY_COOKIE_NAME,
-      CONSENT_COOKIE_NAME,
       API_VERSION,
       CONSENT_SERVER_HOST: HTTP_HOST,
-      CONSENT_SERVER_PROTOCOL: req.protocol,
       CHANNEL_ID: req.channelId,
       SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,
     });
     const trackingJs = await renderFile(path.join(__dirname, "../templates/cmpWithTracking.js"), {
       CHANNEL_ID: req.channelId,
       CMP_ID: req.query.cmpId,
-      TRACKING_PROTOCOL,
       TRACKING_HOST_CONSENT,
       TRACKING_HOST_NO_CONSENT,
       TRACKING_RESOLUTION: req.query.r,

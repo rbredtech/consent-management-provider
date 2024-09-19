@@ -213,14 +213,14 @@ function keyHandler(event) {
 To configure the service for local execution, create a `.env` (`.env.example` can be used as a template) and set the
 values in that file accordingly.
 
-Install dependencies with `npm install`.
+Install dependencies with `yarn install`.
 
 To run during development use
 
-- `npm run watch` (loads with wrapper to display UI and auto-refresh on template changes) or
-- `npm run dev` (loads with wrapper, no auto-refresh for templates).
+- `yarn watch` (loads with wrapper to display UI and auto-refresh on template changes) or
+- `yarn dev` (loads with wrapper, no auto-refresh for templates).
 
-To run in production use `npm start` or `npm run prod` after running the `npm run build` command.
+To run in production use `yarn start` or `yarn prod` after running the `yarn build` command.
 
 This project uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
 for adding new features and creating new releases. It is advised to install the
