@@ -10,7 +10,7 @@
     "start": "yarn prod",
     "build": "rm -rf ./dist/* && gulp",
     "prod": "node ./dist/app.js",
-    "test": "jest --verbose=true spec/cookie-migration.spec.js",
+    "test": "jest --verbose=true --silent",
     "ci": "start-server-and-test start http://localhost:3000/health test",
     "lint": "eslint --color",
     "lint:apply": "yarn lint --fix"
