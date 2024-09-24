@@ -27,7 +27,7 @@ const parseSerializedConsentByVendorId = (serialized: string): Record<number, bo
 };
 
 const serializeConsentByVendorId = (consent: Record<number, boolean | undefined>): string => {
-  let serializedEntries: string[] = [];
+  const serializedEntries: string[] = [];
   Object.entries(consent).forEach(([vendorId, consent]) => {
     if (consent !== undefined) {
       serializedEntries.push(`${vendorId}~${consent}`);
