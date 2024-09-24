@@ -1,11 +1,13 @@
-var gulp = require("gulp");
-var ts = require("gulp-typescript");
-var sourcemaps = require("gulp-sourcemaps");
-var terser = require("gulp-terser");
+import gulp from "gulp";
+import htmlmin from "gulp-htmlmin";
+import minifyInline from "gulp-minify-inline";
+import sourcemaps from "gulp-sourcemaps";
+import terser from "gulp-terser";
+import ts from "gulp-typescript";
 
 var tsProject = ts.createProject("tsconfig.json");
 
-var terserOptions = {
+const terserOptions = {
   compress: {
     arrows: false,
     booleans: false,
@@ -41,4 +43,12 @@ function minifyJsTemplates() {
   return gulp.src("./dist/templates/*.js").pipe(terser(terserOptions)).pipe(gulp.dest("./dist/templates"));
 }
 
-exports.default = gulp.series(typescript, copyTemplates, minifyJsTemplates);
+function minifyHtmlTemplates() {
+  return gulp
+    .src("./dist/templates/*.html")
+    .pipe(minifyInline({ js: terserOptions }))
+    .pipe(htmlmin({ collapseWhitespace: true }))
+    .pipe(gulp.dest("./dist/templates"));
+}
+
+export default gulp.series(typescript, copyTemplates, minifyJsTemplates, minifyHtmlTemplates);
