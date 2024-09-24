@@ -82,7 +82,7 @@
 
   function updateLocalStorageConsent(consentByVendorId) {
     if (window.localStorage && localStorage.setItem && localStorage.getItem) {
-      const lsConsentByVendorId = parseSerializedConsentByVendorId(localStorage.getItem('<%-CONSENT_COOKIE_NAME%>'));
+      var lsConsentByVendorId = parseSerializedConsentByVendorId(localStorage.getItem('<%-CONSENT_COOKIE_NAME%>'));
       for (var vendorId in consentByVendorId) {
         lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
       }
@@ -107,7 +107,7 @@
     SET_CONSENT_BY_VENDOR_ID: 'setConsentByVendorId',
     REMOVE_CONSENT_DECISION: 'removeConsentDecision',
     MIGRATE_CONSENT: 'migrateConsent',
-    RESET_OLD_CONSENT: 'resetOldConsent',
+    RESET_OLD_CONSENT: 'resetOldConsent'
   };
 
   function log(event, success, parameters) {
@@ -186,7 +186,7 @@
             cmpVersion: 1,
             cmpId: 4040,
             gvlVersion: 1,
-            tcfPolicyVersion: 2,
+            tcfPolicyVersion: 2
           });
         }
         break;
@@ -206,20 +206,20 @@
             publisherCC: 'AT',
             purposeOneTreatment: true,
             purpose: {
-              consents: consentByVendorId || {},
+              consents: consentByVendorId || {}
             },
             legitimateInterests: {
-              consents: consentByVendorId || {},
+              consents: consentByVendorId || {}
             },
             vendor: {
-              consents: consentByVendorId || {},
-            },
+              consents: consentByVendorId || {}
+            }
           });
         }
 
         log(logEvents.GET_TC_DATA, true, {
           status: cmpStatus,
-          consentByVendorId: consentByVendorId || {},
+          consentByVendorId: consentByVendorId || {}
         });
         break;
       case 'setConsent':
@@ -227,7 +227,7 @@
         var consent = parameter + '' === 'true';
         var consentDecisionByVendorId = {
           4040: consent,
-          4041: consent,
+          4041: consent
         };
 
         image = document.createElement('img');
@@ -243,7 +243,7 @@
 
           log(logEvents.SET_CONSENT, true, {
             consentByVendorId: consentDecisionByVendorId,
-            localStorageAvailable: localStorageAvailable,
+            localStorageAvailable: localStorageAvailable
           });
 
           if (callback && typeof callback === 'function') {
@@ -275,7 +275,7 @@
 
           log(logEvents.SET_CONSENT_BY_VENDOR_ID, true, {
             consentByVendorId: consentByVendorIdParam,
-            localStorageAvailable: localStorageAvailable,
+            localStorageAvailable: localStorageAvailable
           });
 
           if (callback && typeof callback === 'function') {
@@ -336,9 +336,7 @@
           hasConsent !== undefined &&
           (!consentByVendorIdSerialized || consentByVendorIdSerialized.indexOf('4040~') === -1)
         ) {
-          var migratedConsent = {
-            4040: hasConsent,
-          };
+          var migratedConsent = { 4040: hasConsent };
           var migratedConsentSerialized = serializeConsentByVendorId(migratedConsent);
 
           image = document.createElement('img');
@@ -380,7 +378,7 @@
 
           log(logEvents.RESET_OLD_CONSENT, true, {
             consent: parameter,
-            localStorageAvailable: localStorageAvailable,
+            localStorageAvailable: localStorageAvailable
           });
 
           if (callback && typeof callback === 'function') {

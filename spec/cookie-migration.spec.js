@@ -16,13 +16,14 @@ afterEach(async () => {
 describe("Consent cookie migration", () => {
   describe("when new cookie is not yet present", () => {
     beforeEach(async () => {
-      await page.evaluate(function () {
+      const ls = await page.evaluate(function () {
         return new Promise((resolve) => {
           localStorage.setItem("xconsent", false);
           localStorage.removeItem("agttconsent");
-          resolve();
+          resolve(localStorage.getItem("xconsent"));
         });
       });
+      console.log(ls);
       await pageHelper.initLoader(page, 0);
     });
 
