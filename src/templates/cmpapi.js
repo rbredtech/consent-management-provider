@@ -120,6 +120,7 @@
 
   var channelId = '<%-CHANNEL_ID%>';
   var cmpEnabled = '<%-CMP_ENABLED%>' === 'true';
+  var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('<%-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT%>');
   var now = Date.now();
 
   var technicalCookie = parseInt(readStorageOrCookie('<%-TECH_COOKIE_NAME%>'));
@@ -163,8 +164,6 @@
       // if the tech cookie is set and is old enough, or there is already a consent saved, the cmp is enabled
       cmpStatus = 'loaded';
     }
-
-    var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('<%-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT%>');
 
     if (cmpStatus === 'loaded' && hasConsent === undefined && consentByVendorId === undefined && outOfSample) {
       // cmp instance randomly chosen to be outside the configured sampling threshold,
