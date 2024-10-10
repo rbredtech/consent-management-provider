@@ -12,11 +12,17 @@ import {
   TECH_COOKIE_NAME,
   CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
   HTTP_HOST,
+  CMP_DISABLED_CHANNEL_IDS,
 } from "../config";
 
 export const cmpapiController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "public, max-age=3600");
+
+  const channelId = req.query.channelId?.toString();
+  const disabledChannelIds = CMP_DISABLED_CHANNEL_IDS?.split(",").map((channelId) => channelId.trim());
+  const cmpDisabledByChannelId = channelId && disabledChannelIds ? disabledChannelIds?.includes(channelId) : false;
+  const cmpEnabled = CMP_ENABLED && !cmpDisabledByChannelId;
 
   try {
     res.render("cmpapi.js", {
@@ -24,12 +30,12 @@ export const cmpapiController = async (req: Request, res: Response) => {
       LEGACY_COOKIE_NAME,
       CONSENT_COOKIE_NAME,
       COOKIE_DOMAIN,
-      CMP_ENABLED,
+      CMP_ENABLED: cmpEnabled,
       TECH_COOKIE_MIN,
       TECH_COOKIE_NAME,
       CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
       CONSENT_SERVER_HOST: HTTP_HOST,
-      CHANNEL_ID: req.query.channelId ? req.query.channelId.toString() : "",
+      CHANNEL_ID: channelId ?? "",
     });
   } catch (e) {
     logger.error(e);
