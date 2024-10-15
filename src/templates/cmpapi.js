@@ -1,6 +1,8 @@
 (function () {
   var logCallbacks = [];
 
+  var cmpEnabled = '<%-CMP_ENABLED%>' === 'true';
+
   function getCookie(name) {
     try {
       var cname = name + '=';
@@ -38,6 +40,9 @@
   }
 
   function writeStorageAndCookie(key, value) {
+    if (!cmpEnabled) {
+      return;
+    }
     setCookie(key, value + '');
     if (window.localStorage && localStorage.setItem) {
       localStorage.setItem(key, value + '');
@@ -119,16 +124,13 @@
   }
 
   var channelId = '<%-CHANNEL_ID%>';
-  var cmpEnabled = '<%-CMP_ENABLED%>' === 'true';
   var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('<%-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT%>');
   var now = Date.now();
 
   var technicalCookie = parseInt(readStorageOrCookie('<%-TECH_COOKIE_NAME%>'));
   if (!technicalCookie) {
     technicalCookie = now;
-    if (cmpEnabled) {
-      writeStorageAndCookie('<%-TECH_COOKIE_NAME%>', technicalCookie);
-    }
+    writeStorageAndCookie('<%-TECH_COOKIE_NAME%>', technicalCookie);
   }
 
   var technicalCookiePassed = now - technicalCookie >= parseInt('<%-TECH_COOKIE_MIN%>');
