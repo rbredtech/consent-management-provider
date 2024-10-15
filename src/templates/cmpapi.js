@@ -1,6 +1,8 @@
 (function () {
   var logCallbacks = [];
 
+  var cmpEnabled = '<%-CMP_ENABLED%>' === 'true';
+
   function getCookie(name) {
     try {
       var cname = name + '=';
@@ -38,6 +40,9 @@
   }
 
   function writeStorageAndCookie(key, value) {
+    if (!cmpEnabled) {
+      return;
+    }
     setCookie(key, value + '');
     if (window.localStorage && localStorage.setItem) {
       localStorage.setItem(key, value + '');
@@ -119,19 +124,16 @@
   }
 
   var channelId = '<%-CHANNEL_ID%>';
-
   var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('<%-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT%>');
+  var now = Date.now();
 
   var technicalCookie = parseInt(readStorageOrCookie('<%-TECH_COOKIE_NAME%>'));
   if (!technicalCookie) {
-    technicalCookie = Date.now();
+    technicalCookie = now;
     writeStorageAndCookie('<%-TECH_COOKIE_NAME%>', technicalCookie);
   }
 
-  var technicalCookiePassed =
-    '<%-CMP_ENABLED%>' === 'true' &&
-    technicalCookie &&
-    Date.now() - technicalCookie >= parseInt('<%-TECH_COOKIE_MIN%>');
+  var technicalCookiePassed = now - technicalCookie >= parseInt('<%-TECH_COOKIE_MIN%>');
 
   window.__cmpapi = function (command, _version, callback, parameter) {
     var hasConsentSerialized = readStorageOrCookie('<%-LEGACY_COOKIE_NAME%>');
@@ -160,7 +162,7 @@
 
     var cmpStatus = 'disabled';
 
-    if (technicalCookiePassed || hasConsent !== undefined || consentByVendorId !== undefined) {
+    if (cmpEnabled && (technicalCookiePassed || hasConsent !== undefined || consentByVendorId !== undefined)) {
       // if the tech cookie is set and is old enough, or there is already a consent saved, the cmp is enabled
       cmpStatus = 'loaded';
     }
