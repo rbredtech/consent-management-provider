@@ -21,9 +21,7 @@ const terserOptions = {
     properties: false,
     typeofs: false,
   },
-  mangle: {
-    toplevel: true,
-  },
+  mangle: false,
 };
 
 function typescript() {
