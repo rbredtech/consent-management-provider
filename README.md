@@ -12,7 +12,8 @@ the consent management `getTCData` callback.
 
 ## Compliance
 
-At this time no actually encoded TC String is used. Currently the unregistered vendor IDs `4040` and `4041` are used.
+At this time no actually encoded TC String is used. Currently the unregistered vendor IDs `4040` and `4041` are used for AGTT channels, and `5050` is used for AGF channels.
+
 ## Usage
 
 Usage/Integration examples can be found in the `/examples` folder of this repository.
@@ -25,7 +26,7 @@ opt-in/out ratio on a specific channel.
 - GET `/v2/cmp.js` - Returns the javascript bundle providing the `__cmpapi()` API for client side checking of consent status.
 - GET `/v2/cmp-with-tracking.js`- Returns a javascript bundle like `/cmp.js`, but also integrates the tracking script depending
   on the consent decision (<https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script>). There is one mandatory
-  query param `cmpId` which has to be given (`4040`), the query parameters for the tracking script are passed through
+  query param `cmpId` which has to be given (`4040`, `4041` or `5050`), the query parameters for the tracking script are passed through
   (see <https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script#tracking-script-parameters> for parameters)
 - GET `/v2/banner.js` - Returns the javascript bundle providing the `__cbapi()` API for controlling the consent banner.
 
@@ -42,7 +43,7 @@ __cmpapi(method, version, callback?, parameter?)
 |--------|--------------|------------|----------|
 | ping   |Wait until API is available. Optional. | none | `(status: TCStatus) => void` |
 | getTCData | Retrieve consent decision | none | `(data: TCData) => void` |
-| setConsent | Alter consent decision | `boolean` | `(consent: boolean) => void` |
+| setConsent | Alter consent decision (for AGTT channels only!) | `boolean` | `(consent: boolean) => void` |
 | setConsentByVendorId | Alter consent decision for specific vendor IDs | `Record<number, boolean>` | `(consent: Record<number, boolean>) => void` |
 | removeConsentDecision | Delete any saved consent decision | none | `() => void` |
 
@@ -94,7 +95,7 @@ The app needs to check `cmpStatus` and `consent` of the response of the `tcData`
 
 If `cmpStatus` is `loaded`, consent checking is available. If `consent` for the pre defined vendor id is `undefined`
 then consent has not yet been set on this device and the app should show a banner asking for consent. There is two options
-to proceed. The app can either display its own banner and use `setConsent` method to set the consent result retrieved by
+to proceed. The app can either display its own banner and use `setConsentByVendorId` method to set the consent result retrieved by
 the banner, or the app can use the `showBanner` and `handleKey` methods of the `__cbapi` to use the included banner that
 will overlay over the app (see [here](#displaying-consent-banner)).
 
@@ -108,7 +109,7 @@ The `channelId` query parameter is optional and is used to collect metrics about
 Having added the `cmp.js` javascript file to the application, you can check for the user's consent status through the API endpoints provided by the `__cmpapi` object:
 
 ```js
-var CMP_VENDOR_ID = 4040; // custom vendor id to store AGTT-wide consent decision
+var CMP_VENDOR_ID = 4040; // AGTT vendor ID used for this example
 __cmpapi('getTCData', 2, function(tcData) {
   var isCmpEnabled = tcData.cmpStatus === 'loaded';
   if (!isCmpEnabled) {
@@ -131,10 +132,12 @@ __cmpapi('getTCData', 2, function(tcData) {
 You can set the consent status for a user by executing to following API function:
 
 ```js
-__cmpapi('setConsent', 2, function() {
+__cmpapi('setConsentByVendorId', 2, function() {
   // call returned successfully
-}, true); // set to false to revoke consent
+}, { 4040: true }); // set to false to revoke consent
 ```
+
+The vendor ID `4040` is used here as example, make sure that you use the correct vendor ID for your use case (will be assigned by TV Insight)
 
 ### Displaying consent banner
 
@@ -155,7 +158,7 @@ __cbapi(method, version, callback?, parameter?)
 | Method | Description  | Parameter | Callback  |
 |--------|--------------|------------|----------|
 | showBanner | displays a consent banner to the user | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean \| undefined, bannerCloseReason?: string) => void` |
-| showAdditionalChannelsBanner | this method is used to display the consent banner, if there was already a previous consent decision, but the list of channels has changed (if you were instructed to not use 4040 as CMP_VENDOR_ID) | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean \| undefined, bannerCloseReason: string) => void` |
+| showAdditionalChannelsBanner | this method is used to display the consent banner, if there was already a previous consent decision, but the list of channels has changed (you will be told by TV Insight if this is the case) | `string` (optional, id of the dom-node the banner should be rendered in. if not given, `document.body` is used) | `(consent: boolean \| undefined, bannerCloseReason: string) => void` |
 | hideBanner | hides the consent banner | none | none |
 | isBannerVisible | Callback parameter shows if banner is currently shown | none | `(visible: boolean) => void`
 | handleKey | Allows for key handling of banner. Call for every key event after app called `showBanner` method. Do not use if app uses its own banner. The library does not add its own key handler and relies on the key handler of the host app. | `KeyboardEvent` | `(keyCode: number) => void` |
@@ -174,7 +177,7 @@ Possible values for `bannerCloseReason` of the `showBanner` callback, are
 var isShowingBanner = true;
 __cbapi('showBanner', 2, function(consentDecision) {
   if (consentDecision === true || consentDecision === false) {
-    __cmpapi('setConsent', 2, undefined, consentDecision);
+    __cmpapi('setConsentByVendorId', 2, undefined, { 4040: consentDecision });
   }
   // if consentDecision is `undefined`, the second param of the callback can give hints to why
   isShowingBanner = false;
@@ -189,7 +192,7 @@ using the `handleKey` method while the banner is being displayed.
 var isShowingBanner = true;
 __cbapi('showBanner', 2, function(consentDecision) {
   if (consentDecision === true || consentDecision === false) {
-    __cmpapi('setConsent', 2, undefined, consentDecision);
+    __cmpapi('setConsentByVendorId', 2, undefined, { 4040: consentDecision });
   }
   // if consentDecision is `undefined`, the second param of the callback can give hints to why
   isShowingBanner = false;
