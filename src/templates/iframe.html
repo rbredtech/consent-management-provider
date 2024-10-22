@@ -44,7 +44,7 @@
     try {
       var channelId = '<%-CHANNEL_ID%>';
       var cmpApiScriptTag = document.createElement('script');
-      cmpApiScriptTag.setAttribute('src', window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js?t=' + Date.now() + (channelId !== '' ? '&channelId=' + channelId : ''));
+      cmpApiScriptTag.setAttribute('src', window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js' + (channelId !== '' ? '?channelId=' + channelId : ''));
       cmpApiScriptTag.setAttribute('type', 'text/javascript');
       document.getElementsByTagName('head')[0].appendChild(cmpApiScriptTag);
     } catch (e) { }
