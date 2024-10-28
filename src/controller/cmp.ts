@@ -12,6 +12,7 @@ export const cmpController = async (req: Request, res: Response) => {
   try {
     res.render("cmp.js", {
       API_VERSION,
+      VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
       CONSENT_SERVER_HOST: HTTP_HOST,
       CHANNEL_ID: req.channelId,
       SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,

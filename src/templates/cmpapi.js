@@ -235,7 +235,7 @@
         image = document.createElement('img');
         image.src =
           window.location.protocol +
-          '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
+          '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>set-consent?consentByVendorId=' +
           serializeConsentByVendorId(consentDecisionByVendorId) +
           (channelId !== '' ? '&channelId=' + channelId : '') +
           ('&t=' + Date.now());
@@ -267,7 +267,7 @@
         image = document.createElement('img');
         image.src =
           window.location.protocol +
-          '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
+          '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>set-consent?consentByVendorId=' +
           serializeConsentByVendorId(consentByVendorIdParam) +
           (channelId !== '' ? '&channelId=' + channelId : '') +
           ('&t=' + Date.now());
@@ -298,7 +298,7 @@
 
         image = document.createElement('img');
         image.src =
-          window.location.protocol + '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent?t=' + Date.now();
+          window.location.protocol + '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>remove-consent?t=' + Date.now();
 
         image.onload = function () {
           localStorageAvailable = removeLocalStorageConsent();
@@ -344,7 +344,7 @@
           image = document.createElement('img');
           image.src =
             window.location.protocol +
-            '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/migrate?consentByVendorId=' +
+            '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>migrate?consentByVendorId=' +
             migratedConsentSerialized +
             (channelId !== '' ? '&channelId=' + channelId : '') +
             ('&t=' + Date.now());
@@ -366,7 +366,7 @@
         image = document.createElement('img');
         image.src =
           window.location.protocol +
-          '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/reset-old-consent?consent=' +
+          '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>reset-old-consent?consent=' +
           (parameter + '' === 'true' ? 1 : 0) +
           (channelId !== '' ? '&channelId=' + channelId : '') +
           ('&t=' + Date.now());
