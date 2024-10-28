@@ -16,8 +16,8 @@
 
       bannerLegalText.appendChild(
         document.createTextNode(
-          'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-messung), deren Mitglied ',
-        ),
+          'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-messung), deren Mitglied '
+        )
       );
       bannerLegalText.appendChild(bannerLegalTextChannelName);
       bannerLegalText.appendChild(
@@ -26,8 +26,8 @@
             'die Nutzung der TV-Geräte erfassen (die Daten können ohne Unterstützung der nutzenden Person keinem ' +
             'konkreten TV-Gerät zugeordnet werden), um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, ' +
             'deren TV- und Werbeangebot stetig zu verbessern.  Dazu benötigt die AGTT Ihre Einwilligung, nach der ' +
-            'ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:',
-        ),
+            'ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:'
+        )
       );
 
       bannerLegalText.appendChild(document.createElement('br'));
@@ -35,8 +35,8 @@
         document.createTextNode(
           'Geräte ID, IP-Adresse, System- bzw. Browserinformationen, Geräteinformationen (verwendete HbbTV-Version, TV-Hersteller, ' +
             'Übertragungsweg via Satellit oder Kabel, Geräteauflösung). Nähere Informationen zum Datenschutz finden Sie in der ' +
-            'HbbTV Applikation des Senders, wo Sie den Status Ihrer Einwilligung verwalten bzw. widerrufen können.',
-        ),
+            'HbbTV Applikation des Senders, wo Sie den Status Ihrer Einwilligung verwalten bzw. widerrufen können.'
+        )
       );
     });
   }
@@ -49,8 +49,8 @@
             'Nutzungsverhaltens durch. Zu dieser Messung haben Sie bereits Ihre Einwilligung erteilt. Nunmehr möchte die AGTT die ' +
             'Messung auch auf andere Sender ausdehnen. Dies möchten wir Ihnen hiermit zur Kenntnis bringen. Die aktuelle Liste aller ' +
             'Sender, bei denen das Nutzungsverhalten durch die AGTT gemessen wird, finden Sie unter www.agtt.at/hbb-messung. Falls ' +
-            'Sie Ihre Einstellungen ändern möchten, können Sie dies in den „Einstellungen“ tun. Vielen Dank für Ihre Unterstützung.',
-        ),
+            'Sie Ihre Einstellungen ändern möchten, können Sie dies in den „Einstellungen“ tun. Vielen Dank für Ihre Unterstützung.'
+        )
       );
     });
   }
@@ -277,7 +277,7 @@
         } else {
           bannerCloseCallback(
             consBtnDecline.getAttribute('data-reason') === 'go-to-settings' ? undefined : false,
-            consBtnDecline.getAttribute('data-reason'),
+            consBtnDecline.getAttribute('data-reason')
           );
         }
       }
@@ -324,7 +324,7 @@
           function () {
             showConsentBanner(parameter, callback, 'basic');
           },
-          3,
+          3
         );
         break;
       case 'showAdditionalChannelsBanner':
@@ -333,7 +333,7 @@
           function () {
             showConsentBanner(parameter, callback, 'additional-channels');
           },
-          3,
+          3
         );
         break;
       case 'hideBanner':

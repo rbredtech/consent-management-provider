@@ -19,7 +19,7 @@ describe.each([false, true])("Consent Management is loaded - with tracking scrip
   test("Ping API call returns basic configuration", async () => {
     const result = page.evaluate(() => {
       return new Promise((resolve) => {
-        window.__cmpapi("ping", 1, resolve);
+        window.__cmpapi("ping", 2, resolve);
       });
     });
 
@@ -27,7 +27,7 @@ describe.each([false, true])("Consent Management is loaded - with tracking scrip
       apiVersion: "2.0",
       cmpId: 4040,
       cmpLoaded: true,
-      cmpStatus: "disabled",
+      cmpStatus: "loaded",
       cmpVersion: 1,
       displayStatus: "hidden",
       gdprApplies: true,
@@ -36,14 +36,14 @@ describe.each([false, true])("Consent Management is loaded - with tracking scrip
     });
   });
 
-  test("Storage status is disabled", async () => {
+  test("Storage status is enabled", async () => {
     const apiResponse = await page.evaluate(() => {
       return new Promise((resolve) => {
-        window.__cmpapi("getTCData", 1, resolve);
+        window.__cmpapi("getTCData", 2, resolve);
       });
     });
 
-    expect(apiResponse.cmpStatus).toBe("disabled");
+    expect(apiResponse.cmpStatus).toBe("loaded");
     expect(apiResponse.vendor["consents"]).toBeDefined();
     expect(apiResponse.vendor["consents"]["4040"]).toBeUndefined();
     expect(apiResponse.vendor["consents"]["4041"]).toBeUndefined();

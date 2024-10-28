@@ -2,7 +2,10 @@ import { Request, Response } from "express";
 
 import { COOKIE_DOMAIN, LEGACY_COOKIE_NAME, COOKIE_MAXAGE, CONSENT_COOKIE_NAME } from "../config";
 import { consentCounterMetric } from "../util/metrics";
-import { ConsentCookie } from "./util/getTemplateValues";
+
+export interface ConsentCookie {
+  consent: boolean;
+}
 
 const img = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNiYAAAAAkAAxkR2eQAAAAASUVORK5CYII=",
