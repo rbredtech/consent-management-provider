@@ -26,7 +26,7 @@ export const cmpapiController = async (req: Request, res: Response) => {
 
   try {
     res.render("cmpapi.js", {
-      API_VERSION,
+      VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
       LEGACY_COOKIE_NAME,
       CONSENT_COOKIE_NAME,
       COOKIE_DOMAIN,

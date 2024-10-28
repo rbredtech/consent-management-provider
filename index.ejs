@@ -1,3 +1,8 @@
+<% var VERSION_PATH = "/" %>
+<% if (API_VERSION) { %>
+<% VERSION_PATH = "/" + API_VERSION + "/" %>
+<% } %>
+
 <!DOCTYPE html PUBLIC '-//HbbTV//1.1.1//EN' 'http://www.hbbtv.org/dtd/HbbTV-1.1.1.dtd'>
 <html xmlns='http://www.w3.org/1999/xhtml'>
 
@@ -59,8 +64,8 @@
     });
     //]]>
   </script>
-  <script type='text/javascript' src='http://localhost:3000/v2/cmp.js?channelId=9999'></script>
-  <script type='text/javascript' src='http://localhost:3000/v2/banner.js?channelId=9999'></script>
+  <script type='text/javascript' src='http://localhost:3000<%=VERSION_PATH%>cmp.js?channelId=9999'></script>
+  <script type='text/javascript' src='http://localhost:3000<%=VERSION_PATH%>banner.js?channelId=9999'></script>
   <script>
     //<![CDATA[
     var isShowingBanner = false;

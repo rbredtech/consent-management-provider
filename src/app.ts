@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import { renderFile } from "ejs";
 
-import { API_VERSION, HTTP_PORT } from "./config";
+import { HTTP_PORT } from "./config";
 import router from "./router";
 import { logger } from "./util/logger";
 import { registry } from "./util/metrics";
@@ -14,7 +14,7 @@ app.engine("html", renderFile);
 app.engine("js", renderFile);
 app.set("view engine", "ejs");
 
-app.use(`/${API_VERSION}`, router);
+app.use(`/`, router);
 
 app.get("/metrics", async (_req, res) => {
   res

@@ -40,7 +40,6 @@ describe("Consent Management with technical cookie", () => {
       test("Storage status is enabled and consent is false", async () => {
         const apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 2, resolve)}))`);
 
-        console.log(JSON.stringify(apiResponse));
         expect(apiResponse.cmpStatus).toBe("loaded");
         expect(apiResponse.vendor["consents"]).toBeDefined();
         expect(apiResponse.vendor["consents"]["4040"]).toBe(false);

@@ -26,7 +26,7 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
 
   try {
     const cmpJs = await renderFile(path.join(__dirname, "../templates/cmp.js"), {
-      API_VERSION,
+      VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
       CONSENT_SERVER_HOST: HTTP_HOST,
       CHANNEL_ID: req.channelId,
       SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,
@@ -41,6 +41,7 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
       TRACKING_TIMESTAMP: req.query.t || Math.round(Date.now() / 1000),
       TRACKING_SUSPENDED: req.query.suspended,
       TRACKING_CONTEXT_ID: req.query.i,
+      VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
     });
 
     res.send(`${cmpJs}${trackingJs}`);

@@ -1,6 +1,6 @@
 {
   "name": "consent-management-provider",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "description": "A minimal consent manager aiming for compliance to IAB's Transperancy and Consent Framework (TCF v2) ",
   "main": "dist/app.js",
   "scripts": {

@@ -7,7 +7,7 @@ export const iframeController = (req: Request, res: Response) => {
   res.setHeader("Cache-Control", "public, max-age=3600");
 
   res.render("iframe.html", {
-    API_VERSION,
+    VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
     CONSENT_SERVER_HOST: HTTP_HOST,
     CHANNEL_ID: req.channelId,
   });

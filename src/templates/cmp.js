@@ -90,7 +90,7 @@
     iframe.setAttribute(
       'src',
       window.location.protocol +
-        '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/iframe.html' +
+        '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>iframe.html' +
         (channelId !== '' ? '?channelId=' + channelId : '')
     );
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
@@ -159,7 +159,7 @@
     cmpapiScriptTag.setAttribute(
       'src',
       window.location.protocol +
-        '//<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/cmpapi.js' +
+        '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>cmpapi.js' +
         (channelId !== '' ? '?channelId=' + channelId : '')
     );
 
