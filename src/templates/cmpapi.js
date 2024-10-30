@@ -3,7 +3,7 @@
 
   var cmpEnabled = '<%-CMP_ENABLED%>' === 'true';
 
-  function getCookie(name) {
+  function getCookie(name, decodeFn) {
     try {
       var cname = name + '=';
       var decodedCookie = decodeURIComponent(document.cookie);
@@ -14,7 +14,8 @@
           c = c.substring(1);
         }
         if (c.indexOf(cname) === 0) {
-          return c.substring(cname.length, c.length);
+          var value = c.substring(cname.length, c.length);
+          return decodeFn && typeof decodeFn === 'function' ? decodeFn(value) : value;
         }
       }
     } catch (e) {}
@@ -27,7 +28,7 @@
     document.cookie = cookie;
   }
 
-  function readStorageOrCookie(key) {
+  function readStorageOrCookie(key, cookieDecodeFn) {
     var value = null;
     if (window.localStorage && localStorage.getItem) {
       value = localStorage.getItem(key);
@@ -35,7 +36,7 @@
         return value;
       }
     }
-    value = getCookie(key);
+    value = getCookie(key, cookieDecodeFn);
     return value;
   }
 
@@ -137,7 +138,13 @@
 
   window.__cmpapi = function (command, _version, callback, parameter) {
     var hasConsentSerialized = readStorageOrCookie('<%-LEGACY_COOKIE_NAME%>');
-    var consentByVendorIdSerialized = readStorageOrCookie('<%-CONSENT_COOKIE_NAME%>');
+    var consentByVendorIdSerialized = readStorageOrCookie('<%-CONSENT_COOKIE_NAME%>', function (value) {
+      try {
+        return JSON.parse(atob(value)).consent;
+      } catch (e) {
+        return undefined;
+      }
+    });
 
     var hasConsent = undefined;
     try {
@@ -156,6 +163,9 @@
     }
 
     // backwards compatibility with old cookie
+    if (!consentByVendorId && hasConsent !== undefined) {
+      consentByVendorId = {};
+    }
     if (consentByVendorId && consentByVendorId[4040] === undefined && hasConsent !== undefined) {
       consentByVendorId[4040] = hasConsent;
     }
