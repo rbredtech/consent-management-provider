@@ -237,8 +237,5 @@
     }
   });
 
-  //migrate consent to new cookie if necessary
-  window.__cmpapi('_migrateConsentIfNecessary');
-
   init();
 })();

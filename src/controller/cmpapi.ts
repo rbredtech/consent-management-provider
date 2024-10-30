@@ -4,7 +4,6 @@ import { logger } from "../util/logger";
 
 import {
   API_VERSION,
-  LEGACY_COOKIE_NAME,
   CONSENT_COOKIE_NAME,
   COOKIE_DOMAIN,
   CMP_ENABLED,
@@ -27,7 +26,6 @@ export const cmpapiController = async (req: Request, res: Response) => {
   try {
     res.render("cmpapi.js", {
       VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
-      LEGACY_COOKIE_NAME,
       CONSENT_COOKIE_NAME,
       COOKIE_DOMAIN,
       CMP_ENABLED: cmpEnabled,
