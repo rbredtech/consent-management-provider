@@ -193,50 +193,6 @@
     }
   }
 
-  // send device ids
-  function sendDeviceId(consent, retriesLeft) {
-    if (retriesLeft < 0) {
-      return;
-    }
-
-    if (!__hbb_tracking_tgt || !__hbb_tracking_tgt.getDID) {
-      setTimeout(function () {
-        sendDeviceId(consent, retriesLeft - 1);
-      }, 200);
-      return;
-    }
-
-    __hbb_tracking_tgt.getDID(function (deviceId) {
-      var image = document.createElement('img');
-      image.src =
-        '<%-SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL%>/' +
-        deviceId +
-        '/' +
-        Date.now() +
-        '/consent.gif?consent=' +
-        consent;
-    });
-  }
-
-  var waitForTrackingScriptRetries = 6;
-
-  function waitForTrackingScriptAndSendDeviceId(consent) {
-    sendDeviceId(consent, waitForTrackingScriptRetries);
-  }
-
-  window.__cmpapi('onLogEvent', 2, function (log) {
-    var consent = undefined;
-    if (log.success === true && (log.event === 'getTCData' || log.event === 'setConsent')) {
-      consent = log.parameters.consent;
-    }
-
-    if (consent !== undefined) {
-      try {
-        waitForTrackingScriptAndSendDeviceId(consent);
-      } catch (e) {}
-    }
-  });
-
   //migrate consent to new cookie if necessary
   window.__cmpapi('_migrateConsentIfNecessary');
 

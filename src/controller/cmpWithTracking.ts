@@ -2,13 +2,7 @@ import { renderFile } from "ejs";
 import { Request, Response } from "express";
 import path from "path";
 
-import {
-  API_VERSION,
-  HTTP_HOST,
-  TRACKING_HOST_CONSENT,
-  TRACKING_HOST_NO_CONSENT,
-  SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,
-} from "../config";
+import { API_VERSION, HTTP_HOST, TRACKING_HOST_CONSENT, TRACKING_HOST_NO_CONSENT } from "../config";
 
 export const cmpWithTrackingController = async (req: Request, res: Response) => {
   if (req.channelId === undefined) {
@@ -29,7 +23,6 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
       VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
       CONSENT_SERVER_HOST: HTTP_HOST,
       CHANNEL_ID: req.channelId,
-      SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,
     });
     const trackingJs = await renderFile(path.join(__dirname, "../templates/cmpWithTracking.js"), {
       CHANNEL_ID: req.channelId,
