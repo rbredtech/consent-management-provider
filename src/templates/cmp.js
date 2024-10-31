@@ -44,6 +44,7 @@
   }
 
   var channelId = '<%-CHANNEL_ID%>';
+  var cacheBustingParam = '<%-CACHE_BUSTING_PARAM%>';
 
   function isIframeCapable() {
     var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
@@ -85,14 +86,13 @@
   }
 
   function createIframe() {
-    var iframe = document.createElement('iframe');
+    var q = '';
+    q = q + (channelId !== '' ? '&channelId=' + channelId : '');
+    q = q + (cacheBustingParam !== '' ? '&v=' + cacheBustingParam : '');
+    q = q.length ? '?' + q.substring(1) : '';
 
-    iframe.setAttribute(
-      'src',
-      window.location.protocol +
-        '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>iframe.html' +
-        (channelId !== '' ? '?channelId=' + channelId : '')
-    );
+    var iframe = document.createElement('iframe');
+    iframe.setAttribute('src', window.location.protocol + '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>iframe.html' + q);
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
 
@@ -154,13 +154,16 @@
   }
 
   function createCmpApiScriptTag() {
+    var q = '';
+    q = q + (channelId !== '' ? '&channelId=' + channelId : '');
+    q = q + (cacheBustingParam !== '' ? '&h=' + cacheBustingParam : '');
+    q = q.length ? '?' + q.substring(1) : '';
+
     var cmpapiScriptTag = document.createElement('script');
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
     cmpapiScriptTag.setAttribute(
       'src',
-      window.location.protocol +
-        '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>cmpapi.js' +
-        (channelId !== '' ? '?channelId=' + channelId : '')
+      window.location.protocol + '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>cmpapi.js' + q
     );
 
     cmpapiScriptTag.onload = function () {

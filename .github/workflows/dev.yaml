@@ -37,6 +37,8 @@ jobs:
       - name: Build app
         id: build
         run: yarn build
+        env:
+          CACHE_BUSTING_PARAM: ${{ github.run_number }}
 
       - name: Test app
         id: test
