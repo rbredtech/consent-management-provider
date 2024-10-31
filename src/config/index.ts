@@ -4,7 +4,6 @@ export const HTTP_PORT = new EnvVar("HTTP_PORT").getStringOrFail();
 export const HTTP_HOST = new EnvVar("HTTP_HOST").getStringOrFail();
 export const API_VERSION = new EnvVar("API_VERSION").getString();
 export const COOKIE_DOMAIN = new EnvVar("COOKIE_DOMAIN").getStringOrFail();
-export const LEGACY_COOKIE_NAME = new EnvVar("LEGACY_COOKIE_NAME").getStringOrDefault("xconsent");
 export const CONSENT_COOKIE_NAME = new EnvVar("CONSENT_COOKIE_NAME").getStringOrDefault("agttconsent");
 export const COOKIE_MAXAGE = new EnvVar("COOKIE_MAXAGE").getNumberOrDefault(
   1000 * 60 * 60 * 24 * 365 * 2, // 2 years
@@ -26,7 +25,4 @@ export const TRACKING_HOST_NO_CONSENT = new EnvVar("TRACKING_HOST_NO_CONSENT").g
   "session-cl.tvping.com",
 );
 export const TRACKING_VERSION = new EnvVar("TRACKING_VERSION").getStringOrDefault("v2");
-export const SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL = new EnvVar(
-  "SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL",
-).getStringOrDefault("http://session.tvping.com/v2/consent-status");
 export const CMP_DISABLED_CHANNEL_IDS = new EnvVar("CMP_DISABLED_CHANNEL_IDS").getString();

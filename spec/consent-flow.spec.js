@@ -3,23 +3,29 @@ const pageHelper = require("./helper/page");
 const { HTTP_PROTOCOL } = require("./helper/page");
 let page;
 
-beforeAll(async () => {
-  page = await pageHelper.get();
-}, 20000);
-
-afterAll(async () => {
-  await page.browser().close();
-}, 20000);
-
-describe("Consent Management with technical cookie", () => {
+describe.each([true, false])("Consent Management with technical cookie - localStorage: %s", (localStorageEnabled) => {
   beforeAll(async () => {
+    page = await pageHelper.get(!localStorageEnabled);
     await page.goto(`${HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await page.evaluate(`localStorage.setItem("xt", "${Date.now() - 3600000 * 49}");`);
-  });
+  }, 20000);
+
+  afterAll(async () => {
+    await page.browser().close();
+  }, 20000);
 
   describe("Is loaded", () => {
     beforeAll(async () => {
       await pageHelper.initLoader(page);
+    });
+
+    test(`localStorage is ${localStorageEnabled ? "enabled" : "disabled"}`, async () => {
+      const ls = await page.evaluate(
+        () =>
+          new Promise((resolve) => {
+            resolve(window.localStorage);
+          }),
+      );
+      expect(!!ls).toBe(localStorageEnabled);
     });
 
     test("Storage status is enabled and consent is not defined", async () => {

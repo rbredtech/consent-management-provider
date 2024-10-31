@@ -5,4 +5,3 @@ export { cmpapiController } from "./cmpapi";
 export { iframeController } from "./iframe";
 export { setConsentController } from "./setConsent";
 export { removeConsentController } from "./removeConsent";
-export { resetOldConsentController } from "./resetOldConsent";

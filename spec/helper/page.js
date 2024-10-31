@@ -4,8 +4,12 @@ const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
 const HTTP_PROTOCOL = process.env.HTTP_PROTOCOL || "http";
 const API_VERSION = process.env.API_VERSION;
 
-async function get() {
-  const browser = await puppeteer.launch({ dumpio: false, args: ["--disable-gpu"] });
+async function get(disableLocalStorage) {
+  const args = ["--disable-gpu"];
+  if (disableLocalStorage) {
+    args.push("--disable-local-storage");
+  }
+  const browser = await puppeteer.launch({ dumpio: false, args });
   const page = await browser.newPage();
   return page;
 }
