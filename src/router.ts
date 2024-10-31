@@ -10,7 +10,6 @@ import {
   removeConsentController,
   setConsentController,
   cmpapiController,
-  resetOldConsentController,
 } from "./controller";
 
 import { loggerMiddleware, channelMiddleware } from "./middleware";
@@ -28,7 +27,6 @@ router.get("/cmp-with-tracking.js", cmpWithTrackingController);
 router.get("/cmpapi.js", cmpapiController);
 router.get("/iframe.html", iframeController);
 router.get("/remove-consent", removeConsentController);
-router.get(["/set-consent", "/migrate"], setConsentController);
-router.get("/reset-old-consent", resetOldConsentController);
+router.get("/set-consent", setConsentController);
 
 export default router;

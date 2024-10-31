@@ -101,7 +101,6 @@
   function removeLocalStorageConsent() {
     if (window.localStorage && localStorage.removeItem) {
       localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
-      localStorage.removeItem('<%-LEGACY_COOKIE_NAME%>');
       return true;
     }
     return false;
@@ -137,7 +136,6 @@
   var technicalCookiePassed = now - technicalCookie >= parseInt('<%-TECH_COOKIE_MIN%>');
 
   window.__cmpapi = function (command, _version, callback, parameter) {
-    var hasConsentSerialized = readStorageOrCookie('<%-LEGACY_COOKIE_NAME%>');
     var consentByVendorIdSerialized = readStorageOrCookie('<%-CONSENT_COOKIE_NAME%>', function (value) {
       try {
         return JSON.parse(atob(value)).consent;
@@ -146,38 +144,19 @@
       }
     });
 
-    var hasConsent = undefined;
-    try {
-      if (hasConsentSerialized === 'undefined' || hasConsentSerialized === 'true' || hasConsentSerialized === 'false') {
-        // old consent came from localStorage (not base64 encoded)
-        hasConsent = hasConsentSerialized === 'undefined' ? undefined : hasConsentSerialized === 'true';
-      } else {
-        // old consent came from cookie (base64 encoded)
-        hasConsent = JSON.parse(atob(hasConsentSerialized)).consent;
-      }
-    } catch (e) {}
-
     var consentByVendorId = undefined;
     if (consentByVendorIdSerialized) {
       consentByVendorId = parseSerializedConsentByVendorId(consentByVendorIdSerialized);
     }
 
-    // backwards compatibility with old cookie
-    if (!consentByVendorId && hasConsent !== undefined) {
-      consentByVendorId = {};
-    }
-    if (consentByVendorId && consentByVendorId[4040] === undefined && hasConsent !== undefined) {
-      consentByVendorId[4040] = hasConsent;
-    }
-
     var cmpStatus = 'disabled';
 
-    if (cmpEnabled && (technicalCookiePassed || hasConsent !== undefined || consentByVendorId !== undefined)) {
+    if (cmpEnabled && (technicalCookiePassed || consentByVendorId !== undefined)) {
       // if the tech cookie is set and is old enough, or there is already a consent saved, the cmp is enabled
       cmpStatus = 'loaded';
     }
 
-    if (cmpStatus === 'loaded' && hasConsent === undefined && consentByVendorId === undefined && outOfSample) {
+    if (cmpStatus === 'loaded' && consentByVendorId === undefined && outOfSample) {
       // cmp instance randomly chosen to be outside the configured sampling threshold,
       // so disable consent status
       cmpStatus = 'disabled';
@@ -342,69 +321,6 @@
             }
           } catch (e) {}
         }
-        break;
-      case '_migrateConsentIfNecessary':
-        if (
-          hasConsent !== undefined &&
-          (!consentByVendorIdSerialized || consentByVendorIdSerialized.indexOf('4040~') === -1)
-        ) {
-          var migratedConsent = { 4040: hasConsent };
-          var migratedConsentSerialized = serializeConsentByVendorId(migratedConsent);
-
-          image = document.createElement('img');
-          image.src =
-            window.location.protocol +
-            '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>migrate?consentByVendorId=' +
-            migratedConsentSerialized +
-            (channelId !== '' ? '&channelId=' + channelId : '') +
-            ('&t=' + Date.now());
-
-          image.onload = function () {
-            updateLocalStorageConsent(migratedConsent);
-            log(logEvents.MIGRATE_CONSENT, true, migratedConsent);
-          };
-
-          image.onerror = function () {
-            log(logEvents.MIGRATE_CONSENT, false, {});
-          };
-        }
-        break;
-      // api method for testing migration path, resets old consent and removes new consent
-      case '__testing__resetOldConsent':
-        localStorageAvailable = false;
-
-        image = document.createElement('img');
-        image.src =
-          window.location.protocol +
-          '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>reset-old-consent?consent=' +
-          (parameter + '' === 'true' ? 1 : 0) +
-          (channelId !== '' ? '&channelId=' + channelId : '') +
-          ('&t=' + Date.now());
-
-        image.onload = function () {
-          if (window.localStorage && localStorage.setItem && localStorage.removeItem) {
-            localStorage.setItem('<%-LEGACY_COOKIE_NAME%>', parameter + '' === 'true' ? 'true' : 'false');
-            localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
-            localStorageAvailable = true;
-          }
-
-          log(logEvents.RESET_OLD_CONSENT, true, {
-            consent: parameter,
-            localStorageAvailable: localStorageAvailable
-          });
-
-          if (callback && typeof callback === 'function') {
-            callback(parameter);
-          }
-        };
-
-        image.onerror = function () {
-          log(logEvents.RESET_OLD_CONSENT, false, {});
-
-          if (callback && typeof callback === 'function') {
-            callback(parameter);
-          }
-        };
         break;
       default:
         break;
