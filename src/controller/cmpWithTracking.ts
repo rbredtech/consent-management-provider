@@ -2,7 +2,7 @@ import { renderFile } from "ejs";
 import { Request, Response } from "express";
 import path from "path";
 
-import { API_VERSION, HTTP_HOST, BUILD_NUMBER, TRACKING_HOST_CONSENT, TRACKING_HOST_NO_CONSENT } from "../config";
+import { API_VERSION, HTTP_HOST, BUILD_NUMBER, TRACKING_HOST_CONSENT, TRACKING_HOST_NO_CONSENT, TRACKING_VERSION } from "../config";
 
 export const cmpWithTrackingController = async (req: Request, res: Response) => {
   if (req.channelId === undefined) {
@@ -35,7 +35,7 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
       TRACKING_TIMESTAMP: req.query.t || Math.round(Date.now() / 1000),
       TRACKING_SUSPENDED: req.query.suspended,
       TRACKING_CONTEXT_ID: req.query.i,
-      VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
+      TRACKING_VERSION_PATH: TRACKING_VERSION ? `/${TRACKING_VERSION}/` : "/",
     });
 
     res.send(`${cmpJs}${trackingJs}`);
