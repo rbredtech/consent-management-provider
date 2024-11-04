@@ -43,8 +43,15 @@
 
     try {
       var channelId = '<%-CHANNEL_ID%>';
+      var buildNumber = '<%-BUILD_NUMBER%>';
+
+      var q = '';
+      q = q + (channelId !== '' ? '&channelId=' + channelId : '');
+      q = q + (buildNumber !== '' ? '&v=' + buildNumber : '');
+      q = q.length ? '?' + q.substring(1) : '';
+
       var cmpApiScriptTag = document.createElement('script');
-      cmpApiScriptTag.setAttribute('src', window.location.protocol + '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>cmpapi.js' + (channelId !== '' ? '?channelId=' + channelId : ''));
+      cmpApiScriptTag.setAttribute('src', window.location.protocol + '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>cmpapi.js' + q);
       cmpApiScriptTag.setAttribute('type', 'text/javascript');
       document.getElementsByTagName('head')[0].appendChild(cmpApiScriptTag);
     } catch (e) { }
