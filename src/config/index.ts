@@ -13,6 +13,7 @@ export const TECH_COOKIE_NAME = new EnvVar("TECH_COOKIE_NAME").getStringOrDefaul
 export const TECH_COOKIE_MIN = new EnvVar("TECH_COOKIE_MIN").getNumberOrDefault(
   1000 * 60 * 60 * 24 * 2, // 2 days
 );
+export const BUILD_NUMBER = new EnvVar("BUILD_NUMBER").getString();
 export const CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT = new EnvVar(
   "CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT",
 ).getNumberOrDefault(15);
