@@ -6,7 +6,7 @@ import stringReplace from "gulp-string-replace";
 import terser from "gulp-terser";
 import ts from "gulp-typescript";
 
-var { CACHE_BUSTING_PARAM } = process.env;
+var { BUILD_NUMBER } = process.env;
 
 var tsProject = ts.createProject("tsconfig.json");
 
@@ -45,7 +45,7 @@ function copyTemplates() {
 function setSourceHashParam() {
   return gulp
     .src("./dist/templates/*")
-    .pipe(stringReplace("<%-CACHE_BUSTING_PARAM%>", CACHE_BUSTING_PARAM ?? ""))
+    .pipe(stringReplace("<%-BUILD_NUMBER%>", BUILD_NUMBER ?? ""))
     .pipe(gulp.dest("./dist/templates"));
 }
 

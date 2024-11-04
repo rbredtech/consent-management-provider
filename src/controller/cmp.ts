@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { API_VERSION, HTTP_HOST, CACHE_BUSTING_PARAM } from "../config";
+import { API_VERSION, HTTP_HOST, BUILD_NUMBER } from "../config";
 import { loadedCounterMetric } from "../util/metrics";
 
 export const cmpController = async (req: Request, res: Response) => {
@@ -14,7 +14,7 @@ export const cmpController = async (req: Request, res: Response) => {
       VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
       CONSENT_SERVER_HOST: HTTP_HOST,
       CHANNEL_ID: req.channelId,
-      CACHE_BUSTING_PARAM,
+      BUILD_NUMBER,
     });
   } catch (e) {
     res.status(500).send(e);
