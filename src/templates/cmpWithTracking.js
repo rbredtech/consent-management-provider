@@ -30,7 +30,7 @@
       window.location.protocol +
       '//' +
       trackingHost +
-      '<%-VERSION_PATH%><%-CHANNEL_ID%>/tracking.js' +
+      '<%-TRACKING_VERSION_PATH%><%-CHANNEL_ID%>/tracking.js' +
       queryParamsJoined;
     document.getElementsByTagName('head')[0].appendChild(trackingScriptTag);
   };
