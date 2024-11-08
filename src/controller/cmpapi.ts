@@ -12,11 +12,17 @@ import {
   CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
   HTTP_HOST,
   CMP_DISABLED_CHANNEL_IDS,
+  FORCE_ERROR,
 } from "../config";
 
 export const cmpapiController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=300");
+
+  if (FORCE_ERROR) {
+    res.sendStatus(500);
+    return;
+  }
 
   const channelId = req.query.channelId?.toString();
   const disabledChannelIds = CMP_DISABLED_CHANNEL_IDS?.split(",").map((channelId) => channelId.trim());

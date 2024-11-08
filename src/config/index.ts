@@ -27,3 +27,4 @@ export const TRACKING_HOST_NO_CONSENT = new EnvVar("TRACKING_HOST_NO_CONSENT").g
 );
 export const TRACKING_VERSION = new EnvVar("TRACKING_VERSION").getStringOrDefault("v2");
 export const CMP_DISABLED_CHANNEL_IDS = new EnvVar("CMP_DISABLED_CHANNEL_IDS").getString();
+export const FORCE_ERROR = new EnvVar("FORCE_ERROR").getBooleanOrDefault(false);

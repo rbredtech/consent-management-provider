@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
 
-import { API_VERSION, HTTP_HOST, BUILD_NUMBER } from "../config";
+import { API_VERSION, HTTP_HOST, BUILD_NUMBER, FORCE_ERROR } from "../config";
 import { loadedCounterMetric } from "../util/metrics";
 
 export const cmpController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
   res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=300");
+
+  if (FORCE_ERROR) {
+    res.sendStatus(500);
+    return;
+  }
 
   loadedCounterMetric.labels({ channel: req.channelName }).inc();
 

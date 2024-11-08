@@ -9,9 +9,15 @@ import {
   TRACKING_HOST_CONSENT,
   TRACKING_HOST_NO_CONSENT,
   TRACKING_VERSION,
+  FORCE_ERROR,
 } from "../config";
 
 export const cmpWithTrackingController = async (req: Request, res: Response) => {
+  if (FORCE_ERROR) {
+    res.sendStatus(500);
+    return;
+  }
+
   if (req.channelId === undefined) {
     res.status(400).send({ error: "query parameter channelId is mandatory" });
     return;

@@ -6,6 +6,7 @@ on:
       - "feature/*"
       - "release/*"
       - "hotfix/*"
+      - "force_error"
 
 jobs:
   build-and-test:
@@ -70,14 +71,14 @@ jobs:
 
       - name: Get latest version
         id: get-latest-version
-        if: github.ref == 'refs/heads/develop'
+        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'force_error' }}
         uses: actions-ecosystem/action-get-latest-tag@v1
         with:
           semver_only: true
 
       - name: Set snapshot tag
         id: set-snapshot-tag
-        if: github.ref == 'refs/heads/develop'
+        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'force_error' }}
         uses: actions/github-script@v7
         with:
           script: |
@@ -90,7 +91,7 @@ jobs:
 
       - name: Log in to container registry
         id: registry-login
-        if: github.ref == 'refs/heads/develop'
+        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'force_error' }}
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -99,7 +100,7 @@ jobs:
 
       - name: Extract metadata for docker
         id: docker-meta
-        if: github.ref == 'refs/heads/develop'
+        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'force_error' }}
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
@@ -108,7 +109,7 @@ jobs:
 
       - name: Build and push docker image
         id: docker-build-push
-        if: github.ref == 'refs/heads/develop'
+        if: ${{ github.ref == 'refs/heads/develop' || github.ref == 'force_error' }}
         uses: docker/build-push-action@v5
         with:
           context: .
