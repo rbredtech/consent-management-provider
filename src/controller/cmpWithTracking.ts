@@ -23,7 +23,7 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
   }
 
   res.setHeader("Content-Type", "application/javascript");
-  res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=300");
+  res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600, stale-while-revalidate");
 
   try {
     const cmpJs = await renderFile(path.join(__dirname, "../templates/cmp.js"), {

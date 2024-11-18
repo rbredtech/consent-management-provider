@@ -23,12 +23,12 @@ Usage/Integration examples can be found in the `/examples` folder of this reposi
 All API endpoints take a query parameter`channelId`, which is used to collect metrics about the
 opt-in/out ratio on a specific channel.
 
-- GET `/v2/cmp.js` - Returns the javascript bundle providing the `__cmpapi()` API for client side checking of consent status.
-- GET `/v2/cmp-with-tracking.js`- Returns a javascript bundle like `/cmp.js`, but also integrates the tracking script depending
-  on the consent decision (<https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script>). There is one mandatory
+- GET `/v3/cmp.js` - Returns the javascript bundle providing the `__cmpapi()` API for client side checking of consent status.
+- GET `/v3/cmp-with-tracking.js`- Returns a javascript bundle like `/cmp.js`, but also integrates the tracking script depending
+  on the consent decision (<https://docs.tv-insight.com/docs/hbbtv-tracking/hbbtv-tracking-script>). There is one mandatory
   query param `cmpId` which has to be given (`4040`, `4041` or `5050`), the query parameters for the tracking script are passed through
-  (see <https://docs.tv-insight.com/tv-insight/integrate-hbbtv-v2-tracking-script#tracking-script-parameters> for parameters)
-- GET `/v2/banner.js` - Returns the javascript bundle providing the `__cbapi()` API for controlling the consent banner.
+  (see <https://docs.tv-insight.com/docs/hbbtv-tracking/hbbtv-tracking-script#tracking-script-parameters> for parameters)
+- GET `/v3/banner.js` - Returns the javascript bundle providing the `__cbapi()` API for controlling the consent banner.
 
 ### __cmpapi methods
 
@@ -87,7 +87,7 @@ type TCData = {
 
 ### Checking of consent status
 
-The `{HOST_URL}/v2/cmp.js` script can be added as javascript bundle to your application. This will expose the `__cmpapi()`
+The `{HOST_URL}/v3/cmp.js` script can be added as javascript bundle to your application. This will expose the `__cmpapi()`
 object on the window object providing access to consent information.
 
 The app needs to check `cmpStatus` and `consent` of the response of the `tcData` method. If `cmpStatus` is not set as
@@ -102,7 +102,7 @@ will overlay over the app (see [here](#displaying-consent-banner)).
 Add `cmp.js` bundle to your application:
 
 ```html
-<script src="{HOST_URL}/v2/cmp.js?channelId=1234"></script>
+<script src="{HOST_URL}/v3/cmp.js?channelId=1234"></script>
 ```
 
 The `channelId` query parameter is optional and is used to collect metrics about which channel opt-ins/outs come from.
@@ -141,10 +141,10 @@ The vendor ID `4040` is used here as example, make sure that you use the correct
 
 ### Displaying consent banner
 
-By loading `/v2/banner.js` (besides `/v2/cmp.js`) an additional API is available to invoke the display of a consent banner.
+By loading `/v3/banner.js` (besides `/v3/cmp.js`) an additional API is available to invoke the display of a consent banner.
 
 ```html
-<script src="{HOST_URL}/v2/banner.js?channelId=1234"></script>
+<script src="{HOST_URL}/v3/banner.js?channelId=1234"></script>
 ```
 
 This will expose `window.__cbapi()`, which allows for controlling the display of a consent banner. The `__cbapi` method has the same call signature as `__cmpapi`:
