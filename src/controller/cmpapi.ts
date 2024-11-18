@@ -16,7 +16,7 @@ import {
 
 export const cmpapiController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
-  res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=300");
+  res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600, stale-while-revalidate");
 
   const channelId = req.query.channelId?.toString();
   const disabledChannelIds = CMP_DISABLED_CHANNEL_IDS?.split(",").map((channelId) => channelId.trim());

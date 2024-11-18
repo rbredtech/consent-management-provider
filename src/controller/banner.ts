@@ -5,7 +5,7 @@ import { logger } from "../util/logger";
 
 export const bannerController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
-  res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=300");
+  res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600, stale-while-revalidate");
 
   try {
     res.render("banner.js", {
