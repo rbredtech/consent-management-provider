@@ -196,5 +196,18 @@
     }
   }
 
-  init();
+  waitForDOMElement(
+    'head',
+    function () {
+      var polyfillScriptTag = document.createElement('script');
+      polyfillScriptTag.setAttribute(
+        'src',
+        window.location.protocol + '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>polyfill.js'
+      );
+      polyfillScriptTag.setAttribute('type', 'text/javascript');
+      document.getElementsByTagName('head')[0].appendChild(polyfillScriptTag);
+      init();
+    },
+    3
+  );
 })();

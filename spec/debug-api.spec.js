@@ -1,37 +1,30 @@
 const { describe, beforeAll, expect, afterAll, it } = require("@jest/globals");
 const pageHelper = require("./helper/page");
-const { wait } = require("./helper/wait");
+const { HTTP_PROTOCOL } = require("./helper/page");
 
 let page;
 
-beforeAll(async () => {
-  page = await pageHelper.get();
-}, 20000);
-
-afterAll(async () => {
-  await page.browser().close();
-}, 20000);
-
-describe("Debug API", () => {
+describe.each([true, false])("Debug API - localStorage: %s", (localStorageEnabled) => {
   beforeAll(async () => {
-    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
+    page = await pageHelper.get(!localStorageEnabled);
+    await page.goto(`${HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     await pageHelper.initLoader(page);
-  });
+    await page.evaluate(() => {
+      return new Promise((resolve) => {
+        window.callbackQueue = [];
+        window.__cmpapi("onLogEvent", 2, function (params) {
+          window.callbackQueue.push(params);
+        });
+        resolve();
+      });
+    });
+  }, 20000);
+
+  afterAll(async () => {
+    await page.browser().close();
+  }, 20000);
 
   describe("when debug listener is subscribed", () => {
-    beforeAll(async () => {
-      await page.evaluate(() => {
-        return new Promise((resolve) => {
-          window.callbackQueue = [];
-          window.__cmpapi("onLogEvent", 2, function (params) {
-            window.callbackQueue.push(params);
-          });
-          resolve();
-        });
-      });
-      await wait(100);
-    });
-
     describe("and getTCData API method is called", () => {
       beforeAll(async () => {
         await page.evaluate(() => {
@@ -39,7 +32,6 @@ describe("Debug API", () => {
             window.__cmpapi("getTCData", 2, resolve);
           });
         });
-        await wait(100);
       });
 
       it("should log load event", async () => {
@@ -79,7 +71,6 @@ describe("Debug API", () => {
             });
           });
           await consentCookieLoaded;
-          await wait(100);
         });
 
         it("should log activity for setConsent", async () => {
@@ -91,7 +82,7 @@ describe("Debug API", () => {
             event: "setConsent",
             parameters: {
               consentByVendorId: { 4040: false, 4041: false },
-              localStorageAvailable: true,
+              localStorageAvailable: localStorageEnabled,
             },
             success: true,
             ts: expect.any(Number),
@@ -109,14 +100,12 @@ describe("Debug API", () => {
               resolve();
             });
           });
-          await wait(100);
 
           await page.evaluate(() => {
             return new Promise((resolve) => {
               window.__cmpapi("getTCData", 2, resolve);
             });
           });
-          await wait(100);
         });
 
         it("should log activity for getTCData twice", async () => {

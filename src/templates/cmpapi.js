@@ -50,18 +50,10 @@
     }
   }
 
-  function objectKeys(obj) {
-    var keys = [];
-    for (var key in obj) {
-      keys.push(key);
-    }
-    return keys;
-  }
-
   function serializeConsentByVendorId(consentByVendorId) {
     var serialized = '';
     try {
-      var vendorIds = objectKeys(consentByVendorId);
+      var vendorIds = Object.keys(consentByVendorId);
       for (var i = 0; i < vendorIds.length; i++) {
         serialized = serialized + vendorIds[i] + '~' + consentByVendorId[vendorIds[i]];
         if (i < vendorIds.length - 1) {
