@@ -65,7 +65,7 @@ function minifyHtmlTemplates() {
 function printSize() {
   return gulp
     .src("./dist/templates/*")
-    .pipe(size({ showFiles: true }))
+    .pipe(size({ gzip: true, uncompressed: true, showFiles: true }))
     .pipe(gulp.dest("dist/templates"));
 }
 
