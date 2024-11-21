@@ -130,10 +130,12 @@
   window.__cmpapi = function (command, _version, callback, parameter) {
     var consentByVendorIdSerialized = readStorageOrCookie('<%-CONSENT_COOKIE_NAME%>', function (value) {
       try {
-        return JSON.parse(atob(value)).consent;
-      } catch (e) {
-        return undefined;
-      }
+        var parsed = JSON.parse(atob(value));
+        if (parsed && parsed.consent) {
+          return parsed.consent;
+        }
+      } catch (e) {}
+      return undefined;
     });
 
     var consentByVendorId = undefined;

@@ -7,11 +7,9 @@
   <script type='text/javascript'>
     //<![CDATA[
     function _message(msg) {
-      try {
-        if (window.parent && window.parent.postMessage) {
-          window.parent.postMessage(msg, '*');
-        }
-      } catch (e) {}
+      if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage(msg, '*');
+      }
     }
 
     function messageEventHandler(event) {
