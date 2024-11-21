@@ -81,13 +81,12 @@
       return;
     }
 
-    if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
-      return;
-    }
-
     try {
       var id = message[1];
       var callbackParameter = JSON.parse(message[2]);
+      if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
+        return;
+      }
       callbackMap[id](callbackParameter.param);
     } catch (e) {}
   }
