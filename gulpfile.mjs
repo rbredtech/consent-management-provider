@@ -1,6 +1,7 @@
 import gulp from "gulp";
 import htmlmin from "gulp-htmlmin";
 import minifyInline from "gulp-minify-inline";
+import size from "gulp-size";
 import sourcemaps from "gulp-sourcemaps";
 import stringReplace from "gulp-string-replace";
 import terser from "gulp-terser";
@@ -61,4 +62,18 @@ function minifyHtmlTemplates() {
     .pipe(gulp.dest("./dist/templates"));
 }
 
-export default gulp.series(typescript, copyTemplates, setSourceHashParam, minifyJsTemplates, minifyHtmlTemplates);
+function printSize() {
+  return gulp
+    .src("./dist/templates/*")
+    .pipe(size({ showFiles: true }))
+    .pipe(gulp.dest("dist/templates"));
+}
+
+export default gulp.series(
+  typescript,
+  copyTemplates,
+  setSourceHashParam,
+  minifyJsTemplates,
+  minifyHtmlTemplates,
+  printSize,
+);
