@@ -82,7 +82,9 @@
     if (window.localStorage && localStorage.setItem && localStorage.getItem) {
       var lsConsentByVendorId = parseSerializedConsentByVendorId(localStorage.getItem('<%-CONSENT_COOKIE_NAME%>'));
       for (var vendorId in consentByVendorId) {
-        lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
+        if (Object.prototype.hasOwnProperty.call(consentByVendorId, vendorId)) {
+          lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
+        }
       }
       localStorage.setItem('<%-CONSENT_COOKIE_NAME%>', serializeConsentByVendorId(lsConsentByVendorId));
       return true;

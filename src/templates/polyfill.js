@@ -14,7 +14,7 @@ if (!window.Object.keys) {
       DontEnumsLength = DontEnums.length;
 
     return function (o) {
-      if ((typeof o != 'object' && typeof o != 'function') || o === null) {
+      if ((typeof o !== 'object' && typeof o !== 'function') || o === null) {
         throw new TypeError('Object.keys called on a non-object');
       }
 
