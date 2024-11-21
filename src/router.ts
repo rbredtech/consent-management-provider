@@ -10,6 +10,7 @@ import {
   removeConsentController,
   setConsentController,
   cmpapiController,
+  polyfillController,
 } from "./controller";
 
 import { loggerMiddleware, channelMiddleware } from "./middleware";
@@ -21,6 +22,7 @@ router.use(cookieParser());
 router.use(loggerMiddleware);
 router.use(channelMiddleware);
 
+router.get("/polyfill.js", polyfillController);
 router.get("/banner.js", bannerController);
 router.get("/cmp.js", cmpController);
 router.get("/cmp-with-tracking.js", cmpWithTrackingController);
