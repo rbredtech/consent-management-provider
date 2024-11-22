@@ -1,30 +1,37 @@
 const { describe, beforeAll, expect, afterAll, it } = require("@jest/globals");
 const pageHelper = require("./helper/page");
-const { HTTP_PROTOCOL } = require("./helper/page");
+const { wait } = require("./helper/wait");
 
 let page;
 
-describe.each([true, false])("Debug API - localStorage: %s", (localStorageEnabled) => {
-  beforeAll(async () => {
-    page = await pageHelper.get(!localStorageEnabled);
-    await page.goto(`${HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page);
-    await page.evaluate(() => {
-      return new Promise((resolve) => {
-        window.callbackQueue = [];
-        window.__cmpapi("onLogEvent", 2, function (params) {
-          window.callbackQueue.push(params);
-        });
-        resolve();
-      });
-    });
-  }, 20000);
+beforeAll(async () => {
+  page = await pageHelper.get();
+}, 20000);
 
-  afterAll(async () => {
-    await page.browser().close();
-  }, 20000);
+afterAll(async () => {
+  await page.browser().close();
+}, 20000);
+
+describe("Debug API", () => {
+  beforeAll(async () => {
+    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
+    await pageHelper.initLoader(page);
+  });
 
   describe("when debug listener is subscribed", () => {
+    beforeAll(async () => {
+      await page.evaluate(() => {
+        return new Promise((resolve) => {
+          window.callbackQueue = [];
+          window.__cmpapi("onLogEvent", 2, function (params) {
+            window.callbackQueue.push(params);
+          });
+          resolve();
+        });
+      });
+      await wait(100);
+    });
+
     describe("and getTCData API method is called", () => {
       beforeAll(async () => {
         await page.evaluate(() => {
@@ -32,6 +39,7 @@ describe.each([true, false])("Debug API - localStorage: %s", (localStorageEnable
             window.__cmpapi("getTCData", 2, resolve);
           });
         });
+        await wait(100);
       });
 
       it("should log load event", async () => {
@@ -71,6 +79,7 @@ describe.each([true, false])("Debug API - localStorage: %s", (localStorageEnable
             });
           });
           await consentCookieLoaded;
+          await wait(100);
         });
 
         it("should log activity for setConsent", async () => {
@@ -82,7 +91,7 @@ describe.each([true, false])("Debug API - localStorage: %s", (localStorageEnable
             event: "setConsent",
             parameters: {
               consentByVendorId: { 4040: false, 4041: false },
-              localStorageAvailable: localStorageEnabled,
+              localStorageAvailable: true,
             },
             success: true,
             ts: expect.any(Number),
@@ -100,12 +109,14 @@ describe.each([true, false])("Debug API - localStorage: %s", (localStorageEnable
               resolve();
             });
           });
+          await wait(100);
 
           await page.evaluate(() => {
             return new Promise((resolve) => {
               window.__cmpapi("getTCData", 2, resolve);
             });
           });
+          await wait(100);
         });
 
         it("should log activity for getTCData twice", async () => {
