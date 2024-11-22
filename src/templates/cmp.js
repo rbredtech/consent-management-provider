@@ -12,7 +12,14 @@
   };
 
   function log(event, success, parameters) {
-    window.__cmpapi('_log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
+    try {
+      window.__cmpapi(
+        '_log',
+        2,
+        undefined,
+        window.jsonStringify({ event: event, success: success, parameters: parameters })
+      );
+    } catch (e) {}
   }
 
   function callQueue(type) {
@@ -38,9 +45,13 @@
   var iframe;
 
   function message(type, command, version, callback, parameter) {
-    callbackMap[++callbackCount] = callback;
-    var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
-    iframe.contentWindow.postMessage(msg, window.location.protocol + '//<%-CONSENT_SERVER_HOST%>');
+    try {
+      callbackMap[++callbackCount] = callback;
+      var msg =
+        callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: parameter });
+      var target = iframe.contentWindow || iframe.contentDocument.defaultView;
+      target.postMessage(msg, window.location.protocol + '//<%-CONSENT_SERVER_HOST%>');
+    } catch (e) {}
   }
 
   var channelId = '<%-CHANNEL_ID%>';
@@ -50,7 +61,7 @@
     var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
     var currentUserAgent = window.navigator && navigator.userAgent && navigator.userAgent.toLowerCase();
 
-    if (!currentUserAgent || !currentUserAgent.indexOf) {
+    if (!currentUserAgent) {
       return false;
     }
 
@@ -75,9 +86,10 @@
     if (message[0] !== 'tvicmp') {
       return;
     }
+
     try {
       var id = message[1];
-      var callbackParameter = JSON.parse(message[2]);
+      var callbackParameter = window.jsonParse(message[2]);
       if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
         return;
       }
@@ -97,7 +109,8 @@
     iframe.setAttribute('frameborder', '0');
 
     iframe.onload = function () {
-      if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
+      var target = iframe.contentWindow || iframe.contentDocument.defaultView;
+      if (!target) {
         iframe.parentElement.removeChild(iframe);
         loadCmpApi(3);
         return;
@@ -196,5 +209,18 @@
     }
   }
 
-  init();
+  waitForDOMElement(
+    'head',
+    function () {
+      var polyfillScriptTag = document.createElement('script');
+      polyfillScriptTag.setAttribute(
+        'src',
+        window.location.protocol + '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>polyfill.js?v=' + buildNumber
+      );
+      polyfillScriptTag.setAttribute('type', 'text/javascript');
+      document.getElementsByTagName('head')[0].appendChild(polyfillScriptTag);
+      init();
+    },
+    3
+  );
 })();

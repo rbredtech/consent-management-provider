@@ -176,7 +176,7 @@
     }
   }
 
-  window.__cbapi = function (command, version, callback, parameter) {
+  window.__cbapi = function (command, _version, callback, parameter) {
     function mountConsentBanner(elementId, bannerType) {
       var bannerParentNode = getBannerParentNode(elementId);
 
@@ -187,7 +187,7 @@
       var banner = document.getElementById('agttcnstbnnr');
 
       if (!banner) {
-        if (bannerType == 'additional-channels') {
+        if (bannerType === 'additional-channels') {
           banner = buildBannerAdditionalChannelsElement();
         } else {
           banner = buildBannerElement();
