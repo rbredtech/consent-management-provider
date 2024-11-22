@@ -91,13 +91,18 @@ window.JsonStringify =
   window.JSON.stringify ||
   function (object) {
     var result = undefined;
-    if (object === null) {
+    if (object === null || typeof object === 'function' || typeof object === 'symbol') {
       return 'null';
     } else if (object === undefined) {
       return undefined;
     } else if (typeof object === 'string') {
       return '"' + object + '"';
-    } else if (typeof object === 'number' || typeof object === 'boolean') {
+    } else if (typeof object === 'number') {
+      if (!isFinite(object) || isNaN(object)) {
+        return 'null';
+      }
+      return object.toString();
+    } else if (typeof object === 'boolean') {
       return object.toString();
     } else if (Object.prototype.toString.call(object) === '[object Array]') {
       result = '[';
@@ -111,12 +116,15 @@ window.JsonStringify =
       return result;
     } else if (typeof object === 'object') {
       result = '{';
-      var keys = Object.keys(object);
+      var keys = window.objectKeys(object);
       for (var y = 0; y < keys.length; y++) {
         var key = keys[y];
-        result += '"' + key + '":' + window.JsonStringify(object[key]);
-        if (y !== keys.length - 1) {
-          result += ',';
+        var stringified = window.JsonStringify(object[key]);
+        if (stringified) {
+          result += '"' + key + '":' + stringified;
+          if (y !== keys.length - 1) {
+            result += ',';
+          }
         }
       }
       result += '}';
