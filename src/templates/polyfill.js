@@ -77,18 +77,14 @@ window.cookieDecode =
     };
   })();
 
-if (!window.JSON) {
-  window.JSON = {};
-}
-
 window.JsonParse =
-  window.JSON.parse ||
+  (window.JSON && window.JSON.parse) ||
   function (jsonString) {
     return eval('(' + jsonString + ')');
   };
 
 window.JsonStringify =
-  window.JSON.stringify ||
+  (window.JSON && window.JSON.stringify) ||
   function (object) {
     var result = undefined;
     if (object === null || typeof object === 'function' || typeof object === 'symbol') {

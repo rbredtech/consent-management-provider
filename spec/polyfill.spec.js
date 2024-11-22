@@ -31,7 +31,7 @@ describe("Polyfills", () => {
           resolve([window.JSON, window.atob, window.Object.keys]);
         }),
     );
-    expect(nativeApis).toEqual([{}, null, null]);
+    expect(nativeApis).toEqual([null, null, null]);
   });
 
   describe("Object.keys polyfill (window.objectKeys)", () => {
