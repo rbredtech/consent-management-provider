@@ -17,7 +17,7 @@
         '_log',
         2,
         undefined,
-        window.JsonStringify({ event: event, success: success, parameters: parameters })
+        window.jsonStringify({ event: event, success: success, parameters: parameters })
       );
     } catch (e) {}
   }
@@ -48,7 +48,7 @@
     try {
       callbackMap[++callbackCount] = callback;
       var msg =
-        callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.JsonStringify({ param: parameter });
+        callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: parameter });
       var target = iframe.contentWindow || iframe.contentDocument.defaultView;
       target.postMessage(msg, window.location.protocol + '//<%-CONSENT_SERVER_HOST%>');
     } catch (e) {}
@@ -89,7 +89,7 @@
 
     try {
       var id = message[1];
-      var callbackParameter = window.JsonParse(message[2]);
+      var callbackParameter = window.jsonParse(message[2]);
       if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
         return;
       }

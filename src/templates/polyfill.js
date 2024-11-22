@@ -1,32 +1,32 @@
 window.objectKeys =
   window.Object.keys ||
   (function () {
-    var hasOwnProperty = Object.prototype.hasOwnProperty,
-      hasDontEnumBug = !Object.prototype.propertyIsEnumerable.call({ toString: null }, 'toString'),
-      DontEnums = [
-        'toString',
-        'toLocaleString',
-        'valueOf',
-        'hasOwnProperty',
-        'isPrototypeOf',
-        'propertyIsEnumerable',
-        'constructor'
-      ],
-      DontEnumsLength = DontEnums.length;
+    var hasDontEnumBug = !Object.prototype.propertyIsEnumerable.call({ toString: null }, 'toString');
+    var DontEnums = [
+      'toString',
+      'toLocaleString',
+      'valueOf',
+      'hasOwnProperty',
+      'isPrototypeOf',
+      'propertyIsEnumerable',
+      'constructor'
+    ];
 
-    return function (o) {
-      if ((typeof o !== 'object' && typeof o !== 'function') || o === null) {
-        throw new TypeError('Object.keys called on a non-object');
+    return function (object) {
+      if ((typeof object !== 'object' && typeof object !== 'function') || object === undefined || object === null) {
+        throw new TypeError('Cannot convert undefined or null to object');
       }
 
       var result = [];
-      for (var name in o) {
-        if (hasOwnProperty.call(o, name)) result.push(name);
+      for (var name in object) {
+        if (Object.prototype.hasOwnProperty.call(object, name)) {
+          result.push(name);
+        }
       }
 
       if (hasDontEnumBug) {
-        for (var i = 0; i < DontEnumsLength; i++) {
-          if (hasOwnProperty.call(o, DontEnums[i])) {
+        for (var i = 0; i < DontEnums.length; i++) {
+          if (Object.prototype.hasOwnProperty.call(object, DontEnums[i])) {
             result.push(DontEnums[i]);
           }
         }
@@ -77,13 +77,13 @@ window.cookieDecode =
     };
   })();
 
-window.JsonParse =
+window.jsonParse =
   (window.JSON && window.JSON.parse) ||
   function (jsonString) {
     return eval('(' + jsonString + ')');
   };
 
-window.JsonStringify =
+window.jsonStringify =
   (window.JSON && window.JSON.stringify) ||
   function (object) {
     var result = undefined;
@@ -103,7 +103,7 @@ window.JsonStringify =
     } else if (Object.prototype.toString.call(object) === '[object Array]') {
       result = '[';
       for (var i = 0; i < object.length; i++) {
-        result += window.JsonStringify(object[i]);
+        result += window.jsonStringify(object[i]);
         if (i !== object.length - 1) {
           result += ',';
         }
@@ -115,7 +115,7 @@ window.JsonStringify =
       var keys = window.objectKeys(object);
       for (var y = 0; y < keys.length; y++) {
         var key = keys[y];
-        var stringified = window.JsonStringify(object[key]);
+        var stringified = window.jsonStringify(object[key]);
         if (stringified) {
           result += '"' + key + '":' + stringified;
           if (y !== keys.length - 1) {
@@ -125,7 +125,6 @@ window.JsonStringify =
       }
       result += '}';
       return result;
-    } else {
-      return undefined;
     }
+    return undefined;
   };

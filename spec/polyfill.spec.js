@@ -68,13 +68,13 @@ describe("Polyfills", () => {
     });
   });
 
-  describe("JSON.stringify polyfill (window.JsonStringify)", () => {
+  describe("JSON.stringify polyfill (window.jsonStringify)", () => {
     test("should create correct string representation of object", async () => {
       const stringified = await page.evaluate(
         () =>
           new Promise((resolve) => {
             resolve(
-              window.JsonStringify({
+              window.jsonStringify({
                 name: "Zwonimir",
                 number: 29,
                 infinity: Infinity,
@@ -116,13 +116,13 @@ describe("Polyfills", () => {
     });
   });
 
-  describe("JSON.parse polyfill (window.JsonParse)", () => {
+  describe("JSON.parse polyfill (window.jsonParse)", () => {
     test("should parse string representation of object correctly", async () => {
       const parsed = await page.evaluate(
         () =>
           new Promise((resolve) => {
             resolve(
-              window.JsonParse(
+              window.jsonParse(
                 '{"name":"Zwonimir","number":29,"infinity":null,"boolean":true,"null":null,"nAn":null,"stringArray":["html","css","react"],"numberArray":[1,2,3],"object":{"city":"Salzburg","state":"Salzburg","zip":5023,"anotherArray":["test",1]}}',
               ),
             );

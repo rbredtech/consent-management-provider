@@ -132,7 +132,7 @@
   window.__cmpapi = function (command, _version, callback, parameter) {
     var consentByVendorIdSerialized = readStorageOrCookie('<%-CONSENT_COOKIE_NAME%>', function (value) {
       try {
-        var parsed = window.JsonParse(window.cookieDecode(value));
+        var parsed = window.jsonParse(window.cookieDecode(value));
         if (parsed && parsed.consent) {
           return parsed.consent;
         }
@@ -311,7 +311,7 @@
       case '_log':
         if (parameter) {
           try {
-            var logParameters = window.JsonParse(parameter);
+            var logParameters = window.jsonParse(parameter);
             if (logParameters && logParameters.event) {
               log(logParameters.event, !!logParameters.success, logParameters.parameters);
             }
