@@ -53,7 +53,7 @@
   function serializeConsentByVendorId(consentByVendorId) {
     var serialized = '';
     try {
-      var vendorIds = Object.keys(consentByVendorId);
+      var vendorIds = window.objectKeys(consentByVendorId);
       for (var i = 0; i < vendorIds.length; i++) {
         serialized = serialized + vendorIds[i] + '~' + consentByVendorId[vendorIds[i]];
         if (i < vendorIds.length - 1) {
@@ -132,7 +132,7 @@
   window.__cmpapi = function (command, _version, callback, parameter) {
     var consentByVendorIdSerialized = readStorageOrCookie('<%-CONSENT_COOKIE_NAME%>', function (value) {
       try {
-        var parsed = JSON.parse(atob(value));
+        var parsed = window.JsonParse(window.cookieDecode(value));
         if (parsed && parsed.consent) {
           return parsed.consent;
         }
@@ -311,7 +311,7 @@
       case '_log':
         if (parameter) {
           try {
-            var logParameters = JSON.parse(parameter);
+            var logParameters = window.JsonParse(parameter);
             if (logParameters && logParameters.event) {
               log(logParameters.event, !!logParameters.success, logParameters.parameters);
             }

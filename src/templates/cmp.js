@@ -13,7 +13,12 @@
 
   function log(event, success, parameters) {
     try {
-      window.__cmpapi('_log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
+      window.__cmpapi(
+        '_log',
+        2,
+        undefined,
+        window.JsonStringify({ event: event, success: success, parameters: parameters })
+      );
     } catch (e) {}
   }
 
@@ -42,7 +47,8 @@
   function message(type, command, version, callback, parameter) {
     try {
       callbackMap[++callbackCount] = callback;
-      var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
+      var msg =
+        callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.JsonStringify({ param: parameter });
       var target = iframe.contentWindow || iframe.contentDocument.defaultView;
       target.postMessage(msg, window.location.protocol + '//<%-CONSENT_SERVER_HOST%>');
     } catch (e) {}
@@ -83,7 +89,7 @@
 
     try {
       var id = message[1];
-      var callbackParameter = JSON.parse(message[2]);
+      var callbackParameter = window.JsonParse(message[2]);
       if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
         return;
       }

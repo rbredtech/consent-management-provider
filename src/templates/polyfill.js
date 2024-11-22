@@ -1,5 +1,6 @@
-if (!window.Object.keys) {
-  window.Object.keys = (function () {
+window.objectKeys =
+  window.Object.keys ||
+  (function () {
     var hasOwnProperty = Object.prototype.hasOwnProperty,
       hasDontEnumBug = !Object.prototype.propertyIsEnumerable.call({ toString: null }, 'toString'),
       DontEnums = [
@@ -35,64 +36,60 @@ if (!window.Object.keys) {
     };
   })();
 
-  console.log('Object.keys polyfill applied');
-}
+window.cookieDecode =
+  window.atob ||
+  (function () {
+    var chars = {
+      ascii: function () {
+        return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+      },
+      indices: function () {
+        if (!this.cache) {
+          this.cache = {};
+          var ascii = chars.ascii();
 
-if (!window.atob) {
-  var chars = {
-    ascii: function () {
-      return 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-    },
-    indices: function () {
-      if (!this.cache) {
-        this.cache = {};
-        var ascii = chars.ascii();
+          for (var c = 0; c < ascii.length; c++) {
+            var chr = ascii[c];
+            this.cache[chr] = c;
+          }
+        }
+        return this.cache;
+      }
+    };
 
-        for (var c = 0; c < ascii.length; c++) {
-          var chr = ascii[c];
-          this.cache[chr] = c;
+    return function (b64) {
+      var indices = chars.indices(),
+        pos = b64.indexOf('='),
+        padded = pos > -1,
+        len = padded ? pos : b64.length,
+        i = -1,
+        data = '';
+      while (i < len) {
+        var code = (indices[b64[++i]] << 18) | (indices[b64[++i]] << 12) | (indices[b64[++i]] << 6) | indices[b64[++i]];
+        if (code !== 0) {
+          data += String.fromCharCode((code >>> 16) & 255, (code >>> 8) & 255, code & 255);
         }
       }
-      return this.cache;
-    }
-  };
-
-  window.atob = function (b64) {
-    var indices = chars.indices(),
-      pos = b64.indexOf('='),
-      padded = pos > -1,
-      len = padded ? pos : b64.length,
-      i = -1,
-      data = '';
-    while (i < len) {
-      var code = (indices[b64[++i]] << 18) | (indices[b64[++i]] << 12) | (indices[b64[++i]] << 6) | indices[b64[++i]];
-      if (code !== 0) {
-        data += String.fromCharCode((code >>> 16) & 255, (code >>> 8) & 255, code & 255);
+      if (padded) {
+        data = data.slice(0, pos - b64.length);
       }
-    }
-    if (padded) {
-      data = data.slice(0, pos - b64.length);
-    }
-    return data;
-  };
-
-  console.log('atob polyfill applied');
-}
+      return data;
+    };
+  })();
 
 if (!window.JSON) {
   window.JSON = {};
 }
 
-if (!window.JSON.parse) {
-  window.JSON.parse = function (jsonString) {
+window.JsonParse =
+  window.JSON.parse ||
+  function (jsonString) {
     return eval('(' + jsonString + ')');
   };
 
-  console.log('JSON.parse polyfill applied');
-}
-
-if (!window.JSON.stringify) {
-  window.JSON.stringify = function (object) {
+window.JsonStringify =
+  window.JSON.stringify ||
+  function (object) {
     var result = undefined;
     if (object === null) {
       return 'null';
@@ -105,7 +102,7 @@ if (!window.JSON.stringify) {
     } else if (Object.prototype.toString.call(object) === '[object Array]') {
       result = '[';
       for (var i = 0; i < object.length; i++) {
-        result += window.JSON.stringify(object[i]);
+        result += window.JsonStringify(object[i]);
         if (i !== object.length - 1) {
           result += ',';
         }
@@ -117,7 +114,7 @@ if (!window.JSON.stringify) {
       var keys = Object.keys(object);
       for (var y = 0; y < keys.length; y++) {
         var key = keys[y];
-        result += '"' + key + '":' + window.JSON.stringify(object[key]);
+        result += '"' + key + '":' + window.JsonStringify(object[key]);
         if (y !== keys.length - 1) {
           result += ',';
         }
@@ -128,6 +125,3 @@ if (!window.JSON.stringify) {
       return undefined;
     }
   };
-
-  console.log('JSON.stringify polyfill applied');
-}

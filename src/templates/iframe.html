@@ -23,12 +23,12 @@
           var id = message[0];
           var cmd = message[2];
           var version = message[3];
-          var param = JSON.parse(message[4]);
+          var param = window.JsonParse(message[4]);
           __cmpapi(
             cmd,
             version,
             function (cbParam) {
-              _message('tvicmp;' + id + ';' + JSON.stringify({ param: cbParam }));
+              _message('tvicmp;' + id + ';' + window.JsonStringify({ param: cbParam }));
             },
             param.param
           );
