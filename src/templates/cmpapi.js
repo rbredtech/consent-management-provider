@@ -50,18 +50,10 @@
     }
   }
 
-  function objectKeys(obj) {
-    var keys = [];
-    for (var key in obj) {
-      keys.push(key);
-    }
-    return keys;
-  }
-
   function serializeConsentByVendorId(consentByVendorId) {
     var serialized = '';
     try {
-      var vendorIds = objectKeys(consentByVendorId);
+      var vendorIds = window.objectKeys(consentByVendorId);
       for (var i = 0; i < vendorIds.length; i++) {
         serialized = serialized + vendorIds[i] + '~' + consentByVendorId[vendorIds[i]];
         if (i < vendorIds.length - 1) {
@@ -90,7 +82,9 @@
     if (window.localStorage && localStorage.setItem && localStorage.getItem) {
       var lsConsentByVendorId = parseSerializedConsentByVendorId(localStorage.getItem('<%-CONSENT_COOKIE_NAME%>'));
       for (var vendorId in consentByVendorId) {
-        lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
+        if (Object.prototype.hasOwnProperty.call(consentByVendorId, vendorId)) {
+          lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
+        }
       }
       localStorage.setItem('<%-CONSENT_COOKIE_NAME%>', serializeConsentByVendorId(lsConsentByVendorId));
       return true;
@@ -138,10 +132,12 @@
   window.__cmpapi = function (command, _version, callback, parameter) {
     var consentByVendorIdSerialized = readStorageOrCookie('<%-CONSENT_COOKIE_NAME%>', function (value) {
       try {
-        return JSON.parse(atob(value)).consent;
-      } catch (e) {
-        return undefined;
-      }
+        var parsed = window.jsonParse(window.cookieDecode(value));
+        if (parsed && parsed.consent) {
+          return parsed.consent;
+        }
+      } catch (e) {}
+      return undefined;
     });
 
     var consentByVendorId = undefined;
@@ -315,7 +311,7 @@
       case '_log':
         if (parameter) {
           try {
-            var logParameters = JSON.parse(parameter);
+            var logParameters = window.jsonParse(parameter);
             if (logParameters && logParameters.event) {
               log(logParameters.event, !!logParameters.success, logParameters.parameters);
             }
