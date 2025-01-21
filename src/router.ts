@@ -4,6 +4,7 @@ import { Router } from "express";
 
 import {
   bannerController,
+  bannerAgfController,
   cmpController,
   cmpWithTrackingController,
   iframeController,
@@ -22,6 +23,7 @@ router.use(loggerMiddleware);
 router.use(channelMiddleware);
 
 router.get("/banner.js", bannerController);
+router.get("/banner-agf.js", bannerAgfController);
 router.get("/cmp.js", cmpController);
 router.get("/cmp-with-tracking.js", cmpWithTrackingController);
 router.get("/cmpapi.js", cmpapiController);
