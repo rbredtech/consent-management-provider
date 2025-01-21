@@ -5,7 +5,7 @@ const HTTP_PROTOCOL = process.env.HTTP_PROTOCOL || "http";
 const API_VERSION = process.env.API_VERSION;
 
 async function get(disableLocalStorage) {
-  const args = ["--disable-gpu"];
+  const args = ["--disable-gpu", "--no-sandbox"];
   if (disableLocalStorage) {
     args.push("--disable-local-storage");
   }
