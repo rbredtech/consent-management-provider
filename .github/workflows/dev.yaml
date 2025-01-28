@@ -10,7 +10,7 @@ on:
 jobs:
   build-and-test:
     name: Build and test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
