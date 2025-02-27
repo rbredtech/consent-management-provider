@@ -11,41 +11,32 @@
 
   function buildBannerElement() {
     return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'noconsent', function (bannerLegalText) {
-      var bannerLegalTextChannelName = document.createElement('b');
-      bannerLegalTextChannelName.appendChild(document.createTextNode('<%-CHANNEL_GROUP%>'));
-
-      bannerLegalText.appendChild(document.createTextNode('Die AGF Videoforschung GmbH, deren Mitglied '));
-      bannerLegalText.appendChild(bannerLegalTextChannelName);
       bannerLegalText.appendChild(
         document.createTextNode(
-          ' ist, möchte ' +
-            'die Nutzung der TV-Geräte erfassen (die Daten können ohne Unterstützung der nutzenden Person keinem ' +
-            'konkreten TV-Gerät zugeordnet werden), um dadurch den Mitgliedern der AGF die Möglichkeit zu geben, ' +
-            'deren TV- und Werbeangebot stetig zu verbessern.  Dazu benötigt die AGF Ihre Einwilligung, nach der ' +
-            'ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:'
+          'Wir möchten in einem gemeinsamen Projekt mit der AGF Videoforschung GmbH und weiteren TV-Sendern ' +
+            '(https://www.agf.de/agf-hbbtv-nutzungsmessung-beteiligteunddatenschutzrechtlichverantwortliche) ' +
+            'Informationen über die Nutzung der TV-Geräte unserer Zuschauer erfassen und analysieren, um unser ' +
+            'Programmangebot zu verbessern. Dafür benötigen wir und die anderen Projektbeteiligten Ihre Einwilligung. ' +
+            'Erteilen Sie eine Einwilligung, wird ein Cookie auf Ihrem Gerät platziert, durch das folgende ' +
+            'Informationen ausgelesen werden können:'
         )
       );
-
+      bannerLegalText.appendChild(document.createElement('br'));
       bannerLegalText.appendChild(document.createElement('br'));
       bannerLegalText.appendChild(
         document.createTextNode(
-          'Geräte ID, IP-Adresse, System- bzw. Browserinformationen, Geräteinformationen (verwendete HbbTV-Version, TV-Hersteller, ' +
-            'Übertragungsweg via Satellit oder Kabel, Geräteauflösung). Nähere Informationen zum Datenschutz finden Sie in der ' +
-            'HbbTV Applikation des Senders, wo Sie den Status Ihrer Einwilligung verwalten bzw. widerrufen können.'
+          'Geräte ID; IP-Adresse; System- bzw. Browserinformationen; Geräteinformationen (verwendet HbbTV-Version, ' +
+            'TV-Hersteller, Übertragungsweg via Satellit oder Kabel, Geräteauflösung); Datum, Uhrzeit, Dauer und Sender, ' +
+            'der gesehen wurde.'
         )
       );
-    });
-  }
-
-  function buildBannerAdditionalChannelsElement() {
-    return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'go-to-settings', function (bannerLegalText) {
+      bannerLegalText.appendChild(document.createElement('br'));
+      bannerLegalText.appendChild(document.createElement('br'));
       bannerLegalText.appendChild(
         document.createTextNode(
-          'Die AGF Videoforschung GmbH führt Messungen des ' +
-            'Nutzungsverhaltens durch. Zu dieser Messung haben Sie bereits Ihre Einwilligung erteilt. Nunmehr möchte die AGTT die ' +
-            'Messung auch auf andere Sender ausdehnen. Dies möchten wir Ihnen hiermit zur Kenntnis bringen. Die aktuelle Liste aller ' +
-            'Sender, bei denen das Nutzungsverhalten durch die AGTT gemessen wird, finden Sie unter www.agtt.at/hbb-messung. Falls ' +
-            'Sie Ihre Einstellungen ändern möchten, können Sie dies in den „Einstellungen“ tun. Vielen Dank für Ihre Unterstützung.'
+          'Die Einwilligungserklärungen beziehen sich auf die Nutzungsmessung des Angebots aller teilnehmenden Sender und können in der ' +
+            'HbbTV-Applikation jedes Senders jederzeit mit Wirkung für die Zukunft widerrufen werden. Nähere Informationen zum Datenschutz ' +
+            'finden Sie in unserer HbbTV-Applikation.'
         )
       );
     });
@@ -53,19 +44,18 @@
 
   function buildBanner(header, secondaryButtonType, bodyBuilder) {
     var bannerOuter = document.createElement('div');
-    bannerOuter.id = 'agttcnstbnnr';
+    bannerOuter.id = 'agfcnsntbnnr';
     bannerOuter.style.position = 'absolute';
     bannerOuter.style.left = '20px';
     bannerOuter.style.right = '20px';
     bannerOuter.style.bottom = '20px';
     bannerOuter.style.display = 'none';
     bannerOuter.style.fontFamily = 'sans-serif';
-    bannerOuter.style.fontSize = '16px';
+    bannerOuter.style.fontSize = '14px';
     bannerOuter.style.fontWeight = '400';
-    bannerOuter.style.lineHeight = '24px';
+    bannerOuter.style.lineHeight = '20px';
     bannerOuter.style.color = '#9ebcc7';
     bannerOuter.style.backgroundColor = '#0C5873';
-    bannerOuter.style.border = '4px solid #0C5873';
     bannerOuter.style.borderRadius = '8px';
 
     var bannerContentWrapper = document.createElement('div');
@@ -73,9 +63,9 @@
 
     var bannerHeader = document.createElement('span');
     bannerHeader.style.display = 'block';
-    bannerHeader.style.fontSize = '24px';
-    bannerHeader.style.lineHeight = '24px';
-    bannerHeader.style.fontWeight = '500';
+    bannerHeader.style.fontSize = '22px';
+    bannerHeader.style.lineHeight = '22px';
+    bannerHeader.style.fontWeight = '700';
     bannerHeader.style.color = '#ea515a';
     bannerHeader.style.marginBottom = '16px';
     bannerHeader.appendChild(document.createTextNode(header));
@@ -173,21 +163,17 @@
   }
 
   window.__cbapi = function (command, version, callback, parameter) {
-    function mountConsentBanner(elementId, bannerType) {
+    function mountConsentBanner(elementId) {
       var bannerParentNode = getBannerParentNode(elementId);
 
       if (!bannerParentNode) {
         return null;
       }
 
-      var banner = document.getElementById('agttcnstbnnr');
+      var banner = document.getElementById('agfcnsntbnnr');
 
       if (!banner) {
-        if (bannerType == 'additional-channels') {
-          banner = buildBannerAdditionalChannelsElement();
-        } else {
-          banner = buildBannerElement();
-        }
+        banner = buildBannerElement();
         bannerParentNode.appendChild(banner);
       }
 
@@ -199,7 +185,7 @@
     }
 
     function showConsentBanner(elementId, callback, bannerType) {
-      var banner = mountConsentBanner(elementId, bannerType);
+      var banner = mountConsentBanner(elementId);
 
       if (!banner) {
         if (callback && typeof callback === 'function') {
@@ -224,14 +210,14 @@
     }
 
     function hideConsentBanner() {
-      if (document.getElementById('agttcnstbnnr')) {
-        document.getElementById('agttcnstbnnr').style.display = 'none';
+      if (document.getElementById('agfcnsntbnnr')) {
+        document.getElementById('agfcnsntbnnr').style.display = 'none';
         clearTimeout(hideBannerTimeout);
       }
     }
 
     function isConsentBannerVisible() {
-      var banner = document.getElementById('agttcnstbnnr');
+      var banner = document.getElementById('agfcnsntbnnr');
       if (!banner) {
         return false;
       }
@@ -318,16 +304,7 @@
         waitForDOMElement(
           parameter,
           function () {
-            showConsentBanner(parameter, callback, 'basic');
-          },
-          3
-        );
-        break;
-      case 'showAdditionalChannelsBanner':
-        waitForDOMElement(
-          parameter,
-          function () {
-            showConsentBanner(parameter, callback, 'additional-channels');
+            showConsentBanner(parameter, callback);
           },
           3
         );

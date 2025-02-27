@@ -9,7 +9,6 @@ export const bannerAgfController = async (req: Request, res: Response) => {
 
   try {
     res.render("banner-agf.js", {
-      CHANNEL_GROUP: req.channelGroup,
       BANNER_TIMEOUT,
     });
   } catch (e) {
