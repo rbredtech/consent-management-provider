@@ -1,23 +1,33 @@
 const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
 const pageHelper = require("./helper/page");
 
-let page;
+const cases = [
+  [true, true], // [localStorage, iFrame]
+  [true, false],
+  [false, true],
+  [false, false],
+];
 
-beforeAll(async () => {
-  page = await pageHelper.get();
-}, 20000);
+describe.each(cases)("API is called right after loading - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
+  let apiResponse, page;
 
-afterAll(async () => {
-  await page.browser().close();
-}, 20000);
+  beforeAll(async () => {
+    page = await pageHelper.get(!localStorage, !iFrame);
+  }, 5000);
 
-describe("API is called right after loading", () => {
-  let apiResponse;
+  afterAll(async () => {
+    await page.browser().close();
+  }, 5000);
 
   beforeAll(async () => {
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     await pageHelper.initLoader(page);
-    apiResponse = await page.evaluate(`(new Promise((resolve)=>{window.__cmpapi('getTCData', 1, resolve)}))`);
+    apiResponse = await page.evaluate(
+      () =>
+        new Promise((resolve) => {
+          window.__cmpapi("getTCData", 2, resolve);
+        }),
+    );
   });
 
   test("Callback is eventually called", () => {
