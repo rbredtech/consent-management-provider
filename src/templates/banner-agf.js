@@ -36,7 +36,7 @@
         document.createTextNode(
           'Die Einwilligungserklärungen beziehen sich auf die Nutzungsmessung des Angebots aller teilnehmenden Sender und können in der ' +
             'HbbTV-Applikation jedes Senders jederzeit mit Wirkung für die Zukunft widerrufen werden. Nähere Informationen zum Datenschutz ' +
-            'finden Sie in unserer HbbTV-Applikation.'
+            'finden Sie in unserer HbbTV-Applikation. Drücken Sie hierfür die rote Taste auf Ihrer Fernbedienung.'
         )
       );
     });
