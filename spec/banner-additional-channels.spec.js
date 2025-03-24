@@ -1,20 +1,25 @@
 const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
 const pageHelper = require("./helper/page");
-let page;
 
-beforeAll(async () => {
-  page = await pageHelper.get();
-}, 20000);
+const cases = [
+  [true, true], // [localStorage, iFrame]
+  [true, false],
+  [false, true],
+  [false, false],
+];
 
-afterAll(async () => {
-  await page.browser().close();
-}, 20000);
+describe.each(cases)("Consent banner (additional channels) - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
+  let page;
 
-describe("Consent Management with banner", () => {
   beforeAll(async () => {
+    page = await pageHelper.get(!localStorage, !iFrame);
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     await pageHelper.initLoader(page, 0, true);
-  });
+  }, 5000);
+
+  afterAll(async () => {
+    await page.browser().close();
+  }, 5000);
 
   test("Banner pop-up is NOT displayed", async () => {
     await expect(
@@ -27,7 +32,7 @@ describe("Consent Management with banner", () => {
 
   describe("When showBanner API method is called", () => {
     beforeAll(async () => {
-      await page.evaluate(function () {
+      await page.evaluate(() => {
         window.__cbapi("showAdditionalChannelsBanner", 2, function (consentDecision) {
           if (typeof consentDecision === "boolean") {
             window.__cmpapi("setConsent", 2, undefined, consentDecision);
@@ -55,7 +60,7 @@ describe("Consent Management with banner", () => {
 
       beforeAll(async () => {
         consentSent = page.waitForRequest((request) => request.url().includes("set-consent"));
-        await page.evaluate(function () {
+        await page.evaluate(() => {
           window.__cbapi("handleKey", 2, undefined, 13);
         });
       });
@@ -66,7 +71,7 @@ describe("Consent Management with banner", () => {
 
       describe("When banner is requested again", () => {
         beforeAll(async () => {
-          await page.evaluate(function () {
+          await page.evaluate(() => {
             window.bannerCloseReason = "no-reason";
             window.__cbapi("showAdditionalChannelsBanner", 2, function (consentDecision, reason) {
               window.bannerCloseReason = reason;
@@ -86,7 +91,7 @@ describe("Consent Management with banner", () => {
           });
 
           test("banner close reason should be 'go-to-settings'", async () => {
-            const reason = await page.evaluate(function () {
+            const reason = await page.evaluate(() => {
               return Promise.resolve(window.bannerCloseReason);
             });
             expect(reason).toBe("go-to-settings");
