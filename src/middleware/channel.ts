@@ -56,14 +56,13 @@ export function channelMiddleware(req: Request, res: Response, next: NextFunctio
     return;
   }
 
-  if (isNaN(Number(req.query.channelId))) {
+  if (req.query.channelId && isNaN(Number(req.query.channelId))) {
     res.status(400).send({ error: "query parameter channelId must be numeric" });
     return;
   }
 
   const channelId = req.query.channelId.toString();
-
-  req.channelId = Number(channelId);
+  req.channelId = channelId ? Number(channelId) : undefined;
   req.channelName = channelIdToLabelsMap[channelId]?.name ?? GENERIC_CHANNEL_NAME;
   req.channelGroup = channelIdToLabelsMap[channelId]?.group ?? GENERIC_CHANNEL_NAME;
   logger.debug(`Channel: ${JSON.stringify(req.query)} ::: ${req.channelId} - ${req.channelName} - ${req.channelGroup}`);

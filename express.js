@@ -13,9 +13,16 @@ app.use(express.static("."));
 app.set("views", ".");
 app.set("view engine", "ejs");
 
-app.get("/*", (_req, res) => {
+app.get("/*", (req, res) => {
   res.setHeader("Content-Type", "application/vnd.hbbtv.xhtml+xml");
-  res.render("index", { CONSENT_SERVER_HOST: HTTP_HOST, BROWSER_REFRESH_URL, API_VERSION, HTTP_PROTOCOL });
+  res.render("index", {
+    CONSENT_SERVER_HOST: HTTP_HOST,
+    BROWSER_REFRESH_URL,
+    API_VERSION,
+    HTTP_PROTOCOL,
+    BANNER_SUFFIX: req.query.bannerSuffix,
+    CHANNEL_ID: req.query.channelId || "9999",
+  });
 });
 
 var server = app.listen(port, function () {

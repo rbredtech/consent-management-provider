@@ -1,45 +1,41 @@
 const { describe, beforeAll, expect, afterAll, it } = require("@jest/globals");
 const pageHelper = require("./helper/page");
-const { wait } = require("./helper/wait");
 
-let page;
+describe.each([true, false])("Debug API - iFrame: %s", (iFrame) => {
+  let page;
 
-beforeAll(async () => {
-  page = await pageHelper.get();
-}, 20000);
-
-afterAll(async () => {
-  await page.browser().close();
-}, 20000);
-
-describe("Debug API", () => {
   beforeAll(async () => {
+    page = await pageHelper.get(false, !iFrame);
     await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
     await pageHelper.initLoader(page);
-  });
+  }, 5000);
+
+  afterAll(async () => {
+    await page.browser().close();
+  }, 5000);
 
   describe("when debug listener is subscribed", () => {
     beforeAll(async () => {
-      await page.evaluate(() => {
-        return new Promise((resolve) => {
-          window.callbackQueue = [];
-          window.__cmpapi("onLogEvent", 2, function (params) {
-            window.callbackQueue.push(params);
-          });
-          resolve();
-        });
-      });
-      await wait(100);
+      await page.evaluate(
+        () =>
+          new Promise((resolve) => {
+            window.callbackQueue = [];
+            window.__cmpapi("onLogEvent", 2, function (params) {
+              window.callbackQueue.push(params);
+            });
+            resolve();
+          }),
+      );
     });
 
     describe("and getTCData API method is called", () => {
       beforeAll(async () => {
-        await page.evaluate(() => {
-          return new Promise((resolve) => {
-            window.__cmpapi("getTCData", 2, resolve);
-          });
-        });
-        await wait(100);
+        await page.evaluate(
+          () =>
+            new Promise((resolve) => {
+              window.__cmpapi("getTCData", 2, resolve);
+            }),
+        );
       });
 
       it("should log load event", async () => {
@@ -49,7 +45,7 @@ describe("Debug API", () => {
         expect(queue).toHaveLength(2);
         expect(queue[0]).toEqual({
           event: "loaded",
-          parameters: { type: "iframe" },
+          parameters: { type: iFrame ? "iframe" : "3rdparty" },
           success: true,
           ts: expect.any(Number),
         });
@@ -79,7 +75,6 @@ describe("Debug API", () => {
             });
           });
           await consentCookieLoaded;
-          await wait(100);
         });
 
         it("should log activity for setConsent", async () => {
@@ -102,21 +97,17 @@ describe("Debug API", () => {
       describe("and a second debug listener is added", () => {
         beforeAll(async () => {
           await page.evaluate(() => {
-            return new Promise((resolve) => {
-              window.__cmpapi("onLogEvent", 2, function (params) {
-                window.callbackQueue.push(params);
-              });
-              resolve();
+            window.__cmpapi("onLogEvent", 2, function (params) {
+              window.callbackQueue.push(params);
             });
           });
-          await wait(100);
 
-          await page.evaluate(() => {
-            return new Promise((resolve) => {
-              window.__cmpapi("getTCData", 2, resolve);
-            });
-          });
-          await wait(100);
+          await page.evaluate(
+            () =>
+              new Promise((resolve) => {
+                window.__cmpapi("getTCData", 2, resolve);
+              }),
+          );
         });
 
         it("should log activity for getTCData twice", async () => {

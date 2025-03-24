@@ -109,10 +109,21 @@
     RESET_OLD_CONSENT: 'resetOldConsent'
   };
 
+  var queueLogMessages = true;
+  var logMessageQueue = [];
+
+  setTimeout(function () {
+    queueLogMessages = false;
+  }, 3000);
+
   function log(event, success, parameters) {
+    var msg = { event: event, success: success, parameters: parameters, ts: Date.now() };
+    if (!logCallbacks.length && queueLogMessages) {
+      logMessageQueue[logMessageQueue.length] = msg;
+    }
     for (var i = 0; i < logCallbacks.length; i++) {
       if (logCallbacks[i] && typeof logCallbacks[i] === 'function') {
-        logCallbacks[i]({ event: event, success: success, parameters: parameters, ts: Date.now() });
+        logCallbacks[i](msg);
       }
     }
   }
@@ -306,6 +317,12 @@
       case 'onLogEvent':
         if (callback && typeof callback === 'function') {
           logCallbacks[logCallbacks.length] = callback;
+        }
+        if (logCallbacks.length === 1 && logMessageQueue.length) {
+          for (var i = 0; i < logMessageQueue.length; i++) {
+            logCallbacks[0](logMessageQueue[i]);
+          }
+          logMessageQueue = [];
         }
         break;
       case '_log':

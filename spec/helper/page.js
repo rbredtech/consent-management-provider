@@ -4,13 +4,16 @@ const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
 const HTTP_PROTOCOL = process.env.HTTP_PROTOCOL || "http";
 const API_VERSION = process.env.API_VERSION;
 
-async function get(disableLocalStorage) {
+async function get(disableLocalStorage, disableIframe) {
   const args = ["--disable-gpu", "--no-sandbox"];
   if (disableLocalStorage) {
     args.push("--disable-local-storage");
   }
   const browser = await puppeteer.launch({ dumpio: false, args });
   const page = await browser.newPage();
+  if (disableIframe) {
+    await page.setUserAgent("HbbTV/1.1.1 (+PVR;Humax;HD FOX+;1.00.20;1.0;)CE-HTML/1.0 ANTGalio/3.3.0.26.03");
+  }
   return page;
 }
 
