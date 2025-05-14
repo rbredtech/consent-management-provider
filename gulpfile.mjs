@@ -1,14 +1,18 @@
 import gulp from "gulp";
+import ejs from "gulp-ejs";
+import envLoader from "gulp-env-loader";
 import htmlmin from "gulp-htmlmin";
 import minifyInline from "gulp-minify-inline";
-import sourcemaps from "gulp-sourcemaps";
-import stringReplace from "gulp-string-replace";
+import size from "gulp-size";
 import terser from "gulp-terser";
-import ts from "gulp-typescript";
+import yargs from "yargs";
 
-var { BUILD_NUMBER } = process.env;
+const config = envLoader(yargs(process.argv).argv.env || ".env").env;
+console.log(config);
 
-var tsProject = ts.createProject("tsconfig.json");
+ejs.__EJS__.delimiter = "*";
+ejs.__EJS__.openDelimiter = "__ejs(/";
+ejs.__EJS__.closeDelimiter = "/);";
 
 const terserOptions = {
   compress: {
@@ -29,36 +33,30 @@ const terserOptions = {
   },
 };
 
-function typescript() {
-  return tsProject
-    .src()
-    .pipe(sourcemaps.init())
-    .pipe(tsProject())
-    .pipe(sourcemaps.write(".", { sourceRoot: "./", includeContent: false }))
-    .pipe(gulp.dest("dist"));
-}
-
-function copyTemplates() {
-  return gulp.src("./src/templates/*").pipe(gulp.dest("./dist/templates"));
-}
-
-function setSourceHashParam() {
+function compileTemplates() {
   return gulp
-    .src("./dist/templates/*")
-    .pipe(stringReplace("<%-BUILD_NUMBER%>", BUILD_NUMBER ?? ""))
-    .pipe(gulp.dest("./dist/templates"));
+    .src(["./src/*.js", "./src/*.html"])
+    .pipe(ejs({ ...config }))
+    .pipe(gulp.dest("./dist"));
 }
 
 function minifyJsTemplates() {
-  return gulp.src("./dist/templates/*.js").pipe(terser(terserOptions)).pipe(gulp.dest("./dist/templates"));
+  return gulp.src("./dist/*.js").pipe(terser(terserOptions)).pipe(gulp.dest("./dist"));
 }
 
 function minifyHtmlTemplates() {
   return gulp
-    .src("./dist/templates/*.html")
+    .src("./dist/*.html")
     .pipe(minifyInline({ js: terserOptions }))
     .pipe(htmlmin({ collapseWhitespace: true }))
-    .pipe(gulp.dest("./dist/templates"));
+    .pipe(gulp.dest("./dist"));
 }
 
-export default gulp.series(typescript, copyTemplates, setSourceHashParam, minifyJsTemplates, minifyHtmlTemplates);
+function printSize() {
+  return gulp
+    .src("./dist/*")
+    .pipe(size({ showFiles: true }))
+    .pipe(gulp.dest("dist"));
+}
+
+export default gulp.series(compileTemplates, minifyJsTemplates, minifyHtmlTemplates, printSize);

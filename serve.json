@@ -1,0 +1,21 @@
+{
+  "cleanUrls": false,
+  "directoryListing": false,
+  "redirects": [
+    {
+      "source": "!index.html",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "index.html",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/vnd.hbbtv.xhtml+xml"
+        }
+      ]
+    }
+  ]
+}
