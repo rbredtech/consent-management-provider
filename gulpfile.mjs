@@ -7,8 +7,7 @@ import size from "gulp-size";
 import terser from "gulp-terser";
 import yargs from "yargs";
 
-const config = envLoader(yargs(process.argv).argv.env || ".env").env;
-console.log(config);
+const config = envLoader(yargs(process.argv).argv.config || ".env").env;
 
 ejs.__EJS__.delimiter = "*";
 ejs.__EJS__.openDelimiter = "__ejs(/";

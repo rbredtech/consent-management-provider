@@ -1,0 +1,57 @@
+name: PROD - Static Bucket
+
+on:
+  push:
+    branches:
+      - "!develop"
+      - "master"
+    tags:
+      - "v*.*.*"
+
+jobs:
+  deploy:
+    name: PROD - Deploy static assets to storage bucket
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        env:
+          - config: .env.prod.agf
+            bucket: consent-agf-tvping-com
+
+    steps:
+      - id: checkout
+        uses: actions/checkout@v4
+
+      - id: install
+        name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - id: lint
+        name: Lint
+        run: yarn lint
+
+      - id: test
+        name: Test
+        run: yarn ci
+
+      - id: build
+        name: Build
+        run: yarn build --config ${{ matrix.env.config }}
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: tv-insight-cd
+          credentials_json: ${{ secrets.GCP_CMP_SA_KEY }}
+
+      - id: upload
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          path: dist
+          destination: ${{ matrix.env.bucket }}
+          parent: false
+          predefinedAcl: publicRead
+          headers: |-
+            cache-control: public, max-age=3600
+          process_gcloudignore: false

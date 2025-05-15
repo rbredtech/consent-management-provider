@@ -1,0 +1,57 @@
+name: DEV - Static Bucket
+
+on:
+  push:
+    branches:
+      - "develop"
+      - "feature/*"
+      - "release/*"
+      - "hotfix/*"
+
+jobs:
+  deploy-dev:
+    name: DEV - Deploy static assets to storage bucket
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        env:
+          - config: .env.agf.dev
+            bucket: consent-agf-dev-tv-insight-com
+
+    steps:
+      - id: checkout
+        uses: actions/checkout@v4
+
+      - id: install
+        name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - id: lint
+        name: Lint
+        run: yarn lint
+
+      - id: test
+        name: Test
+        run: yarn ci
+
+      - id: build
+        name: Build
+        run: yarn build --config ${{ matrix.env.config }}
+
+      - id: auth
+        if: github.ref == 'refs/heads/develop'
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: tv-insight-cd
+          credentials_json: ${{ secrets.GCP_CMP_SA_KEY }}
+
+      - id: upload
+        if: github.ref == 'refs/heads/develop'
+        uses: google-github-actions/upload-cloud-storage@v2
+        with:
+          path: dist
+          destination: ${{ matrix.env.bucket }}
+          parent: false
+          predefinedAcl: publicRead
+          process_gcloudignore: false
