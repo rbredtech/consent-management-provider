@@ -14,7 +14,7 @@ async function get(disableLocalStorage, disableIframe) {
 }
 
 async function init(page) {
-  await page.goto("http://localhost:5555/jest.html");
+  await page.goto("http://localhost:5555/jest.html", { waitUntil: "networkidle0" });
 }
 
 module.exports = { get, init };
