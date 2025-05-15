@@ -30,7 +30,7 @@ const {
   BANNER_TIMEOUT
 } = process.env;
 
-app.get("*", function(req, res) {
+app.get(/.{1,}/ , function(req, res) {
   res.render(__dirname + "/src" + req.path.replace(CONSENT_PATH ?? "/", "/"), {
     CMP_ENABLED,
     CONSENT_HOST,
