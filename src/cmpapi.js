@@ -5,44 +5,32 @@
 
   function serializeConsentByVendorId(consentByVendorId) {
     var serialized = '';
-    try {
-      var vendorIds = window.objectKeys(consentByVendorId);
-      for (var i = 0; i < vendorIds.length; i++) {
-        serialized = serialized + vendorIds[i] + '~' + consentByVendorId[vendorIds[i]];
-        if (i < vendorIds.length - 1) {
-          serialized = serialized + ',';
-        }
+    for (var vendorId in consentByVendorId) {
+      if (Object.prototype.hasOwnProperty.call(consentByVendorId, vendorId)) {
+        serialized = serialized + vendorId + '~' + consentByVendorId[vendorId] + ',';
       }
-    } catch (e) {}
-    return serialized;
+    }
+    return serialized.length ? serialized.substring(0, serialized.length - 1) : serialized;
   }
 
   function parseSerializedConsentByVendorId(serializedConsentByVendorId) {
     var consentByVendorId = {};
-    try {
-      if (serializedConsentByVendorId) {
-        var parsed = serializedConsentByVendorId.split(',');
-        for (var x = 0; x < parsed.length; x++) {
-          var split = parsed[x].split('~');
-          consentByVendorId[split[0]] = split[1] === 'true';
-        }
+    if (serializedConsentByVendorId) {
+      var parsed = serializedConsentByVendorId.split(',');
+      for (var x = 0; x < parsed.length; x++) {
+        var split = parsed[x].split('~');
+        consentByVendorId[split[0]] = split[1] === 'true';
       }
-    } catch (e) {}
+    }
     return consentByVendorId;
   }
 
   function consentCookieEncoder(value) {
-    try {
-      return window.cookieEncode('{"consent":"' + value + '"}');
-    } catch (e) {}
+    return window.cookieEncode('{"consent":"' + value + '"}');
   }
 
   function consentCookieDecoder(value) {
-    try {
-      return window.jsonParse(window.cookieDecode(value)).consent;
-    } catch (e) {
-      return undefined;
-    }
+    return window.jsonParse(window.cookieDecode(value)).consent;
   }
 
   var logEvents = {

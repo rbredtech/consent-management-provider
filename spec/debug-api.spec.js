@@ -1,4 +1,3 @@
-const { describe, beforeAll, expect, afterAll, it } = require("@jest/globals");
 const pageHelper = require("./helper/page");
 
 describe.each([true, false])("Debug API - iFrame: %s", (iFrame) => {

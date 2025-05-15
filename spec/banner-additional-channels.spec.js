@@ -1,4 +1,3 @@
-const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
 const pageHelper = require("./helper/page");
 
 const cases = [

@@ -16,36 +16,6 @@ var __base64Chars = {
   }
 };
 
-window.objectKeys =
-  window.Object.keys ||
-  (function () {
-    var hasDontEnumBug = !Object.prototype.propertyIsEnumerable.call({ toString: null }, 'toString');
-    var DontEnums = ['toString', 'toLocaleString', 'valueOf', 'hasOwnProperty', 'isPrototypeOf', 'propertyIsEnumerable', 'constructor'];
-
-    return function (object) {
-      if ((typeof object !== 'object' && typeof object !== 'function') || object === undefined || object === null) {
-        throw new Error('Cannot convert undefined or null to object');
-      }
-
-      var result = [];
-      for (var name in object) {
-        if (Object.prototype.hasOwnProperty.call(object, name)) {
-          result.push(name);
-        }
-      }
-
-      if (hasDontEnumBug) {
-        for (var i = 0; i < DontEnums.length; i++) {
-          if (Object.prototype.hasOwnProperty.call(object, DontEnums[i])) {
-            result.push(DontEnums[i]);
-          }
-        }
-      }
-
-      return result;
-    };
-  })();
-
 // source: https://base64.guru/developers/javascript/examples/polyfill
 window.cookieEncode =
   window.btoa ||
@@ -129,7 +99,12 @@ window.jsonStringify =
       return result;
     } else if (typeof object === 'object') {
       result = '{';
-      var keys = window.objectKeys(object);
+      var keys = [];
+      for (var k in object) {
+        if (Object.prototype.hasOwnProperty.call(object, k)) {
+          keys.push(k);
+        }
+      }
       for (var y = 0; y < keys.length; y++) {
         var key = keys[y];
         var stringified = window.jsonStringify(object[key]);
