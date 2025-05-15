@@ -8,13 +8,12 @@ const cases = [
   [false, false],
 ];
 
-describe.each(cases)("Consent Management is loaded - tracking script: %s, localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
+describe.each(cases)("Consent Management is loaded - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
   let page;
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
-    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page);
+    await pageHelper.init(page);
   }, 5000);
 
   afterAll(async () => {
@@ -54,18 +53,4 @@ describe.each(cases)("Consent Management is loaded - tracking script: %s, localS
     expect(apiResponse.vendor["consents"]["4040"]).toBeUndefined();
     expect(apiResponse.vendor["consents"]["4041"]).toBeUndefined();
   });
-
-  if (withTracking) {
-    test("Tracking script api is available", async () => {
-      const did = await page.evaluate(
-        () =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              window.__hbb_tracking_tgt.getDID(resolve);
-            }, 2000);
-          }),
-      );
-      expect(did).not.toBeUndefined();
-    });
-  }
 });

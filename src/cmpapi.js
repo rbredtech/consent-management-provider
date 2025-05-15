@@ -171,15 +171,21 @@
         }
         break;
       case 'setConsentByVendorId':
-        var serialized = serializeConsentByVendorId(parameter);
+        var updated = consentByVendorId || {};
+        for (var vendorId in parameter) {
+          if (Object.prototype.hasOwnProperty.call(parameter, vendorId)) {
+            updated[vendorId] = parameter[vendorId];
+          }
+        }
+        var serialized = serializeConsentByVendorId(updated);
         window.cmpWriteStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serialized, consentCookieEncoder);
 
         log(logEvents.SET_CONSENT_BY_VENDOR_ID, true, {
-          consentByVendorId: parameter
+          consentByVendorId: updated
         });
 
         if (callback && typeof callback === 'function') {
-          callback(parameter);
+          callback(updated);
         }
         break;
       case 'removeConsentDecision':

@@ -1,8 +1,5 @@
 const puppeteer = require("puppeteer");
 
-const HTTP_HOST = "localhost:833";
-const HTTP_PROTOCOL = "http";
-
 async function get(disableLocalStorage, disableIframe) {
   const args = ["--disable-gpu", "--no-sandbox"];
   if (disableLocalStorage) {
@@ -16,13 +13,9 @@ async function get(disableLocalStorage, disableIframe) {
   return page;
 }
 
-async function initLoader(page, channelId = 9999, withBanner = false) {
-  let pageContent = `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}/cmp.js?channelId=${channelId}"></script>`;
-  if (withBanner) {
-    pageContent += `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}/banner.js?channelId=${channelId}"></script>`;
-  }
-  await page.setContent(pageContent);
+async function init(page) {
+  await page.goto(`http://localhost:822/jest.html`);
   await page.waitForFunction(() => document.readyState === "complete");
 }
 
-module.exports = { get, initLoader, HTTP_HOST, HTTP_PROTOCOL };
+module.exports = { get, init };

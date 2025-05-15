@@ -20,8 +20,7 @@ describe.each(cases)("API is called right after loading - localStorage: %s, iFra
   }, 5000);
 
   beforeAll(async () => {
-    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page);
+    await pageHelper.init(page);
     apiResponse = await page.evaluate(
       () =>
         new Promise((resolve) => {

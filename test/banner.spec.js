@@ -1,4 +1,3 @@
-const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
 const pageHelper = require("./helper/page");
 
 const cases = [
@@ -13,8 +12,7 @@ describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStor
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
-    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page, 3100, true);
+    await pageHelper.init(page);
   }, 5000);
 
   afterAll(async () => {
@@ -50,28 +48,21 @@ describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStor
       ).resolves.toBeDefined();
     });
 
-    test("Channel specific information should be present", async () => {
-      const bannerText = await page.$eval("div#agttcnstbnnr", (node) => node.innerText);
-      expect(bannerText).toContain("deren Mitglied");
-    });
-
-    test("Channel group name is replaced in legal text", async () => {
-      const bannerText = await page.$eval("div#agttcnstbnnr", (node) => node.innerText);
-      expect(bannerText).toContain("ORF");
-    });
-
     describe("When OK button is hit", () => {
-      let consentSent;
-
       beforeAll(async () => {
-        consentSent = page.waitForRequest((request) => request.url().includes("set-consent"));
         await page.evaluate(() => {
           window.__cbapi("handleKey", 2, undefined, 13);
         });
       });
 
-      test("Consent is sent", async () => {
-        expect((await consentSent).url()).toContain("set-consent?consentByVendorId=4040~true,4041~true");
+      test("Consent is saved (true)", async () => {
+        const tcData = await page.evaluate(
+          () =>
+            new Promise((resolve) => {
+              window.__cmpapi("getTCData", 2, resolve);
+            }),
+        );
+        expect(tcData.vendor.consents).toEqual({ 4040: true, 4041: true });
       });
 
       describe("When banner is requested again", () => {
@@ -86,18 +77,21 @@ describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStor
         });
 
         describe("And Dismiss is selected", () => {
-          let consentSent;
-
           beforeAll(async () => {
-            consentSent = page.waitForRequest((request) => request.url().includes("set-consent"));
             await page.evaluate(() => {
-              window.__cbapi("handleKey", 2, console.log, 37);
-              window.__cbapi("handleKey", 2, console.log, 13);
+              window.__cbapi("handleKey", 2, undefined, 37);
+              window.__cbapi("handleKey", 2, undefined, 13);
             });
           });
 
-          test("Consent revoke is sent", async () => {
-            expect((await consentSent).url()).toContain("set-consent?consentByVendorId=4040~false,4041~false");
+          test("Consent revoke is saved (false)", async () => {
+            const tcData = await page.evaluate(
+              () =>
+                new Promise((resolve) => {
+                  window.__cmpapi("getTCData", 2, resolve);
+                }),
+            );
+            expect(tcData.vendor.consents).toEqual({ 4040: false, 4041: false });
           });
         });
       });

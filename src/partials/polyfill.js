@@ -24,7 +24,7 @@ window.objectKeys =
 
     return function (object) {
       if ((typeof object !== 'object' && typeof object !== 'function') || object === undefined || object === null) {
-        throw new TypeError('Cannot convert undefined or null to object');
+        throw new Error('Cannot convert undefined or null to object');
       }
 
       var result = [];
@@ -46,6 +46,7 @@ window.objectKeys =
     };
   })();
 
+// source: https://base64.guru/developers/javascript/examples/polyfill
 window.cookieEncode =
   window.btoa ||
   function (data) {
@@ -71,6 +72,7 @@ window.cookieEncode =
     return b64;
   };
 
+// source: https://base64.guru/developers/javascript/examples/polyfill
 window.cookieDecode =
   window.atob ||
   function (b64) {

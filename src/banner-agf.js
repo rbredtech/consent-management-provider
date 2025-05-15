@@ -7,7 +7,7 @@
   var consBtnAgree;
   var consBtnDecline;
   var bannerCloseCallback;
-  var hideBannerTimeout;
+  var cancelBannerTimeout;
   var bannerTimeout = __ejs(/*-BANNER_TIMEOUT*/);
 
   function buildBannerElement() {
@@ -163,7 +163,7 @@
     }
   }
 
-  window.__cbapi = function (command, version, callback, parameter) {
+  window.__cbapi = function (command, _version, callback, parameter) {
     function mountConsentBanner(elementId) {
       var bannerParentNode = getBannerParentNode(elementId);
 
@@ -185,7 +185,7 @@
       return banner;
     }
 
-    function showConsentBanner(elementId, callback, bannerType) {
+    function showConsentBanner(elementId, callback) {
       var banner = mountConsentBanner(elementId);
 
       if (!banner) {
@@ -202,7 +202,7 @@
 
       banner.style.display = 'block';
 
-      hideBannerTimeout = setTimeout(function () {
+      cancelBannerTimeout = setTimeout(function () {
         hideConsentBanner();
         if (callback && typeof callback === 'function') {
           callback(undefined, 'timeout');
@@ -213,7 +213,7 @@
     function hideConsentBanner() {
       if (document.getElementById('agfcnsntbnnr')) {
         document.getElementById('agfcnsntbnnr').style.display = 'none';
-        clearTimeout(hideBannerTimeout);
+        clearTimeout(cancelBannerTimeout);
       }
     }
 

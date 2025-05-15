@@ -7,7 +7,7 @@
   var consBtnAgree;
   var consBtnDecline;
   var bannerCloseCallback;
-  var hideBannerTimeout;
+  var cancelBannerTimeout;
   var bannerTimeout = __ejs(/*-BANNER_TIMEOUT*/);
 
   function buildBannerElement() {
@@ -211,7 +211,7 @@
 
       banner.style.display = 'block';
 
-      hideBannerTimeout = setTimeout(function () {
+      cancelBannerTimeout = setTimeout(function () {
         hideConsentBanner();
         if (callback && typeof callback === 'function') {
           callback(undefined, 'timeout');
@@ -222,7 +222,7 @@
     function hideConsentBanner() {
       if (document.getElementById('agttcnstbnnr')) {
         document.getElementById('agttcnstbnnr').style.display = 'none';
-        clearTimeout(hideBannerTimeout);
+        clearTimeout(cancelBannerTimeout);
       }
     }
 

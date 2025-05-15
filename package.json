@@ -11,9 +11,9 @@
     "build": "rm -rf ./dist && gulp",
     "serve-scripts": "node --import=./register.js --env-file=.env app.ts",
     "serve-test": "serve test/ -p 822",
-    "serve-dist": "serve dist/ -p 4040 -c ../serve.json",
+    "serve-dist": "serve dist/ -p 4040 -c ../serve.dist.json",
     "test": "jest --verbose",
-    "ci": "start-server-and-test \"concurrently 'yarn serve-scripts' 'yarn serve-test' --hide 0,1\" http://localhost:822 test",
+    "ci": "start-server-and-test \"concurrently 'yarn serve-scripts' 'yarn serve-test -c ../serve.jest.json' --hide 0,1\" http://localhost:822 'yarn test'",
     "lint": "eslint src/**"
   },
   "devDependencies": {

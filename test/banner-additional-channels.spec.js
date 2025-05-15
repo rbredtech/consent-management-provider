@@ -13,8 +13,7 @@ describe.each(cases)("Consent banner (additional channels) - localStorage: %s, i
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
-    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page, 0, true);
+    await pageHelper.init(page);
   }, 5000);
 
   afterAll(async () => {
@@ -56,17 +55,20 @@ describe.each(cases)("Consent banner (additional channels) - localStorage: %s, i
     });
 
     describe("When OK button is hit", () => {
-      let consentSent;
-
       beforeAll(async () => {
-        consentSent = page.waitForRequest((request) => request.url().includes("set-consent"));
         await page.evaluate(() => {
           window.__cbapi("handleKey", 2, undefined, 13);
         });
       });
 
-      test("Consent is sent", async () => {
-        expect((await consentSent).url()).toContain("set-consent?consentByVendorId=4040~true,4041~true");
+      test("Consent is saved (true)", async () => {
+        const tcData = await page.evaluate(
+          () =>
+            new Promise((resolve) => {
+              window.__cmpapi("getTCData", 2, resolve);
+            }),
+        );
+        expect(tcData.vendor.consents).toEqual({ 4040: true, 4041: true });
       });
 
       describe("When banner is requested again", () => {

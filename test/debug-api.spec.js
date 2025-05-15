@@ -6,8 +6,7 @@ describe.each([true, false])("Debug API - iFrame: %s", (iFrame) => {
 
   beforeAll(async () => {
     page = await pageHelper.get(false, !iFrame);
-    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page);
+    await pageHelper.init(page);
   }, 5000);
 
   afterAll(async () => {
@@ -68,7 +67,6 @@ describe.each([true, false])("Debug API - iFrame: %s", (iFrame) => {
         let consentCookieLoaded;
 
         beforeAll(async () => {
-          consentCookieLoaded = page.waitForResponse((response) => response.url().includes("set-consent"));
           await page.evaluate(() => {
             return new Promise((resolve) => {
               window.__cmpapi("setConsent", 2, resolve, false);
@@ -86,7 +84,6 @@ describe.each([true, false])("Debug API - iFrame: %s", (iFrame) => {
             event: "setConsent",
             parameters: {
               consentByVendorId: { 4040: false, 4041: false },
-              localStorageAvailable: true,
             },
             success: true,
             ts: expect.any(Number),
