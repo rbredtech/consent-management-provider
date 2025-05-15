@@ -27,18 +27,28 @@ Usage/Integration examples can be found in the `/examples` folder of this reposi
 To configure the service for local execution, create a `.env` (`.env.example` can be used as a template) and set the
 values in that file accordingly.
 
-Install dependencies with `yarn install`.
+Install dependencies with
+
+- `yarn install`
 
 To run during development use
 
-- `yarn watch` (loads with wrapper to display UI and auto-refresh on template changes) or
-- `yarn dev` (loads with wrapper, no auto-refresh for templates).
+- `yarn dev`
 
-To run in production use `yarn start` or `yarn prod` after running the `yarn build` command.
+To create a build you can use
 
-This project uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
-for adding new features and creating new releases. It is advised to install the
-[Gitflow extension](https://skoch.github.io/Git-Workflow/) on your system.
+- `yarn build`
+
+to create a build in the `/dist` folder and
+
+- `yarn serve-dist`
+
+to serve ist from `localhost:9999`
+
+> [!TIP]
+> This project uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
+> for adding new features and creating new releases. It is advised to install the
+> [Gitflow extension](https://skoch.github.io/Git-Workflow/) on your system.
 
 ### Propose a change/feature
 

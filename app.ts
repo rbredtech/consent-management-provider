@@ -1,7 +1,8 @@
 import ejs, { renderFile } from "ejs";
 import express from "express";
 import path from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
+import yargs from "yargs";
 
 ejs.delimiter = "*";
 ejs.openDelimiter = "__ejs(/";
@@ -43,5 +44,7 @@ app.get("*", function(req, res) {
   });
 });
 
-app.listen(3000);
-console.info(`serving CMP scripts at http://localhost:3000`);
+const port = yargs(process.argv.slice(2)).parseSync().port || 3000;
+
+app.listen(port);
+console.info(`serving CMP scripts at http://localhost:${port}`);

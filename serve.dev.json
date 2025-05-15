@@ -3,7 +3,7 @@
   "directoryListing": false,
   "redirects": [
     {
-      "source": "",
+      "source": "!index.html",
       "destination": "/index.html"
     }
   ],
