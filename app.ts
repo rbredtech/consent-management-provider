@@ -31,10 +31,6 @@ const {
   BANNER_TIMEOUT
 } = process.env;
 
-app.get("", function (_req, res) {
-  res.sendStatus(200);
-});
-
 app.get(/\/.{1,}/ , function(req, res) {
   const path = __dirname + "/src" + req.path.replace(CONSENT_PATH ?? "/", "/");
   if (!existsSync(path)) {
