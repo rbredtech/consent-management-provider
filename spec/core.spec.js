@@ -13,11 +13,11 @@ describe.each(cases)("Consent Management is loaded - localStorage: %s, iFrame: %
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
     await pageHelper.init(page);
-  }, 5000);
+  }, 20000);
 
   afterAll(async () => {
     await page.browser().close();
-  }, 5000);
+  }, 20000);
 
   test("Ping API call returns basic configuration", async () => {
     const result = page.evaluate(() => {

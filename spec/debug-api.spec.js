@@ -6,11 +6,11 @@ describe.each([true, false])("Debug API - iFrame: %s", (iFrame) => {
   beforeAll(async () => {
     page = await pageHelper.get(false, !iFrame);
     await pageHelper.init(page);
-  }, 5000);
+  }, 20000);
 
   afterAll(async () => {
     await page.browser().close();
-  }, 5000);
+  }, 20000);
 
   describe("when debug listener is subscribed", () => {
     beforeAll(async () => {

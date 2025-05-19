@@ -12,17 +12,14 @@ describe.each(cases)("Consent Management with technical cookie - localStorage: %
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
-  }, 5000);
+    await pageHelper.init(page);
+  }, 20000);
 
   afterAll(async () => {
     await page.browser().close();
-  }, 5000);
+  }, 20000);
 
   describe("Is loaded", () => {
-    beforeAll(async () => {
-      await pageHelper.init(page);
-    });
-
     test(`localStorage is ${localStorage ? "enabled" : "disabled"}`, async () => {
       const ls = await page.evaluate(
         () =>
@@ -55,7 +52,6 @@ describe.each(cases)("Consent Management with technical cookie - localStorage: %
               window.__cmpapi("setConsent", 1, resolve, false);
             }),
         );
-        await pageHelper.init(page);
       });
 
       test("Storage status is enabled and consent is false", async () => {

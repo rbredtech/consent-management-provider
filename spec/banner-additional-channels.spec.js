@@ -13,11 +13,11 @@ describe.each(cases)("Consent banner (additional channels) - localStorage: %s, i
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
     await pageHelper.init(page);
-  }, 5000);
+  }, 20000);
 
   afterAll(async () => {
     await page.browser().close();
-  }, 5000);
+  }, 20000);
 
   test("Banner pop-up is NOT displayed", async () => {
     await expect(

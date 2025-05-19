@@ -33,11 +33,7 @@ jobs:
 
       - id: test
         name: Test
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 10
-          max_attempts: 3
-          command: yarn ci
+        run: yarn ci
 
       - id: build
         name: Build
