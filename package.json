@@ -11,9 +11,10 @@
     "build": "rm -rf ./dist && gulp",
     "serve-dev": "serve -p 822 -c serve.dev.json",
     "serve-dist": "serve dist/ -p 9999 -c ../serve.dist.json",
+    "serve-spec": "serve spec/ -p 5555 -c ../serve.jest.json",
     "serve-scripts": "node --import=./register.js --env-file=.env app.ts",
-    "test": "jest --verbose --no-cache",
-    "ci": "start-server-and-test \"concurrently 'yarn serve-scripts --port 3000' 'serve spec/ -p 5555' --hide 0,1\" \"http://localhost:5555/jest.html|http://localhost:3000/cmp.js\" 'yarn test'",
+    "test": "jest --verbose",
+    "ci": "start-server-and-test \"concurrently 'yarn serve-scripts --port 3000' 'yarn serve-spec' --hide 0,1\" \"localhost:5555/jest.html|localhost:3000/cmp.js\" 'yarn test'",
     "lint": "eslint src/**"
   },
   "devDependencies": {
