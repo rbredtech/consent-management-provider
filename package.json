@@ -11,7 +11,7 @@
     "build": "rm -rf ./dist && gulp",
     "serve-dev": "serve -p 822 -c serve.dev.json",
     "serve-dist": "serve dist/ -p 9999 -c ../serve.dist.json",
-    "serve-scripts": "node --import=./register.js --env-file=.env app.ts",
+    "serve-scripts": "dotenv-load node --import=./register.js app.ts",
     "test": "jest --verbose",
     "ci": "start-server-and-test \"concurrently 'yarn serve-scripts --port 3000' 'serve spec/ -p 5555 -c ../serve.spec.json' --hide 0,1\" \"localhost:3000/cmp.js|localhost:5555\" 'yarn test'",
     "lint": "eslint src/**"
@@ -30,6 +30,7 @@
     "@types/node": "^22.8.4",
     "@types/yargs": "^17.0.33",
     "concurrently": "^9.0.1",
+    "dotenv-load": "^3.0.0",
     "ejs": "^3.1.10",
     "eslint": "^9.13.0",
     "eslint-config-prettier": "^10.1.5",
