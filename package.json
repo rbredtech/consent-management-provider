@@ -13,7 +13,7 @@
     "serve-dist": "serve dist/ -p 9999 -c ../serve.dist.json",
     "serve-scripts": "node --import=./register.js --env-file=.env app.ts",
     "test": "jest --verbose",
-    "ci": "start-server-and-test \"concurrently 'yarn serve-scripts --port 3000' 'serve spec/ -p 5555 -c ../serve.spec.json' --hide 0,1\" \"3000|5555\" 'yarn test'",
+    "ci": "start-server-and-test \"concurrently 'yarn serve-scripts --port 3000' 'serve spec/ -p 5555 -c ../serve.spec.json' --hide 0,1\" \"localhost:3000|localhost:5555\" 'yarn test'",
     "lint": "eslint src/**"
   },
   "devDependencies": {

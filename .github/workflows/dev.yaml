@@ -34,6 +34,8 @@ jobs:
       - id: test
         name: Test
         run: yarn ci
+        env:
+          DEBUG: start-server-and-test
 
       - id: build
         name: Build
