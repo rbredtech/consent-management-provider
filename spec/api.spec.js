@@ -12,6 +12,7 @@ describe.each(cases)("API is called right after loading - localStorage: %s, iFra
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
+    await pageHelper.init(page);
   }, 5000);
 
   afterAll(async () => {
@@ -19,7 +20,6 @@ describe.each(cases)("API is called right after loading - localStorage: %s, iFra
   }, 5000);
 
   beforeAll(async () => {
-    await pageHelper.init(page);
     apiResponse = await page.evaluate(
       () =>
         new Promise((resolve) => {

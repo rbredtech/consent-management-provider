@@ -9,7 +9,7 @@ function wait(timeout) {
 }
 
 async function get(disableLocalStorage, disableIframe) {
-  const args = ["--disable-gpu", "--no-sandbox"];
+  const args = ["--no-sandbox", "--disable-setuid-sandbox"];
   if (disableLocalStorage) {
     args.push("--disable-local-storage");
   }
