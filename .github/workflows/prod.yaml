@@ -20,7 +20,13 @@ jobs:
             bucket: consent-agf-tvping-com
 
     steps:
+      - id: node
+        name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - id: checkout
+        name: Checkout
         uses: actions/checkout@v4
 
       - id: install
