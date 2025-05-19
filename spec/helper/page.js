@@ -14,7 +14,7 @@ async function get(disableLocalStorage, disableIframe) {
 }
 
 async function init(page) {
-  return page.goto("http://localhost:5555/jest.html");
+  return page.goto("http://localhost:5555/index.html");
 }
 
 module.exports = { get, init };

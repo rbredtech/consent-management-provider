@@ -1,5 +1,6 @@
 import ejs, { renderFile } from "ejs";
 import express from "express";
+import { existsSync } from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import yargs from "yargs";
@@ -30,8 +31,18 @@ const {
   BANNER_TIMEOUT
 } = process.env;
 
-app.get(/.{1,}/ , function(req, res) {
-  res.render(__dirname + "/src" + req.path.replace(CONSENT_PATH ?? "/", "/"), {
+app.get("", function (_req, res) {
+  res.sendStatus(200);
+});
+
+app.get(/\/.{1,}/ , function(req, res) {
+  const path = __dirname + "/src" + req.path.replace(CONSENT_PATH ?? "/", "/");
+  if (!existsSync(path)) {
+    res.sendStatus(404);
+    return;
+  }
+
+  res.render(path, {
     CMP_ENABLED,
     CONSENT_HOST,
     CONSENT_PATH,
