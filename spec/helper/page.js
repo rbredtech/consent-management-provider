@@ -1,5 +1,13 @@
 const puppeteer = require("puppeteer");
 
+function wait(timeout) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, timeout);
+  });
+}
+
 async function get(disableLocalStorage, disableIframe) {
   const args = ["--disable-gpu", "--no-sandbox"];
   if (disableLocalStorage) {
@@ -14,7 +22,8 @@ async function get(disableLocalStorage, disableIframe) {
 }
 
 async function init(page) {
-  await page.goto("http://localhost:5555/jest.html", { waitUntil: "networkidle0" });
+  await page.goto("http://localhost:5555/jest.html");
+  return wait(1000);
 }
 
 module.exports = { get, init };
