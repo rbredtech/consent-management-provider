@@ -11,7 +11,7 @@ on:
 jobs:
   deploy-dev:
     name: DEV - Deploy static assets to storage bucket
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 5
     strategy:
       matrix:
