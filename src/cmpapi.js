@@ -52,7 +52,7 @@
   function log(event, success, parameters) {
     var msg = { event: event, success: success, parameters: parameters, ts: Date.now() };
     if (!logCallbacks.length && queueLogMessages) {
-      logMessageQueue[logMessageQueue.length] = msg;
+      logMessageQueue.push(msg);
     }
     for (var i = 0; i < logCallbacks.length; i++) {
       if (logCallbacks[i] && typeof logCallbacks[i] === 'function') {
@@ -191,7 +191,7 @@
         break;
       case 'onLogEvent':
         if (callback && typeof callback === 'function') {
-          logCallbacks[logCallbacks.length] = callback;
+          logCallbacks.push(callback);
         }
         if (logCallbacks.length === 1 && logMessageQueue.length) {
           for (var i = 0; i < logMessageQueue.length; i++) {

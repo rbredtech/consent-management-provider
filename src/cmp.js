@@ -8,9 +8,9 @@ __ejs(/*- include("partials/polyfill.js") */);
   window.__cmpapi = function () {
     var args = Array.prototype.slice.call(arguments, 0);
     if (args[0] === 'onLogEvent') {
-      onLogEventQueue[onLogEventQueue.length] = args;
+      onLogEventQueue.push(args);
     } else {
-      queue[queue.length] = args;
+      queue.push(args);
     }
   };
 
