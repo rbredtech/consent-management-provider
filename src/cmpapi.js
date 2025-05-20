@@ -151,7 +151,8 @@
         window.cmpWriteStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serialized, consentCookieEncoder);
 
         log(logEvents.SET_CONSENT, true, {
-          consentByVendorId: consentDecisionByVendorId
+          consentByVendorId: consentDecisionByVendorId,
+          localStorageAvailable: window.__cmpLsAvailable
         });
 
         if (callback && typeof callback === 'function') {
@@ -169,7 +170,8 @@
         window.cmpWriteStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serialized, consentCookieEncoder);
 
         log(logEvents.SET_CONSENT_BY_VENDOR_ID, true, {
-          consentByVendorId: updated
+          consentByVendorId: updated,
+          localStorageAvailable: window.__cmpLsAvailable
         });
 
         if (callback && typeof callback === 'function') {
@@ -179,7 +181,9 @@
       case 'removeConsentDecision':
         window.cmpDeleteStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);');
 
-        log(logEvents.REMOVE_CONSENT_DECISION, true);
+        log(logEvents.REMOVE_CONSENT_DECISION, true, {
+          localStorageAvailable: window.__cmpLsAvailable
+        });
 
         if (callback && typeof callback === 'function') {
           callback();

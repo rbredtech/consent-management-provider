@@ -1,3 +1,20 @@
+function isLocalStorageAvailable() {
+  try {
+    if (!window.localStorage) {
+      return false;
+    }
+    var key = 'a';
+    var value = Date.now() + '';
+    localStorage.setItem(key, value);
+    var ls = localStorage.getItem(key);
+    localStorage.removeItem(key);
+    return ls === value;
+  } catch (e) {}
+  return false;
+}
+
+window.__cmpLsAvailable = isLocalStorageAvailable();
+
 window.cmpGetCookie = function (name, decodeFn) {
   try {
     var cname = name + '=';
@@ -31,7 +48,7 @@ window.cmpDeleteCookie = function (name) {
 
 window.cmpReadStorage = function (key, cookieDecodeFn) {
   var value = null;
-  if (window.localStorage && localStorage.getItem) {
+  if (window.__cmpLsAvailable) {
     value = localStorage.getItem(key);
     if (value) {
       return value;
@@ -42,14 +59,14 @@ window.cmpReadStorage = function (key, cookieDecodeFn) {
 
 window.cmpWriteStorage = function (key, value, cookieEncodeFn) {
   window.cmpSetCookie(key, value + '', cookieEncodeFn);
-  if (window.localStorage && localStorage.setItem) {
+  if (window.__cmpLsAvailable) {
     localStorage.setItem(key, value + '');
   }
 };
 
 window.cmpDeleteStorage = function (key) {
   window.cmpDeleteCookie(key);
-  if (window.localStorage && localStorage.removeItem) {
+  if (window.__cmpLsAvailable) {
     localStorage.removeItem(key);
   }
 };
