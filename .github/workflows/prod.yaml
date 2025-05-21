@@ -17,7 +17,7 @@ jobs:
       matrix:
         env:
           - config: .env.prod.agf
-            bucket: consent-agf-tvping-com
+            bucket: consent-management-agf-v3-static
 
     steps:
       - id: node
@@ -48,13 +48,14 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v2
         with:
-          project_id: tv-insight-cd
+          project_id: tv-insight-prod
           credentials_json: ${{ secrets.GCP_CMP_SA_KEY }}
 
       - id: upload
         uses: google-github-actions/upload-cloud-storage@v2
         with:
           path: dist
+          project_id: tv-insight-prod
           destination: ${{ matrix.env.bucket }}
           parent: false
           predefinedAcl: publicRead

@@ -17,7 +17,7 @@ jobs:
       matrix:
         env:
           - config: .env.agf.dev
-            bucket: consent-agf-dev-tv-insight-com
+            bucket: consent-management-agf-v3-static
 
     steps:
       - id: node
@@ -46,17 +46,18 @@ jobs:
         run: yarn build --config ${{ matrix.env.config }}
 
       - id: auth
-        if: github.ref == 'refs/heads/develop'
+        #if: github.ref == 'refs/heads/develop'
         uses: google-github-actions/auth@v2
         with:
-          project_id: tv-insight-cd
+          project_id: tv-insight-dev
           credentials_json: ${{ secrets.GCP_CMP_SA_KEY }}
 
       - id: upload
-        if: github.ref == 'refs/heads/develop'
+        #if: github.ref == 'refs/heads/develop'
         uses: google-github-actions/upload-cloud-storage@v2
         with:
           path: dist
+          project_id: tv-insight-dev
           destination: ${{ matrix.env.bucket }}
           parent: false
           predefinedAcl: publicRead
