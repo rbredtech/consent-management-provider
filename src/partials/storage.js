@@ -4,7 +4,7 @@ window.__cmpLsAvailable = (function () {
       return false;
     }
     var key = 'a';
-    var value = Date.now() + '';
+    var value = new Date().getTime() + '';
     localStorage.setItem(key, value);
     var ls = localStorage.getItem(key);
     localStorage.removeItem(key);

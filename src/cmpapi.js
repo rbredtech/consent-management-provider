@@ -53,7 +53,7 @@
   }, 3000);
 
   function log(event, success, parameters) {
-    var msg = { event: event, success: success, parameters: parameters, ts: Date.now() };
+    var msg = { event: event, success: success, parameters: parameters, ts: new Date().getTime() };
     if (!logCallbacks.length && queueLogMessages) {
       logMessageQueue.push(msg);
     }
@@ -65,7 +65,7 @@
   }
 
   var outOfSample = Math.floor(Math.random() * 100) + 1 > __ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);
-  var now = Date.now();
+  var now = new Date().getTime();
 
   var technicalCookie = parseInt(window.cmpReadStorage('__ejs(/*-TECH_COOKIE_NAME*/);'));
   if (!technicalCookie) {
