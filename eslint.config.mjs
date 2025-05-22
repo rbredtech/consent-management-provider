@@ -1,11 +1,17 @@
 import html from "eslint-plugin-html";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import globals from "globals";
 
 export default [
   eslintPluginPrettierRecommended,
   {
     files: ["src/**/*.js", "src/**/*.html", "test/**/*.html"],
     languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        ...globals.jest,
+      },
       ecmaVersion: 3,
       sourceType: "script",
     },
@@ -43,6 +49,8 @@ export default [
       "no-new-func": "error",
       "no-new": "error",
       "no-param-reassign": "error",
+      "no-proto": "error",
+      "no-prototype-builtins": "error",
       "no-self-compare": "error",
       "no-sequences": "error",
       "no-throw-literal": "error",
@@ -56,7 +64,6 @@ export default [
       "no-with": "error",
       radix: ["error", "as-needed"],
       yoda: ["error", "never", { exceptRange: true }],
-
       "semi-spacing": "error",
       "space-before-blocks": "error",
       "space-in-parens": ["error", "never"],
