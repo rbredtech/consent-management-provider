@@ -1,4 +1,4 @@
-function isLocalStorageAvailable() {
+window.__cmpLsAvailable = (function () {
   try {
     if (!window.localStorage) {
       return false;
@@ -11,9 +11,7 @@ function isLocalStorageAvailable() {
     return ls === value;
   } catch (e) {}
   return false;
-}
-
-window.__cmpLsAvailable = isLocalStorageAvailable();
+})();
 
 window.cmpGetCookie = function (name, decodeFn) {
   try {
