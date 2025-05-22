@@ -16,15 +16,9 @@ ejs.__EJS__.closeDelimiter = "/);";
 const terserOptions = {
   compress: {
     arrows: false,
-    booleans: false,
-    comparisons: false,
-    conditionals: false,
+    booleans_as_integers: true,
     drop_console: true,
-    evaluate: false,
-    if_return: false,
     keep_fargs: true,
-    negate_iife: false,
-    properties: false,
     typeofs: false,
   },
   mangle: {
