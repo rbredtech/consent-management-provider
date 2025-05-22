@@ -14,6 +14,7 @@
     "serve-scripts": "dotenv-load node --import=./register.js app.ts",
     "test": "jest --verbose",
     "ci": "start-server-and-test \"concurrently 'yarn serve-scripts --port 3000' 'serve spec/ -p 5555' --hide 0,1\" \"localhost:3000/cmp.js|localhost:5555\" 'yarn test'",
+    "ci-dist": "start-server-and-test \"concurrently 'serve dist/ -p 3000 -c ../serve.dist.json' 'serve spec/ -p 5555' --hide 0,1\" \"localhost:3000/cmp.js|localhost:5555\" 'yarn test'",
     "lint": "eslint src/**"
   },
   "devDependencies": {

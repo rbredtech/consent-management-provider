@@ -38,11 +38,19 @@ jobs:
         run: yarn lint
 
       - id: test
-        name: Test
+        name: Test (source)
         run: yarn ci
 
+      - id: build-test
+        name: Build (test)
+        run: yarn build --config .env.test
+
+      - id: test-dist
+        name: Test (build)
+        run: yarn ci-dist
+
       - id: build
-        name: Build
+        name: Build (dist)
         run: yarn build --config ${{ matrix.env.config }}
 
       - id: auth

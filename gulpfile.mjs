@@ -7,7 +7,9 @@ import size from "gulp-size";
 import terser from "gulp-terser";
 import yargs from "yargs";
 
-const config = envLoader(yargs(process.argv).argv.config || ".env").env;
+const args = yargs(process.argv).argv;
+const config = envLoader(args.config || ".env").env;
+const dest = args.dist || "dist";
 
 ejs.__EJS__.delimiter = "*";
 ejs.__EJS__.openDelimiter = "__ejs(/";
@@ -16,7 +18,6 @@ ejs.__EJS__.closeDelimiter = "/);";
 const terserOptions = {
   compress: {
     arrows: false,
-    booleans_as_integers: true,
     drop_console: true,
     keep_fargs: true,
     typeofs: false,
@@ -28,28 +29,28 @@ const terserOptions = {
 
 function compileTemplates() {
   return gulp
-    .src(["./src/*.js", "./src/*.html"])
+    .src(["src/*.js", "src/*.html"])
     .pipe(ejs({ ...config }))
-    .pipe(gulp.dest("./dist"));
+    .pipe(gulp.dest(dest));
 }
 
 function minifyJsTemplates() {
-  return gulp.src("./dist/*.js").pipe(terser(terserOptions)).pipe(gulp.dest("./dist"));
+  return gulp.src(`${dest}/*.js`).pipe(terser(terserOptions)).pipe(gulp.dest(dest));
 }
 
 function minifyHtmlTemplates() {
   return gulp
-    .src("./dist/*.html")
+    .src(`${dest}/*.html`)
     .pipe(minifyInline({ js: terserOptions }))
     .pipe(htmlmin({ collapseWhitespace: true }))
-    .pipe(gulp.dest("./dist"));
+    .pipe(gulp.dest(dest));
 }
 
 function printSize() {
   return gulp
-    .src("./dist/*")
+    .src(`${dest}/*`)
     .pipe(size({ showFiles: true }))
-    .pipe(gulp.dest("dist"));
+    .pipe(gulp.dest(dest));
 }
 
 export default gulp.series(compileTemplates, minifyJsTemplates, minifyHtmlTemplates, printSize);
