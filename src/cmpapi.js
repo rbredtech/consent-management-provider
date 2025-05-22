@@ -30,7 +30,10 @@
   }
 
   function consentCookieDecoder(value) {
-    return window.jsonParse(window.cookieDecode(value)).consent;
+    try {
+      return window.jsonParse(window.cookieDecode(value)).consent;
+    } catch (e) {}
+    return undefined;
   }
 
   var logEvents = {
