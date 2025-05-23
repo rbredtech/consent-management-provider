@@ -33,14 +33,16 @@ window.cmpGetCookie = function (name, decodeFn) {
 };
 
 window.cmpSetCookie = function (name, value, encodeFn) {
+  var cookieDomain = '__ejs(/*-COOKIE_DOMAIN*/);';
   var maxAge = __ejs(/*-CONSENT_COOKIE_MAX_AGE*/);
   var cookieValue = encodeFn && typeof encodeFn === 'function' ? encodeFn(value) : value;
-  var cookie = name + '=' + cookieValue + ';max-age=' + maxAge + ';path=' + location.host;
+  var cookie = name + '=' + cookieValue + ';max-age=' + maxAge + ';domain=' + cookieDomain + ';path=/';
   document.cookie = cookie;
 };
 
 window.cmpDeleteCookie = function (name) {
-  var cookie = name + '=;max-age=-1;path=' + location.host;
+  var cookieDomain = '__ejs(/*-COOKIE_DOMAIN*/);';
+  var cookie = name + '=;max-age=-1;domain=' + cookieDomain + ';path=/';
   document.cookie = cookie;
 };
 

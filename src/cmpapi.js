@@ -64,7 +64,8 @@
     }
   }
 
-  var outOfSample = Math.floor(Math.random() * 100) + 1 > __ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);
+  var samplingThresholdPercent = __ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);
+  var outOfSample = Math.floor(Math.random() * 100) + 1 > samplingThresholdPercent;
   var now = new Date().getTime();
 
   var technicalCookie = parseInt(window.cmpReadStorage('__ejs(/*-TECH_COOKIE_NAME*/);'));
