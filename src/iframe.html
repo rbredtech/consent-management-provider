@@ -9,7 +9,9 @@
     __ejs(/*- include("partials/polyfill.js") */);
 
     function _message(msg) {
-      window.parent.postMessage(msg, '*');
+      if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage(msg, '*');
+      }
     }
 
     function messageEventHandler(event) {

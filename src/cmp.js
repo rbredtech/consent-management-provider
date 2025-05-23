@@ -83,6 +83,12 @@ __ejs(/*- include("partials/polyfill.js") */);
     iframe.setAttribute('frameborder', '0');
 
     iframe.onload = function () {
+      if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
+        iframe.parentElement.removeChild(iframe);
+        loadCmpApi(3);
+        return;
+      }
+
       window.__cmpapi = function (command, version, callback, parameter) {
         message('cmd', command, version, callback, parameter);
       };

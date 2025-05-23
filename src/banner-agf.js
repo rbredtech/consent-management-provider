@@ -53,7 +53,7 @@
     bannerOuter.style.display = 'none';
     bannerOuter.style.fontFamily = 'sans-serif';
     bannerOuter.style.fontSize = '14px';
-    bannerOuter.style.fontWeight = '400';
+    bannerOuter.style.fontWeight = 'normal';
     bannerOuter.style.lineHeight = '20px';
     bannerOuter.style.color = '#9ebcc7';
     bannerOuter.style.backgroundColor = '#0C5873';
@@ -66,7 +66,7 @@
     bannerHeader.style.display = 'block';
     bannerHeader.style.fontSize = '22px';
     bannerHeader.style.lineHeight = '22px';
-    bannerHeader.style.fontWeight = '700';
+    bannerHeader.style.fontWeight = 'bold';
     bannerHeader.style.color = '#ea515a';
     bannerHeader.style.marginBottom = '16px';
     bannerHeader.appendChild(document.createTextNode(header));
@@ -127,11 +127,11 @@
   }
 
   function loadOnDOMContentLoaded(domContentLoadedCB) {
-    document.addEventListener('DOMContentLoaded', function () {
-      if (domContentLoadedCB && typeof domContentLoadedCB === 'function') {
+    if (domContentLoadedCB && typeof domContentLoadedCB === 'function') {
+      document.addEventListener('DOMContentLoaded', function () {
         domContentLoadedCB();
-      }
-    });
+      });
+    }
   }
 
   function getBannerParentNode(elementId) {
