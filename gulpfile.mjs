@@ -28,11 +28,26 @@ const terserOptions = {
   },
 };
 
-function compileTemplates() {
-  return gulp
-    .src(["src/*.js", "src/*.html"])
-    .pipe(ejs({ ...config }))
-    .pipe(gulp.dest(dest));
+function compileTemplates(done) {
+  const tasks = [
+    function compileMinified() {
+      return gulp
+        .src(["src/*.js", "src/*.html"])
+        .pipe(ejs({ ...config }))
+        .pipe(gulp.dest(dest));
+    },
+    function compileUnminified() {
+      return gulp
+        .src(["src/*.js", "src/*.html"])
+        .pipe(ejs({ ...config, CONSENT_PATH: `${config.CONSENT_PATH}unminified/` }))
+        .pipe(gulp.dest(`${dest}/unminified`));
+    },
+  ];
+
+  return gulp.series(...tasks, (tasksDone) => {
+    tasksDone();
+    done();
+  })();
 }
 
 function minifyJsTemplates() {
@@ -49,9 +64,9 @@ function minifyHtmlTemplates() {
 
 function printSize() {
   return gulp
-    .src(`${dest}/*`)
+    .src(`${dest}/**/*`)
     .pipe(size({ showFiles: true }))
     .pipe(gulp.dest(dest));
 }
 
-export default gulp.series(compileTemplates, minifyJsTemplates, minifyHtmlTemplates, printSize);
+export default gulp.series(compileTemplates, gulp.parallel(minifyJsTemplates, minifyHtmlTemplates), printSize);
