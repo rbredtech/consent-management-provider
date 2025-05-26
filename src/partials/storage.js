@@ -34,16 +34,13 @@
   }
 
   function setCookie(name, value, encodeFn) {
-    var cookieDomain = '__ejs(/*-COOKIE_DOMAIN*/);';
-    var maxAge = __ejs(/*-CONSENT_COOKIE_MAX_AGE*/);
     var cookieValue = encodeFn && typeof encodeFn === 'function' ? encodeFn(value) : value;
-    var cookie = name + '=' + cookieValue + ';max-age=' + maxAge + ';domain=' + cookieDomain + ';path=/';
+    var cookie = name + '=' + cookieValue + ';max-age=__ejs(/*-CONSENT_COOKIE_MAX_AGE*/);;domain=__ejs(/*-COOKIE_DOMAIN*/);;path=/';
     document.cookie = cookie;
   }
 
   function deleteCookie(name) {
-    var cookieDomain = '__ejs(/*-COOKIE_DOMAIN*/);';
-    var cookie = name + '=;max-age=-1;domain=' + cookieDomain + ';path=/';
+    var cookie = name + '=;max-age=-1;domain=__ejs(/*-COOKIE_DOMAIN*/);;path=/';
     document.cookie = cookie;
   }
 

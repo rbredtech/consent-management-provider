@@ -1,8 +1,6 @@
 (function () {
   var logCallbacks = [];
 
-  var cmpEnabled = __ejs(/*-CMP_ENABLED*/);
-
   function serializeConsentByVendorId(consentByVendorId) {
     var serialized = '';
     for (var vendorId in consentByVendorId) {
@@ -64,8 +62,7 @@
     }
   }
 
-  var samplingThresholdPercent = __ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);
-  var outOfSample = Math.floor(Math.random() * 100) + 1 > samplingThresholdPercent;
+  var outOfSample = Math.floor(Math.random() * 100) + 1 > __ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);
   var now = new Date().getTime();
 
   var technicalCookie = parseInt(window.cmpReadStorage('__ejs(/*-TECH_COOKIE_NAME*/);'));
@@ -84,6 +81,7 @@
     }
 
     var cmpStatus = 'disabled';
+    var cmpEnabled = __ejs(/*-CMP_ENABLED*/);
 
     if (cmpEnabled && (technicalCookiePassed || consentByVendorId !== undefined)) {
       // if the tech cookie is set and is old enough, or there is already a consent saved, the cmp is enabled
