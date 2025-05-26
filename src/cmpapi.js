@@ -1,3 +1,5 @@
+__ejs(/*- include("partials/storage.js") */);
+
 (function () {
   var logCallbacks = [];
 

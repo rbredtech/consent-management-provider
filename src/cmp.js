@@ -1,4 +1,3 @@
-__ejs(/*- include("partials/storage.js") */);
 __ejs(/*- include("partials/polyfill.js") */);
 
 (function () {
