@@ -1,6 +1,74 @@
-__ejs(/*- include("partials/storage.js") */);
-
 (function () {
+  var lsAvailable = (function () {
+    try {
+      if (!window.localStorage) {
+        return false;
+      }
+      var key = 'a';
+      var value = new Date().getTime() + '';
+      localStorage.setItem(key, value);
+      var ls = localStorage.getItem(key);
+      localStorage.removeItem(key);
+      return ls === value;
+    } catch (e) {}
+    return false;
+  })();
+
+  function getCookie(name, decodeFn) {
+    try {
+      var decodedCookie = decodeURIComponent(document.cookie);
+      var ca = decodedCookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) === ' ') {
+          c = c.substring(1);
+        }
+        var cname = name + '=';
+        if (c.indexOf(cname) === 0) {
+          var value = c.substring(cname.length, c.length);
+          return decodeFn && typeof decodeFn === 'function' ? decodeFn(value) : value;
+        }
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function setCookie(name, value, encodeFn) {
+    var cookieValue = encodeFn && typeof encodeFn === 'function' ? encodeFn(value) : value;
+    var cookie = name + '=' + cookieValue + ';max-age=__ejs(/*-CONSENT_COOKIE_MAX_AGE*/);;domain=__ejs(/*-COOKIE_DOMAIN*/);;path=/';
+    document.cookie = cookie;
+  }
+
+  function deleteCookie(name) {
+    var cookie = name + '=;max-age=-1;domain=__ejs(/*-COOKIE_DOMAIN*/);;path=/';
+    document.cookie = cookie;
+  }
+
+  function getStorage(key, cookieDecodeFn) {
+    var value = null;
+    if (lsAvailable) {
+      value = localStorage.getItem(key);
+      if (value) {
+        return value;
+      }
+    }
+    return getCookie(key, cookieDecodeFn);
+  }
+
+  function setStorage(key, value, cookieEncodeFn) {
+    setCookie(key, value + '', cookieEncodeFn);
+    if (lsAvailable) {
+      localStorage.setItem(key, value + '');
+    }
+  }
+
+  function deleteStorage(key) {
+    deleteCookie(key);
+    if (lsAvailable) {
+      localStorage.removeItem(key);
+    }
+  }
+
   var logCallbacks = [];
 
   function serializeConsentByVendorId(consentByVendorId) {
@@ -67,16 +135,16 @@ __ejs(/*- include("partials/storage.js") */);
   var outOfSample = Math.floor(Math.random() * 100) + 1 > __ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);
   var now = new Date().getTime();
 
-  var technicalCookie = parseInt(window.cmpReadStorage('__ejs(/*-TECH_COOKIE_NAME*/);'));
+  var technicalCookie = parseInt(getStorage('__ejs(/*-TECH_COOKIE_NAME*/);'));
   if (!technicalCookie) {
     technicalCookie = now;
-    window.cmpWriteStorage('__ejs(/*-TECH_COOKIE_NAME*/);', technicalCookie);
+    setStorage('__ejs(/*-TECH_COOKIE_NAME*/);', technicalCookie);
   }
 
   var technicalCookiePassed = now - technicalCookie >= __ejs(/*-TECH_COOKIE_MIN_AGE*/);
 
   window.__cmpapi = function (command, _version, callback, parameter) {
-    var consentByVendorIdSerialized = window.cmpReadStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', consentCookieDecoder);
+    var consentByVendorIdSerialized = getStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', consentCookieDecoder);
     var consentByVendorId = undefined;
     if (consentByVendorIdSerialized) {
       consentByVendorId = parseSerializedConsentByVendorId(consentByVendorIdSerialized);
@@ -152,11 +220,11 @@ __ejs(/*- include("partials/storage.js") */);
         };
         var serialized = serializeConsentByVendorId(consentDecisionByVendorId);
 
-        window.cmpWriteStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serialized, consentCookieEncoder);
+        setStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serialized, consentCookieEncoder);
 
         log(logEvents.SET_CONSENT, true, {
           consentByVendorId: consentDecisionByVendorId,
-          localStorageAvailable: window.__cmpLsAvailable
+          localStorageAvailable: lsAvailable
         });
 
         if (callback && typeof callback === 'function') {
@@ -171,11 +239,11 @@ __ejs(/*- include("partials/storage.js") */);
           }
         }
         var serialized = serializeConsentByVendorId(updated);
-        window.cmpWriteStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serialized, consentCookieEncoder);
+        setStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serialized, consentCookieEncoder);
 
         log(logEvents.SET_CONSENT_BY_VENDOR_ID, true, {
           consentByVendorId: updated,
-          localStorageAvailable: window.__cmpLsAvailable
+          localStorageAvailable: lsAvailable
         });
 
         if (callback && typeof callback === 'function') {
@@ -183,10 +251,10 @@ __ejs(/*- include("partials/storage.js") */);
         }
         break;
       case 'removeConsentDecision':
-        window.cmpDeleteStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);');
+        deleteStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);');
 
         log(logEvents.REMOVE_CONSENT_DECISION, true, {
-          localStorageAvailable: window.__cmpLsAvailable
+          localStorageAvailable: lsAvailable
         });
 
         if (callback && typeof callback === 'function') {

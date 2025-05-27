@@ -7,44 +7,41 @@
     //<![CDATA[
     __ejs(/*- include("partials/polyfill.js") */);
 
-    function _message(msg) {
-      if (window.parent && window.parent.postMessage) {
-        window.parent.postMessage(msg, '*');
-      }
-    }
-
-    function messageEventHandler(event) {
-      if (!event.data || typeof event.data !== 'string') {
-        return;
-      }
-
-      try {
-        var message = event.data.split(';');
-        if (message[1] === 'cmd') {
-          var id = message[0];
-          var cmd = message[2];
-          var version = message[3];
-          var param = window.jsonParse(message[4]);
-          __cmpapi(
-            cmd,
-            version,
-            function (cbParam) {
-              _message('tvicmp;' + id + ';' + window.jsonStringify({ param: cbParam }));
-            },
-            param.param
-          );
+    (function () {
+      function _message(msg) {
+        if (window.parent && window.parent.postMessage) {
+          window.parent.postMessage(msg, '*');
         }
-      } catch (e) {}
-    }
+      }
 
-    if (window['addEventListener']) {
+      function messageEventHandler(event) {
+        if (!event.data || typeof event.data !== 'string') {
+          return;
+        }
+
+        try {
+          var message = event.data.split(';');
+          if (message[1] === 'cmd') {
+            var id = message[0];
+            var cmd = message[2];
+            var version = message[3];
+            var param = window.jsonParse(message[4]);
+            __cmpapi(
+              cmd,
+              version,
+              function (cbParam) {
+                _message('tvicmp;' + id + ';' + window.jsonStringify({ param: cbParam }));
+              },
+              param.param
+            );
+          }
+        } catch (e) {}
+      }
+
       window.addEventListener('message', messageEventHandler, false);
-    }
+    })();
 
-    var cmpApiScriptTag = document.createElement('script');
-    cmpApiScriptTag.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-CONSENT_PATH*/);cmpapi.js');
-    cmpApiScriptTag.setAttribute('type', 'text/javascript');
-    document.getElementsByTagName('head')[0].appendChild(cmpApiScriptTag);
+    __ejs(/*- include("cmpapi.js") */);
     //]]>
   </script>
 </head>
