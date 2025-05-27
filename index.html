@@ -29,6 +29,29 @@
       border-radius: 2px;
     }
   </style>
+  <script>
+    //<![CDATA[
+    function toggleIFrame() {
+      if (sessionUserAgent === vieraUserAgent) {
+        sessionStorage.removeItem('ua', originalUserAgent);
+      } else {
+        sessionStorage.setItem('ua', vieraUserAgent);
+      }
+    }
+
+    var vieraUserAgent = 'HbbTV/1.1.1 (;Panasonic;VIERA 2011;3.252;4e01-0003 0080-0000;)';
+    var originalUserAgent = navigator.userAgent;
+    var sessionUserAgent = sessionStorage.getItem('ua');
+
+    if (!sessionUserAgent) {
+      sessionUserAgent = originalUserAgent;
+    }
+
+    Object.defineProperty(navigator, 'userAgent', {
+      value: sessionUserAgent
+    });
+    //]]>
+  </script>
   <script type='text/javascript' src='http://localhost:3000/cmp.js'></script>
   <script type='text/javascript' src='http://localhost:3000/banner.js'></script>
   <script>
@@ -96,12 +119,12 @@
           case KeyEvent.VK_YELLOW:
             toggleIFrame();
             setTimeout(function () {
-              document.location = document.location;
+              location.reload();
             }, 300);
             break;
           case KeyEvent.VK_BLUE:
             setTimeout(function () {
-              document.location = document.location;
+              location.reload();
             }, 300);
             break;
           default:
@@ -110,28 +133,8 @@
       }
     }
 
-    function toggleIFrame() {
-      if (sessionUserAgent === vieraUserAgent) {
-        sessionStorage.setItem('ua', originalUserAgent);
-      } else {
-        sessionStorage.setItem('ua', vieraUserAgent);
-      }
-    }
-
     function main() {
       // overwriting the browser's user agent with this one will disable the iFrame capabilities
-      var vieraUserAgent = 'HbbTV/1.1.1 (;Panasonic;VIERA 2011;3.252;4e01-0003 0080-0000;)';
-      var originalUserAgent = navigator.userAgent;
-      var sessionUserAgent = sessionStorage.getItem('ua');
-
-      if (!sessionUserAgent) {
-        sessionUserAgent = originalUserAgent;
-      }
-
-      Object.defineProperty(navigator, 'userAgent', {
-        value: sessionUserAgent
-      });
-
       window.__cmpapi('getTCData', 2, function (tcData) {
         if (tcData.cmpStatus === 'loaded') {
           var consent = tcData.vendor.consents[4041];
@@ -156,15 +159,13 @@
         console.warn('logEvent', params.event, params.success, params.parameters, params.ts);
       });
 
-      setTimeout(function () {
-        var mgr = document.getElementById('oipfAppMngr');
-        var app = mgr && mgr.getOwnerApplication && mgr.getOwnerApplication(document);
-        var keyset = app && app.privateData.keyset;
-        keyset && keyset.setValue(keyset.RED | keyset.GREEN | keyset.YELLOW | keyset.BLUE | keyset.NAVIGATION);
+      var mgr = document.getElementById('oipfAppMngr');
+      var app = mgr && mgr.getOwnerApplication && mgr.getOwnerApplication(document);
+      var keyset = app && app.privateData.keyset;
+      keyset && keyset.setValue(keyset.RED | keyset.GREEN | keyset.YELLOW | keyset.BLUE | keyset.NAVIGATION);
 
-        initKeyCodes();
-        document.addEventListener('keydown', keyHandler);
-      }, 100);
+      initKeyCodes();
+      document.addEventListener('keydown', keyHandler);
 
       var toggleLabel = document.getElementById('iframe-toggle-label');
       if (sessionUserAgent === vieraUserAgent) {
