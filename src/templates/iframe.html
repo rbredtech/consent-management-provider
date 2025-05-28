@@ -2,59 +2,46 @@
 <html xmlns='http://www.w3.org/1999/xhtml'>
 
 <head>
-  <meta http-equiv="content-type" content="application/vnd.hbbtv.xhtml+xml; charset=utf-8">
-  </meta>
-  <title></title>
+  <meta http-equiv="content-type" content="application/vnd.hbbtv.xhtml+xml; charset=utf-8" />
   <script type='text/javascript'>
     //<![CDATA[
-    function _message(msg) {
-      if (window.parent && window.parent.postMessage) {
-        window.parent.postMessage(msg, '*');
-      }
-    }
+    __ejs(/*- include("partials/ponyfills.js") */);
 
-    function messageEventHandler(event) {
-      if (!event.data || typeof event.data !== "string") {
-        return;
-      }
-
-      try {
-        var message = event.data.split(';');
-        if (message[1] === 'cmd') {
-          var id = message[0];
-          var cmd = message[2];
-          var version = message[3];
-          var param = JSON.parse(message[4]);
-          __cmpapi(
-            cmd,
-            version,
-            function (cbParam) {
-              _message('tvicmp;' + id + ';' + JSON.stringify({ param: cbParam }));
-            },
-            param.param
-          );
+    (function () {
+      function _message(msg) {
+        if (window.parent && window.parent.postMessage) {
+          window.parent.postMessage(msg, '*');
         }
-      } catch (e) {}
-    }
+      }
 
-    if (window['addEventListener']) {
+      function messageEventHandler(event) {
+        if (!event.data || typeof event.data !== 'string') {
+          return;
+        }
+
+        try {
+          var message = event.data.split(';');
+          if (message[1] === 'cmd') {
+            var id = message[0];
+            var cmd = message[2];
+            var version = message[3];
+            var param = window.jsonParse(message[4]);
+            __cmpapi(
+              cmd,
+              version,
+              function (cbParam) {
+                _message('tvicmp;' + id + ';' + window.jsonStringify({ param: cbParam }));
+              },
+              param.param
+            );
+          }
+        } catch (e) { }
+      }
+
       window.addEventListener('message', messageEventHandler, false);
-    }
+    })();
 
-    try {
-      var channelId = '<%-CHANNEL_ID%>';
-      var buildNumber = '<%-BUILD_NUMBER%>';
-
-      var q = '';
-      q = q + (channelId !== '' ? '&channelId=' + channelId : '');
-      q = q + (buildNumber !== '' ? '&v=' + buildNumber : '');
-      q = q.length ? '?' + q.substring(1) : '';
-
-      var cmpApiScriptTag = document.createElement('script');
-      cmpApiScriptTag.setAttribute('src', window.location.protocol + '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>cmpapi.js' + q);
-      cmpApiScriptTag.setAttribute('type', 'text/javascript');
-      document.getElementsByTagName('head')[0].appendChild(cmpApiScriptTag);
-    } catch (e) { }
+    __ejs(/*- include("cmpapi.js") */);
     //]]>
   </script>
 </head>

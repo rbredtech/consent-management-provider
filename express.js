@@ -1,9 +1,14 @@
 var argv = require("yargs").argv;
+var ejs = require("ejs");
 var express = require("express");
 var dotenv = require("dotenv");
 var browserRefreshClient = require("browser-refresh-client");
 
-var port = argv.port || 8080;
+ejs.delimiter = "*";
+ejs.openDelimiter = "__ejs(/";
+ejs.closeDelimiter = "/);";
+
+var port = argv.port || 8000;
 
 dotenv.config();
 const { BROWSER_REFRESH_URL, API_VERSION, HTTP_HOST, HTTP_PROTOCOL } = process.env;

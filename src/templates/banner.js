@@ -11,20 +11,11 @@
 
   function buildBannerElement() {
     return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'noconsent', function (bannerLegalText) {
-      var bannerLegalTextChannelName = document.createElement('b');
-      bannerLegalTextChannelName.appendChild(document.createTextNode('<%-CHANNEL_GROUP%>'));
-
       bannerLegalText.appendChild(
         document.createTextNode(
-          'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-messung), deren Mitglied '
-        )
-      );
-      bannerLegalText.appendChild(bannerLegalTextChannelName);
-      bannerLegalText.appendChild(
-        document.createTextNode(
-          ' ist, möchte ' +
-            'die Nutzung der TV-Geräte erfassen (die Daten können ohne Unterstützung der nutzenden Person keinem ' +
-            'konkreten TV-Gerät zugeordnet werden), um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, ' +
+          'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe agtt.at/hbb-messung), deren Mitglied dieser ' +
+            'Sender ist, möchte die Nutzung der TV-Geräte erfassen (die Daten können ohne Unterstützung der nutzenden Person ' +
+            'keinem konkreten TV-Gerät zugeordnet werden), um dadurch den Mitgliedern der AGTT die Möglichkeit zu geben, ' +
             'deren TV- und Werbeangebot stetig zu verbessern.  Dazu benötigt die AGTT Ihre Einwilligung, nach der ' +
             'ein Cookie auf Ihrem Gerät platziert wird, um folgende Informationen auslesen zu können:'
         )
@@ -65,7 +56,7 @@
     bannerOuter.style.display = 'none';
     bannerOuter.style.fontFamily = 'sans-serif';
     bannerOuter.style.fontSize = '16px';
-    bannerOuter.style.fontWeight = '400';
+    bannerOuter.style.fontWeight = 'normal';
     bannerOuter.style.lineHeight = '24px';
     bannerOuter.style.color = '#505050';
     bannerOuter.style.backgroundColor = '#ffffff';
@@ -79,7 +70,7 @@
     bannerHeader.style.display = 'block';
     bannerHeader.style.fontSize = '24px';
     bannerHeader.style.lineHeight = '24px';
-    bannerHeader.style.fontWeight = '500';
+    bannerHeader.style.fontWeight = 'bold';
     bannerHeader.style.color = '#76b642';
     bannerHeader.style.marginBottom = '16px';
     bannerHeader.appendChild(document.createTextNode(header));
@@ -140,11 +131,11 @@
   }
 
   function loadOnDOMContentLoaded(domContentLoadedCB) {
-    document.addEventListener('DOMContentLoaded', function () {
-      if (domContentLoadedCB && typeof domContentLoadedCB === 'function') {
+    if (domContentLoadedCB && typeof domContentLoadedCB === 'function') {
+      document.addEventListener('DOMContentLoaded', function () {
         domContentLoadedCB();
-      }
-    });
+      });
+    }
   }
 
   function getBannerParentNode(elementId) {
@@ -187,7 +178,7 @@
       var banner = document.getElementById('agttcnstbnnr');
 
       if (!banner) {
-        if (bannerType == 'additional-channels') {
+        if (bannerType === 'additional-channels') {
           banner = buildBannerAdditionalChannelsElement();
         } else {
           banner = buildBannerElement();
@@ -224,7 +215,7 @@
         if (callback && typeof callback === 'function') {
           callback(undefined, 'timeout');
         }
-      }, parseInt('<%-BANNER_TIMEOUT%>'));
+      }, parseInt('__ejs(/*-BANNER_TIMEOUT*/);'));
     }
 
     function hideConsentBanner() {

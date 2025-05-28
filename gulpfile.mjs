@@ -45,7 +45,7 @@ function copyTemplates() {
 function setSourceHashParam() {
   return gulp
     .src("./dist/templates/*")
-    .pipe(stringReplace("<%-BUILD_NUMBER%>", BUILD_NUMBER ?? ""))
+    .pipe(stringReplace("__ejs(/*-BUILD_NUMBER*/);", BUILD_NUMBER ?? ""))
     .pipe(gulp.dest("./dist/templates"));
 }
 

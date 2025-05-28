@@ -1,28 +1,23 @@
+__ejs(/*- include("cmp.js") */);
+
 (function () {
   var initTracking = function (consent) {
-    var trackingHost = consent ? '<%-TRACKING_HOST_CONSENT%>' : '<%-TRACKING_HOST_NO_CONSENT%>';
+    var trackingHost = consent ? '__ejs(/*-TRACKING_HOST_CONSENT*/);' : '__ejs(/*-TRACKING_HOST_NO_CONSENT*/);';
 
     var queryParams = [];
-    if ('<%-TRACKING_RESOLUTION%>' !== '') {
-      queryParams.push('r=<%-TRACKING_RESOLUTION%>');
+    if ('__ejs(/*-TRACKING_RESOLUTION*/);' !== '') {
+      queryParams.push('r=__ejs(/*-TRACKING_RESOLUTION*/);');
     }
-    if ('<%-TRACKING_DELIVERY%>' !== '') {
-      queryParams.push('d=<%-TRACKING_DELIVERY%>');
+    if ('__ejs(/*-TRACKING_DELIVERY*/);' !== '') {
+      queryParams.push('d=__ejs(/*-TRACKING_DELIVERY*/);');
     }
-    if ('<%-TRACKING_TIMESTAMP%>' !== '') {
-      queryParams.push('t=<%-TRACKING_TIMESTAMP%>');
+    if ('__ejs(/*-TRACKING_SUSPENDED*/);' !== '') {
+      queryParams.push('suspended=__ejs(/*-TRACKING_SUSPENDED*/);');
     }
-    if ('<%-TRACKING_SUSPENDED%>' !== '') {
-      queryParams.push('suspended=<%-TRACKING_SUSPENDED%>');
+    if ('__ejs(/*-TRACKING_CONTEXT_ID*/);' !== '') {
+      queryParams.push('i=__ejs(/*-TRACKING_CONTEXT_ID*/);');
     }
-    if ('<%-TRACKING_CONTEXT_ID%>' !== '') {
-      queryParams.push('i=<%-TRACKING_CONTEXT_ID%>');
-    }
-
-    var queryParamsJoined = queryParams.join('&');
-    if (queryParamsJoined.length) {
-      queryParamsJoined = '?' + queryParamsJoined;
-    }
+    queryParams.push('t=' + new Date().getTime());
 
     var trackingScriptTag = document.createElement('script');
     trackingScriptTag.type = 'text/javascript';
@@ -30,12 +25,13 @@
       window.location.protocol +
       '//' +
       trackingHost +
-      '<%-TRACKING_VERSION_PATH%><%-CHANNEL_ID%>/tracking.js' +
-      queryParamsJoined;
+      '__ejs(/*-TRACKING_VERSION_PATH*/);__ejs(/*-CHANNEL_ID*/);/tracking.js' +
+      '?' +
+      queryParams.join('&');
     document.getElementsByTagName('head')[0].appendChild(trackingScriptTag);
   };
 
   window.__cmpapi('getTCData', 2, function (tcData) {
-    initTracking(tcData.vendor.consents['<%-CMP_ID%>']);
+    initTracking(tcData.vendor.consents['__ejs(/*-CMP_ID*/);']);
   });
 })();

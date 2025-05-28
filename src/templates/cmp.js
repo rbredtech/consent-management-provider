@@ -1,3 +1,5 @@
+__ejs(/*- include("partials/ponyfills.js") */);
+
 (function () {
   var queue = [];
   var onLogEventQueue = [];
@@ -12,7 +14,7 @@
   };
 
   function log(event, success, parameters) {
-    window.__cmpapi('_log', 2, undefined, JSON.stringify({ event: event, success: success, parameters: parameters }));
+    window.__cmpapi('_log', 2, undefined, window.jsonStringify({ event: event, success: success, parameters: parameters }));
   }
 
   function callQueue(type) {
@@ -39,12 +41,12 @@
 
   function message(type, command, version, callback, parameter) {
     callbackMap[++callbackCount] = callback;
-    var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
-    iframe.contentWindow.postMessage(msg, window.location.protocol + '//<%-CONSENT_SERVER_HOST%>');
+    var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: parameter });
+    iframe.contentWindow.postMessage(msg, window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);');
   }
 
-  var channelId = '<%-CHANNEL_ID%>';
-  var buildNumber = '<%-BUILD_NUMBER%>';
+  var channelId = '__ejs(/*-CHANNEL_ID*/);';
+  var buildNumber = '__ejs(/*-BUILD_NUMBER*/);';
 
   function isIframeCapable() {
     var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
@@ -64,7 +66,7 @@
 
   function onIframeMessage(event) {
     if (
-      window.location.protocol + '//<%-CONSENT_SERVER_HOST%>'.indexOf(event.origin) === -1 ||
+      window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);'.indexOf(event.origin) === -1 ||
       !event.data ||
       typeof event.data !== 'string'
     ) {
@@ -77,7 +79,7 @@
     }
     try {
       var id = message[1];
-      var callbackParameter = JSON.parse(message[2]);
+      var callbackParameter = window.jsonParse(message[2]);
       if (!callbackMap[id] || typeof callbackMap[id] !== 'function') {
         return;
       }
@@ -92,7 +94,7 @@
     q = q.length ? '?' + q.substring(1) : '';
 
     var iframe = document.createElement('iframe');
-    iframe.setAttribute('src', window.location.protocol + '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>iframe.html' + q);
+    iframe.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);iframe.html' + q);
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
 
@@ -163,7 +165,7 @@
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
     cmpapiScriptTag.setAttribute(
       'src',
-      window.location.protocol + '//<%-CONSENT_SERVER_HOST%><%-VERSION_PATH%>cmpapi.js' + q
+      window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);cmpapi.js' + q
     );
 
     cmpapiScriptTag.onload = function () {

@@ -13,14 +13,10 @@ import {
   cmpapiController,
 } from "./controller";
 
-import { loggerMiddleware, channelMiddleware } from "./middleware";
-
 const router = Router();
 
 router.use(cors());
 router.use(cookieParser());
-router.use(loggerMiddleware);
-router.use(channelMiddleware);
 
 router.get("/banner.js", bannerController);
 router.get("/banner-agf.js", bannerAgfController);

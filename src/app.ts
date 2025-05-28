@@ -1,11 +1,15 @@
+import ejs, { renderFile } from "ejs";
 import express from "express";
 import path from "path";
-import { renderFile } from "ejs";
 
 import { HTTP_PORT } from "./config";
 import router from "./router";
 import { logger } from "./util/logger";
 import { registry } from "./util/metrics";
+
+ejs.delimiter = "*";
+ejs.openDelimiter = "__ejs(/";
+ejs.closeDelimiter = "/);";
 
 const app = express();
 app.set("trust proxy", 1);
