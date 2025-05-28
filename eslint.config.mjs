@@ -61,8 +61,9 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.builtin,
-        __cmpapi: true,
-        __hbb_tracking_tgt: true,
+        __cmpapi: false,
+        __hbb_tracking_tgt: false,
+        __ejs: false,
       },
     },
     rules: {

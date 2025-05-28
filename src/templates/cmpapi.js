@@ -50,47 +50,37 @@
     }
   }
 
-  function objectKeys(obj) {
-    var keys = [];
-    for (var key in obj) {
-      keys.push(key);
-    }
-    return keys;
-  }
-
   function serializeConsentByVendorId(consentByVendorId) {
     var serialized = '';
-    try {
-      var vendorIds = objectKeys(consentByVendorId);
-      for (var i = 0; i < vendorIds.length; i++) {
-        serialized = serialized + vendorIds[i] + '~' + consentByVendorId[vendorIds[i]];
-        if (i < vendorIds.length - 1) {
-          serialized = serialized + ',';
-        }
+    for (var vendorId in consentByVendorId) {
+      if (Object.prototype.hasOwnProperty.call(consentByVendorId, vendorId)) {
+        serialized = serialized + vendorId + '~' + consentByVendorId[vendorId] + ',';
       }
-    } catch (e) {}
-    return serialized;
+    }
+    return serialized.length ? serialized.substring(0, serialized.length - 1) : serialized;
   }
 
   function parseSerializedConsentByVendorId(serializedConsentByVendorId) {
     var consentByVendorId = {};
-    try {
-      if (serializedConsentByVendorId) {
-        var parsed = serializedConsentByVendorId.split(',');
-        for (var x = 0; x < parsed.length; x++) {
-          var split = parsed[x].split('~');
-          consentByVendorId[split[0]] = split[1] === 'true';
-        }
+    if (serializedConsentByVendorId) {
+      var parsed = serializedConsentByVendorId.split(',');
+      for (var x = 0; x < parsed.length; x++) {
+        var split = parsed[x].split('~');
+        consentByVendorId[split[0]] = split[1] === 'true';
       }
-    } catch (e) {}
+    }
     return consentByVendorId;
   }
 
   function updateLocalStorageConsent(consentByVendorId) {
     if (window.localStorage && localStorage.setItem && localStorage.getItem) {
-      var lsConsentByVendorId = parseSerializedConsentByVendorId(localStorage.getItem('__ejs(/*-CONSENT_COOKIE_NAME*/);'));
+      var lsConsentByVendorId = parseSerializedConsentByVendorId(
+        localStorage.getItem('__ejs(/*-CONSENT_COOKIE_NAME*/);')
+      );
       for (var vendorId in consentByVendorId) {
-        lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
+        if (Object.prototype.hasOwnProperty.call(consentByVendorId, vendorId)) {
+          lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
+        }
       }
       localStorage.setItem('__ejs(/*-CONSENT_COOKIE_NAME*/);', serializeConsentByVendorId(lsConsentByVendorId));
       return true;
@@ -110,7 +100,7 @@
     GET_TC_DATA: 'getTCData',
     SET_CONSENT: 'setConsent',
     SET_CONSENT_BY_VENDOR_ID: 'setConsentByVendorId',
-    REMOVE_CONSENT_DECISION: 'removeConsentDecision',
+    REMOVE_CONSENT_DECISION: 'removeConsentDecision'
   };
 
   var queueLogMessages = true;
@@ -133,7 +123,8 @@
   }
 
   var channelId = '__ejs(/*-CHANNEL_ID*/);';
-  var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('__ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);');
+  var outOfSample =
+    Math.floor(Math.random() * 100) + 1 > parseInt('__ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);');
   var now = Date.now();
 
   var technicalCookie = parseInt(readStorageOrCookie('__ejs(/*-TECH_COOKIE_NAME*/);'));
@@ -296,7 +287,9 @@
 
         image = document.createElement('img');
         image.src =
-          window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);remove-consent?t=' + Date.now();
+          window.location.protocol +
+          '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);remove-consent?t=' +
+          Date.now();
 
         image.onload = function () {
           localStorageAvailable = removeLocalStorageConsent();

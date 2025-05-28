@@ -1,12 +1,6 @@
 import { Request, Response } from "express";
 
-import {
-  API_VERSION,
-  HTTP_HOST,
-  TRACKING_HOST_CONSENT,
-  TRACKING_HOST_NO_CONSENT,
-  TRACKING_VERSION,
-} from "../config";
+import { API_VERSION, HTTP_HOST, TRACKING_HOST_CONSENT, TRACKING_HOST_NO_CONSENT, TRACKING_VERSION } from "../config";
 
 export const cmpWithTrackingController = async (req: Request, res: Response) => {
   if (req.channelId === undefined) {

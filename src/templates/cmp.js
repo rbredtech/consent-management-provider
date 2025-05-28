@@ -14,7 +14,12 @@ __ejs(/*- include("partials/ponyfills.js") */);
   };
 
   function log(event, success, parameters) {
-    window.__cmpapi('_log', 2, undefined, window.jsonStringify({ event: event, success: success, parameters: parameters }));
+    window.__cmpapi(
+      '_log',
+      2,
+      undefined,
+      window.jsonStringify({ event: event, success: success, parameters: parameters })
+    );
   }
 
   function callQueue(type) {
@@ -41,7 +46,8 @@ __ejs(/*- include("partials/ponyfills.js") */);
 
   function message(type, command, version, callback, parameter) {
     callbackMap[++callbackCount] = callback;
-    var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: parameter });
+    var msg =
+      callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: parameter });
     iframe.contentWindow.postMessage(msg, window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);');
   }
 
@@ -92,7 +98,10 @@ __ejs(/*- include("partials/ponyfills.js") */);
     q = q.length ? '?' + q.substring(1) : '';
 
     var iframe = document.createElement('iframe');
-    iframe.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);iframe.html' + q);
+    iframe.setAttribute(
+      'src',
+      window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);iframe.html' + q
+    );
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
 
