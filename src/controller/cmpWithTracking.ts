@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 
 import {
   API_VERSION,
-  BUILD_NUMBER,
   HTTP_HOST,
   TRACKING_HOST_CONSENT,
   TRACKING_HOST_NO_CONSENT,
@@ -28,7 +27,6 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
       VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
       CONSENT_SERVER_HOST: HTTP_HOST,
       CHANNEL_ID: req.channelId,
-      BUILD_NUMBER,
       CMP_ID: req.query.cmpId,
       TRACKING_HOST_CONSENT,
       TRACKING_HOST_NO_CONSENT,

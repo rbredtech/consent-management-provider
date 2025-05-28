@@ -37,8 +37,6 @@ jobs:
       - name: Build app
         id: build
         run: yarn build
-        env:
-          BUILD_NUMBER: ${{ github.run_number }}
 
       - name: Test app
         id: test

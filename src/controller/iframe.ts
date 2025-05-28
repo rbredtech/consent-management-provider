@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import {
-  API_VERSION, BUILD_NUMBER,
+  API_VERSION,
   CMP_DISABLED_CHANNEL_IDS,
   CMP_ENABLED,
   CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
@@ -25,7 +25,6 @@ export const iframeController = (req: Request, res: Response) => {
   try {
     res.render("iframe.html", {
       CONSENT_SERVER_HOST: HTTP_HOST,
-      BUILD_NUMBER,
       VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
       CONSENT_COOKIE_NAME,
       COOKIE_DOMAIN,

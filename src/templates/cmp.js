@@ -46,7 +46,6 @@ __ejs(/*- include("partials/ponyfills.js") */);
   }
 
   var channelId = '__ejs(/*-CHANNEL_ID*/);';
-  var buildNumber = '__ejs(/*-BUILD_NUMBER*/);';
 
   function isIframeCapable() {
     var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
@@ -90,7 +89,6 @@ __ejs(/*- include("partials/ponyfills.js") */);
   function createIframe() {
     var q = '';
     q = q + (channelId !== '' ? '&channelId=' + channelId : '');
-    q = q + (buildNumber !== '' ? '&v=' + buildNumber : '');
     q = q.length ? '?' + q.substring(1) : '';
 
     var iframe = document.createElement('iframe');
@@ -158,7 +156,6 @@ __ejs(/*- include("partials/ponyfills.js") */);
   function createCmpApiScriptTag() {
     var q = '';
     q = q + (channelId !== '' ? '&channelId=' + channelId : '');
-    q = q + (buildNumber !== '' ? '&h=' + buildNumber : '');
     q = q.length ? '?' + q.substring(1) : '';
 
     var cmpapiScriptTag = document.createElement('script');

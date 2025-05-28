@@ -2,11 +2,8 @@ import gulp from "gulp";
 import htmlmin from "gulp-htmlmin";
 import minifyInline from "gulp-minify-inline";
 import sourcemaps from "gulp-sourcemaps";
-import stringReplace from "gulp-string-replace";
 import terser from "gulp-terser";
 import ts from "gulp-typescript";
-
-var { BUILD_NUMBER } = process.env;
 
 var tsProject = ts.createProject("tsconfig.json");
 
@@ -42,13 +39,6 @@ function copyTemplates() {
   return gulp.src("./src/templates/*").pipe(gulp.dest("./dist/templates"));
 }
 
-function setSourceHashParam() {
-  return gulp
-    .src("./dist/templates/*")
-    .pipe(stringReplace("__ejs(/*-BUILD_NUMBER*/);", BUILD_NUMBER ?? ""))
-    .pipe(gulp.dest("./dist/templates"));
-}
-
 function minifyJsTemplates() {
   return gulp.src("./dist/templates/*.js").pipe(terser(terserOptions)).pipe(gulp.dest("./dist/templates"));
 }
@@ -61,4 +51,4 @@ function minifyHtmlTemplates() {
     .pipe(gulp.dest("./dist/templates"));
 }
 
-export default gulp.series(typescript, copyTemplates, setSourceHashParam, minifyJsTemplates, minifyHtmlTemplates);
+export default gulp.series(typescript, copyTemplates, minifyJsTemplates, minifyHtmlTemplates);
