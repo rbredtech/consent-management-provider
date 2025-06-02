@@ -11,14 +11,8 @@ const terserOptions = {
   compress: {
     arrows: false,
     booleans: false,
-    comparisons: false,
-    conditionals: false,
     drop_console: true,
-    evaluate: false,
-    if_return: false,
     keep_fargs: true,
-    negate_iife: false,
-    properties: false,
     typeofs: false,
   },
   mangle: {
@@ -36,11 +30,11 @@ function typescript() {
 }
 
 function copyTemplates() {
-  return gulp.src("./src/templates/*").pipe(gulp.dest("./dist/templates"));
+  return gulp.src(["./src/templates/**/*.js", "./src/templates/**/*.html"]).pipe(gulp.dest("./dist/templates"));
 }
 
 function minifyJsTemplates() {
-  return gulp.src("./dist/templates/*.js").pipe(terser(terserOptions)).pipe(gulp.dest("./dist/templates"));
+  return gulp.src("./dist/templates/**/*.js").pipe(terser(terserOptions)).pipe(gulp.dest("./dist/templates"));
 }
 
 function minifyHtmlTemplates() {

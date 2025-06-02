@@ -13,8 +13,7 @@ describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStor
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
-    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page, 3100, true);
+    await pageHelper.init(page, 3100, true);
   }, 5000);
 
   afterAll(async () => {

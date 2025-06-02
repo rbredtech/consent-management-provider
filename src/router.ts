@@ -3,14 +3,14 @@ import cors from "cors";
 import { Router } from "express";
 
 import {
-  bannerController,
   bannerAgfController,
+  bannerController,
+  cmpapiController,
   cmpController,
   cmpWithTrackingController,
   iframeController,
   removeConsentController,
   setConsentController,
-  cmpapiController,
 } from "./controller";
 
 const router = Router();

@@ -3,49 +3,37 @@
 
   var cmpEnabled = '__ejs(/*-CMP_ENABLED*/);' === 'true';
 
-  function getCookie(name, decodeFn) {
+  var lsAvailable = (function () {
     try {
-      var cname = name + '=';
-      var decodedCookie = decodeURIComponent(document.cookie);
-      var ca = decodedCookie.split(';');
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) === ' ') {
-          c = c.substring(1);
-        }
-        if (c.indexOf(cname) === 0) {
-          var value = c.substring(cname.length, c.length);
-          return decodeFn && typeof decodeFn === 'function' ? decodeFn(value) : value;
-        }
+      if (!window.localStorage) {
+        return false;
       }
+      var key = 'a';
+      var value = new Date().getTime() + '';
+      localStorage.setItem(key, value);
+      var ls = localStorage.getItem(key);
+      localStorage.removeItem(key);
+      return ls === value;
     } catch (e) {}
-    return null;
-  }
+    return false;
+  })();
 
-  function setCookie(name, value) {
-    var maxAge = 60 * 60 * 24 * 365 * 2; // 2 years
-    var cookie = name + '=' + value + ';max-age=' + maxAge + ';path=/;domain=__ejs(/*-COOKIE_DOMAIN*/);';
-    document.cookie = cookie;
-  }
-
-  function readStorageOrCookie(key, cookieDecodeFn) {
+  function readStorage(key) {
     var value = null;
-    if (window.localStorage && localStorage.getItem) {
+    if (lsAvailable) {
       value = localStorage.getItem(key);
       if (value) {
         return value;
       }
     }
-    value = getCookie(key, cookieDecodeFn);
     return value;
   }
 
-  function writeStorageAndCookie(key, value) {
+  function writeStorage(key, value) {
     if (!cmpEnabled) {
       return;
     }
-    setCookie(key, value + '');
-    if (window.localStorage && localStorage.setItem) {
+    if (lsAvailable) {
       localStorage.setItem(key, value + '');
     }
   }
@@ -61,39 +49,49 @@
   }
 
   function parseSerializedConsentByVendorId(serializedConsentByVendorId) {
-    var consentByVendorId = {};
-    if (serializedConsentByVendorId) {
+    if (!serializeConsentByVendorId) {
+      return undefined;
+    }
+    try {
+      var consentByVendorId = {};
       var parsed = serializedConsentByVendorId.split(',');
       for (var x = 0; x < parsed.length; x++) {
         var split = parsed[x].split('~');
         consentByVendorId[split[0]] = split[1] === 'true';
       }
+      return consentByVendorId;
+    } catch (e) {
+      return undefined;
     }
-    return consentByVendorId;
   }
 
   function updateLocalStorageConsent(consentByVendorId) {
-    if (window.localStorage && localStorage.setItem && localStorage.getItem) {
-      var lsConsentByVendorId = parseSerializedConsentByVendorId(
-        localStorage.getItem('__ejs(/*-CONSENT_COOKIE_NAME*/);')
-      );
+    if (lsAvailable) {
+      var lsConsentByVendorId = parseSerializedConsentByVendorId(localStorage.getItem('__ejs(/*-CONSENT_COOKIE_NAME*/);')) || {};
       for (var vendorId in consentByVendorId) {
         if (Object.prototype.hasOwnProperty.call(consentByVendorId, vendorId)) {
           lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
         }
       }
       localStorage.setItem('__ejs(/*-CONSENT_COOKIE_NAME*/);', serializeConsentByVendorId(lsConsentByVendorId));
-      return true;
     }
-    return false;
   }
 
   function removeLocalStorageConsent() {
-    if (window.localStorage && localStorage.removeItem) {
+    if (lsAvailable) {
       localStorage.removeItem('__ejs(/*-CONSENT_COOKIE_NAME*/);');
-      return true;
     }
-    return false;
+  }
+
+  function consentCookieEncoder(consentByVendorId) {
+    return window.cookieEncode('{"consent":"' + serializeConsentByVendorId(consentByVendorId) + '"}');
+  }
+
+  function consentCookieDecoder(value) {
+    try {
+      return parseSerializedConsentByVendorId(window.jsonParse(window.cookieDecode(value)).consent);
+    } catch (e) {}
+    return undefined;
   }
 
   var logEvents = {
@@ -111,7 +109,7 @@
   }, 3000);
 
   function log(event, success, parameters) {
-    var msg = { event: event, success: success, parameters: parameters, ts: Date.now() };
+    var msg = { event: event, success: success, parameters: parameters, ts: new Date().getTime() };
     if (!logCallbacks.length && queueLogMessages) {
       logMessageQueue[logMessageQueue.length] = msg;
     }
@@ -123,30 +121,26 @@
   }
 
   var channelId = '__ejs(/*-CHANNEL_ID*/);';
-  var outOfSample =
-    Math.floor(Math.random() * 100) + 1 > parseInt('__ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);');
-  var now = Date.now();
+  var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('__ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);');
+  var now = new Date().getTime();
 
-  var technicalCookie = parseInt(readStorageOrCookie('__ejs(/*-TECH_COOKIE_NAME*/);'));
-  if (!technicalCookie) {
-    technicalCookie = now;
-    writeStorageAndCookie('__ejs(/*-TECH_COOKIE_NAME*/);', technicalCookie);
+  var technicalCookieFromCookie = parseInt('{{TECH_COOKIE_VALUE}}');
+  var technicalCookieFromLocalStorage = parseInt(readStorage('__ejs(/*-TECH_COOKIE_NAME*/);'));
+
+  if (!technicalCookieFromLocalStorage && technicalCookieFromCookie) {
+    writeStorage('__ejs(/*-TECH_COOKIE_NAME*/);', technicalCookieFromCookie);
   }
 
+  var technicalCookie = technicalCookieFromLocalStorage || technicalCookieFromCookie || now;
   var technicalCookiePassed = now - technicalCookie >= parseInt('__ejs(/*-TECH_COOKIE_MIN*/);');
 
   window.__cmpapi = function (command, _version, callback, parameter) {
-    var consentByVendorIdSerialized = readStorageOrCookie('__ejs(/*-CONSENT_COOKIE_NAME*/);', function (value) {
-      try {
-        return window.jsonParse(window.cookieDecode(value)).consent;
-      } catch (e) {
-        return undefined;
-      }
-    });
+    var consentFromCookie = consentCookieDecoder('{{CONSENT_COOKIE_CONTENT}}');
+    var consentFromLocalStorage = readStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);');
 
-    var consentByVendorId = undefined;
-    if (consentByVendorIdSerialized) {
-      consentByVendorId = parseSerializedConsentByVendorId(consentByVendorIdSerialized);
+    var consentByVendorId = consentFromCookie;
+    if (consentFromLocalStorage) {
+      consentByVendorId = parseSerializedConsentByVendorId(consentFromLocalStorage);
     }
 
     var cmpStatus = 'disabled';
@@ -163,7 +157,6 @@
     }
 
     var image;
-    var localStorageAvailable;
 
     switch (command) {
       case 'ping':
@@ -214,7 +207,6 @@
         });
         break;
       case 'setConsent':
-        localStorageAvailable = false;
         var consent = parameter + '' === 'true';
         var consentDecisionByVendorId = {
           4040: consent,
@@ -224,17 +216,17 @@
         image = document.createElement('img');
         image.src =
           window.location.protocol +
-          '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?consentByVendorId=' +
-          serializeConsentByVendorId(consentDecisionByVendorId) +
+          '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?c=' +
+          encodeURIComponent(consentCookieEncoder(consentDecisionByVendorId)) +
           (channelId !== '' ? '&channelId=' + channelId : '') +
-          ('&t=' + Date.now());
+          ('&t=' + new Date().getTime());
 
         image.onload = function () {
-          localStorageAvailable = updateLocalStorageConsent(consentDecisionByVendorId);
+          updateLocalStorageConsent(consentDecisionByVendorId);
 
           log(logEvents.SET_CONSENT, true, {
             consentByVendorId: consentDecisionByVendorId,
-            localStorageAvailable: localStorageAvailable
+            localStorageAvailable: lsAvailable
           });
 
           if (callback && typeof callback === 'function') {
@@ -251,26 +243,24 @@
         };
         break;
       case 'setConsentByVendorId':
-        localStorageAvailable = false;
-        var consentByVendorIdParam = parameter;
         image = document.createElement('img');
         image.src =
           window.location.protocol +
-          '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?consentByVendorId=' +
-          serializeConsentByVendorId(consentByVendorIdParam) +
+          '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?q=' +
+          encodeURIComponent(consentCookieEncoder(parameter)) +
           (channelId !== '' ? '&channelId=' + channelId : '') +
-          ('&t=' + Date.now());
+          ('&t=' + new Date().getTime());
 
         image.onload = function () {
-          localStorageAvailable = updateLocalStorageConsent(consentByVendorIdParam);
+          updateLocalStorageConsent(parameter);
 
           log(logEvents.SET_CONSENT_BY_VENDOR_ID, true, {
-            consentByVendorId: consentByVendorIdParam,
-            localStorageAvailable: localStorageAvailable
+            consentByVendorId: parameter,
+            localStorageAvailable: lsAvailable
           });
 
           if (callback && typeof callback === 'function') {
-            callback(consentByVendorIdParam);
+            callback(parameter);
           }
         };
 
@@ -283,18 +273,13 @@
         };
         break;
       case 'removeConsentDecision':
-        localStorageAvailable = false;
-
         image = document.createElement('img');
-        image.src =
-          window.location.protocol +
-          '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);remove-consent?t=' +
-          Date.now();
+        image.src = window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);remove-consent?t=' + new Date().getTime();
 
         image.onload = function () {
-          localStorageAvailable = removeLocalStorageConsent();
+          removeLocalStorageConsent();
 
-          log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
+          log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: lsAvailable });
 
           if (callback && typeof callback === 'function') {
             callback();

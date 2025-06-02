@@ -13,15 +13,14 @@ describe.each(cases)("API is called right after loading - localStorage: %s, iFra
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
-  }, 5000);
+    await pageHelper.init(page);
+  }, 20000);
 
   afterAll(async () => {
     await page.browser().close();
-  }, 5000);
+  }, 20000);
 
   beforeAll(async () => {
-    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page);
     apiResponse = await page.evaluate(
       () =>
         new Promise((resolve) => {

@@ -13,16 +13,12 @@ export const TECH_COOKIE_NAME = new EnvVar("TECH_COOKIE_NAME").getStringOrDefaul
 export const TECH_COOKIE_MIN = new EnvVar("TECH_COOKIE_MIN").getNumberOrDefault(
   1000 * 60 * 60 * 24 * 2, // 2 days
 );
-export const CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT = new EnvVar(
-  "CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT",
-).getNumberOrDefault(15);
+export const CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT = new EnvVar("CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT").getNumberOrDefault(15);
 export const BANNER_TIMEOUT = new EnvVar("BANNER_TIMEOUT").getNumberOrDefault(
   1000 * 60 * 2, // 2 mins
 );
 export const CMP_ENABLED = new EnvVar("CMP_ENABLED").getBooleanOrDefault(true);
 export const TRACKING_HOST_CONSENT = new EnvVar("TRACKING_HOST_CONSENT").getStringOrDefault("session.tvping.com");
-export const TRACKING_HOST_NO_CONSENT = new EnvVar("TRACKING_HOST_NO_CONSENT").getStringOrDefault(
-  "session-cl.tvping.com",
-);
+export const TRACKING_HOST_NO_CONSENT = new EnvVar("TRACKING_HOST_NO_CONSENT").getStringOrDefault("session-cl.tvping.com");
 export const TRACKING_VERSION = new EnvVar("TRACKING_VERSION").getStringOrDefault("v2");
 export const CMP_DISABLED_CHANNEL_IDS = new EnvVar("CMP_DISABLED_CHANNEL_IDS").getString();

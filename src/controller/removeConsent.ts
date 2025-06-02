@@ -1,16 +1,10 @@
 import { Request, Response } from "express";
 
 import { CONSENT_COOKIE_NAME, COOKIE_DOMAIN } from "../config";
-import { consentCounterMetric } from "../util/metrics";
 
-const img = Buffer.from(
-  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNiYAAAAAkAAxkR2eQAAAAASUVORK5CYII=",
-  "base64",
-);
+const img = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNiYAAAAAkAAxkR2eQAAAAASUVORK5CYII=", "base64");
 
-export const removeConsentController = (req: Request, res: Response) => {
-  consentCounterMetric.labels({ consent: "remove" }).inc();
-
+export const removeConsentController = (_req: Request, res: Response) => {
   res.cookie(CONSENT_COOKIE_NAME, "{}", {
     maxAge: 0,
     domain: COOKIE_DOMAIN,

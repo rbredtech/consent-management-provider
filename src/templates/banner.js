@@ -266,10 +266,7 @@
         if (consBtnAgree && consBtnAgree.className.indexOf('selected') !== -1) {
           bannerCloseCallback(true, consBtnAgree.getAttribute('data-reason'));
         } else {
-          bannerCloseCallback(
-            consBtnDecline.getAttribute('data-reason') === 'go-to-settings' ? undefined : false,
-            consBtnDecline.getAttribute('data-reason')
-          );
+          bannerCloseCallback(consBtnDecline.getAttribute('data-reason') === 'go-to-settings' ? undefined : false, consBtnDecline.getAttribute('data-reason'));
         }
       }
       hideConsentBanner();

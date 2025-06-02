@@ -7,19 +7,14 @@ __ejs(/*- include("partials/ponyfills.js") */);
   window.__cmpapi = function () {
     var args = Array.prototype.slice.call(arguments, 0);
     if (args[0] === 'onLogEvent') {
-      onLogEventQueue[onLogEventQueue.length] = args;
+      onLogEventQueue.push(args);
     } else {
-      queue[queue.length] = args;
+      queue.push(args);
     }
   };
 
   function log(event, success, parameters) {
-    window.__cmpapi(
-      '_log',
-      2,
-      undefined,
-      window.jsonStringify({ event: event, success: success, parameters: parameters })
-    );
+    window.__cmpapi('_log', 2, undefined, window.jsonStringify({ event: event, success: success, parameters: parameters }));
   }
 
   function callQueue(type) {
@@ -46,35 +41,23 @@ __ejs(/*- include("partials/ponyfills.js") */);
 
   function message(type, command, version, callback, parameter) {
     callbackMap[++callbackCount] = callback;
-    var msg =
-      callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: parameter });
+    var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: parameter });
     iframe.contentWindow.postMessage(msg, window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);');
   }
 
-  var channelId = '__ejs(/*-CHANNEL_ID*/);';
-
   function isIframeCapable() {
     var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
-    var currentUserAgent = window.navigator && navigator.userAgent && navigator.userAgent.toLowerCase();
-
-    if (!currentUserAgent || !currentUserAgent.indexOf) {
-      return false;
-    }
 
     var userAgentIsExcluded = false;
     for (var i = 0; i < excludeList.length; i++) {
-      userAgentIsExcluded = userAgentIsExcluded || currentUserAgent.indexOf(excludeList[i]) !== -1;
+      userAgentIsExcluded = userAgentIsExcluded || navigator.userAgent.toLowerCase().indexOf(excludeList[i]) !== -1;
     }
 
     return !userAgentIsExcluded;
   }
 
   function onIframeMessage(event) {
-    if (
-      window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);'.indexOf(event.origin) === -1 ||
-      !event.data ||
-      typeof event.data !== 'string'
-    ) {
+    if (window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);'.indexOf(event.origin) === -1 || !event.data || typeof event.data !== 'string') {
       return;
     }
 
@@ -92,16 +75,20 @@ __ejs(/*- include("partials/ponyfills.js") */);
     } catch (e) {}
   }
 
-  function createIframe() {
-    var q = '';
-    q = q + (channelId !== '' ? '&channelId=' + channelId : '');
-    q = q.length ? '?' + q.substring(1) : '';
+  function getQueryParams() {
+    var queryParams = [];
+    if ('__ejs(/*-CHANNEL_ID*/);') {
+      queryParams.push('channelId=__ejs(/*-CHANNEL_ID*/);');
+    }
+    if ('{{CONSENT_COOKIE_CONTENT}}') {
+      queryParams.push('c=' + encodeURIComponent('{{CONSENT_COOKIE_CONTENT}}'));
+    }
+    return queryParams.length ? '?' + queryParams.join('&') : '';
+  }
 
+  function createIframe() {
     var iframe = document.createElement('iframe');
-    iframe.setAttribute(
-      'src',
-      window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);iframe.html' + q
-    );
+    iframe.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);iframe.html' + getQueryParams());
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
 
@@ -163,16 +150,9 @@ __ejs(/*- include("partials/ponyfills.js") */);
   }
 
   function createCmpApiScriptTag() {
-    var q = '';
-    q = q + (channelId !== '' ? '&channelId=' + channelId : '');
-    q = q.length ? '?' + q.substring(1) : '';
-
     var cmpapiScriptTag = document.createElement('script');
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
-    cmpapiScriptTag.setAttribute(
-      'src',
-      window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);cmpapi.js' + q
-    );
+    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);cmpapi.js' + getQueryParams());
 
     cmpapiScriptTag.onload = function () {
       onAPILoaded('3rdparty');

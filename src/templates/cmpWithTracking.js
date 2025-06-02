@@ -21,13 +21,7 @@ __ejs(/*- include("cmp.js") */);
 
     var trackingScriptTag = document.createElement('script');
     trackingScriptTag.type = 'text/javascript';
-    trackingScriptTag.src =
-      window.location.protocol +
-      '//' +
-      trackingHost +
-      '__ejs(/*-TRACKING_VERSION_PATH*/);__ejs(/*-CHANNEL_ID*/);/tracking.js' +
-      '?' +
-      queryParams.join('&');
+    trackingScriptTag.src = window.location.protocol + '//' + trackingHost + '__ejs(/*-TRACKING_VERSION_PATH*/);__ejs(/*-CHANNEL_ID*/);/tracking.js' + '?' + queryParams.join('&');
     document.getElementsByTagName('head')[0].appendChild(trackingScriptTag);
   };
 

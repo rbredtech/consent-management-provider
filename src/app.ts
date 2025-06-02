@@ -5,7 +5,6 @@ import path from "path";
 import { HTTP_PORT } from "./config";
 import router from "./router";
 import { logger } from "./util/logger";
-import { registry } from "./util/metrics";
 
 ejs.delimiter = "*";
 ejs.openDelimiter = "__ejs(/";
@@ -19,13 +18,6 @@ app.engine("js", renderFile);
 app.set("view engine", "ejs");
 
 app.use(`/`, router);
-
-app.get("/metrics", async (_req, res) => {
-  res
-    .status(200)
-    .contentType(registry.contentType)
-    .send(await registry.metrics());
-});
 
 app.get("/health", async (_req, res) => {
   const healthcheck = {
