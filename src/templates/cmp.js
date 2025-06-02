@@ -45,17 +45,6 @@ __ejs(/*- include("partials/ponyfills.js") */);
     iframe.contentWindow.postMessage(msg, window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);');
   }
 
-  function isIframeCapable() {
-    var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
-
-    var userAgentIsExcluded = false;
-    for (var i = 0; i < excludeList.length; i++) {
-      userAgentIsExcluded = userAgentIsExcluded || navigator.userAgent.toLowerCase().indexOf(excludeList[i]) !== -1;
-    }
-
-    return !userAgentIsExcluded;
-  }
-
   function onIframeMessage(event) {
     if (window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);'.indexOf(event.origin) === -1 || !event.data || typeof event.data !== 'string') {
       return;
@@ -86,8 +75,8 @@ __ejs(/*- include("partials/ponyfills.js") */);
     return queryParams.length ? '?' + queryParams.join('&') : '';
   }
 
-  function createIframe() {
-    var iframe = document.createElement('iframe');
+  function loadIframe() {
+    iframe = document.createElement('iframe');
     iframe.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);iframe.html' + getQueryParams());
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
@@ -112,7 +101,25 @@ __ejs(/*- include("partials/ponyfills.js") */);
       log('loaded', false, { type: 'iframe' });
     };
 
-    return iframe;
+    var body = document.getElementsByTagName('body')[0];
+    body.appendChild(iframe);
+  }
+
+  function loadCmpApi() {
+    var cmpapiScriptTag = document.createElement('script');
+    cmpapiScriptTag.setAttribute('type', 'text/javascript');
+    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);cmpapi.js' + getQueryParams());
+
+    cmpapiScriptTag.onload = function () {
+      onAPILoaded('3rdparty');
+    };
+
+    cmpapiScriptTag.onerror = function () {
+      log('loaded', false, { type: '3rdparty' });
+    };
+
+    var head = document.getElementsByTagName('head')[0];
+    head.appendChild(cmpapiScriptTag);
   }
 
   function loadOnDOMContentLoaded(onDOMContentLoadedCB) {
@@ -143,44 +150,26 @@ __ejs(/*- include("partials/ponyfills.js") */);
     }
   }
 
-  function loadIframe() {
-    var body = document.getElementsByTagName('body')[0];
-    iframe = createIframe();
-    body.appendChild(iframe);
-  }
+  function isIframeCapable() {
+    var excludeList = ['antgalio', 'hybrid', 'maple', 'presto', 'technotrend goerler', 'viera 2011'];
 
-  function createCmpApiScriptTag() {
-    var cmpapiScriptTag = document.createElement('script');
-    cmpapiScriptTag.setAttribute('type', 'text/javascript');
-    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);cmpapi.js' + getQueryParams());
+    var userAgentIsExcluded = false;
+    for (var i = 0; i < excludeList.length; i++) {
+      userAgentIsExcluded = userAgentIsExcluded || navigator.userAgent.toLowerCase().indexOf(excludeList[i]) !== -1;
+    }
 
-    cmpapiScriptTag.onload = function () {
-      onAPILoaded('3rdparty');
-    };
-
-    cmpapiScriptTag.onerror = function () {
-      log('loaded', false, { type: '3rdparty' });
-    };
-
-    return cmpapiScriptTag;
-  }
-
-  function loadCmpApi() {
-    var head = document.getElementsByTagName('head')[0];
-    var cmpapiScriptTag = createCmpApiScriptTag();
-    head.appendChild(cmpapiScriptTag);
+    return !userAgentIsExcluded;
   }
 
   function init() {
-    var waitForDOMElementRetries = 3;
     if (isIframeCapable()) {
       // in case of iframe handling, we need to wait for the body element to be available,
       // as the iframe is mounted to the body
-      waitForDOMElement('body', loadIframe, waitForDOMElementRetries);
+      waitForDOMElement('body', loadIframe, 3);
     } else {
       // in case of non-iframe handling, the cmp is loaded with a script tag, therefore
       // we need to check for the head to be available, where the script tag is written to
-      waitForDOMElement('head', loadCmpApi, waitForDOMElementRetries);
+      waitForDOMElement('head', loadCmpApi, 3);
     }
   }
 

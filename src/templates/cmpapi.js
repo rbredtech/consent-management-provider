@@ -1,6 +1,4 @@
 (function () {
-  var logCallbacks = [];
-
   var cmpEnabled = '__ejs(/*-CMP_ENABLED*/);' === 'true';
 
   var lsAvailable = (function () {
@@ -19,23 +17,21 @@
   })();
 
   function readStorage(key) {
-    var value = null;
-    if (lsAvailable) {
-      value = localStorage.getItem(key);
-      if (value) {
-        return value;
-      }
-    }
-    return value;
+    return lsAvailable ? localStorage.getItem(key) : null;
   }
 
   function writeStorage(key, value) {
-    if (!cmpEnabled) {
+    if (!cmpEnabled || !lsAvailable) {
       return;
     }
-    if (lsAvailable) {
-      localStorage.setItem(key, value + '');
+    localStorage.setItem(key, value + '');
+  }
+
+  function removeStorage(key) {
+    if (!lsAvailable) {
+      return;
     }
+    localStorage.removeItem(key);
   }
 
   function serializeConsentByVendorId(consentByVendorId) {
@@ -49,38 +45,16 @@
   }
 
   function parseSerializedConsentByVendorId(serializedConsentByVendorId) {
-    if (!serializeConsentByVendorId) {
+    if (!serializedConsentByVendorId) {
       return undefined;
     }
-    try {
-      var consentByVendorId = {};
-      var parsed = serializedConsentByVendorId.split(',');
-      for (var x = 0; x < parsed.length; x++) {
-        var split = parsed[x].split('~');
-        consentByVendorId[split[0]] = split[1] === 'true';
-      }
-      return consentByVendorId;
-    } catch (e) {
-      return undefined;
+    var consentByVendorId = {};
+    var parsed = serializedConsentByVendorId.split(',');
+    for (var x = 0; x < parsed.length; x++) {
+      var split = parsed[x].split('~');
+      consentByVendorId[split[0]] = split[1] === 'true';
     }
-  }
-
-  function updateLocalStorageConsent(consentByVendorId) {
-    if (lsAvailable) {
-      var lsConsentByVendorId = parseSerializedConsentByVendorId(localStorage.getItem('__ejs(/*-CONSENT_COOKIE_NAME*/);')) || {};
-      for (var vendorId in consentByVendorId) {
-        if (Object.prototype.hasOwnProperty.call(consentByVendorId, vendorId)) {
-          lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
-        }
-      }
-      localStorage.setItem('__ejs(/*-CONSENT_COOKIE_NAME*/);', serializeConsentByVendorId(lsConsentByVendorId));
-    }
-  }
-
-  function removeLocalStorageConsent() {
-    if (lsAvailable) {
-      localStorage.removeItem('__ejs(/*-CONSENT_COOKIE_NAME*/);');
-    }
+    return consentByVendorId;
   }
 
   function consentCookieEncoder(consentByVendorId) {
@@ -90,8 +64,9 @@
   function consentCookieDecoder(value) {
     try {
       return parseSerializedConsentByVendorId(window.jsonParse(window.cookieDecode(value)).consent);
-    } catch (e) {}
-    return undefined;
+    } catch (e) {
+      return undefined;
+    }
   }
 
   var logEvents = {
@@ -100,18 +75,16 @@
     SET_CONSENT_BY_VENDOR_ID: 'setConsentByVendorId',
     REMOVE_CONSENT_DECISION: 'removeConsentDecision'
   };
-
-  var queueLogMessages = true;
   var logMessageQueue = [];
-
-  setTimeout(function () {
-    queueLogMessages = false;
-  }, 3000);
+  var logCallbacks = [];
 
   function log(event, success, parameters) {
     var msg = { event: event, success: success, parameters: parameters, ts: new Date().getTime() };
-    if (!logCallbacks.length && queueLogMessages) {
-      logMessageQueue[logMessageQueue.length] = msg;
+    if (!logCallbacks.length) {
+      logMessageQueue.push(msg);
+      if (logMessageQueue.length > 5) {
+        logMessageQueue.shift();
+      }
     }
     for (var i = 0; i < logCallbacks.length; i++) {
       if (logCallbacks[i] && typeof logCallbacks[i] === 'function') {
@@ -134,15 +107,28 @@
   var technicalCookie = technicalCookieFromLocalStorage || technicalCookieFromCookie || now;
   var technicalCookiePassed = now - technicalCookie >= parseInt('__ejs(/*-TECH_COOKIE_MIN*/);');
 
-  window.__cmpapi = function (command, _version, callback, parameter) {
-    var consentFromCookie = consentCookieDecoder('{{CONSENT_COOKIE_CONTENT}}');
-    var consentFromLocalStorage = readStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);');
+  var consentFromCookie = consentCookieDecoder('{{CONSENT_COOKIE_CONTENT}}');
+  var consentFromLocalStorage = parseSerializedConsentByVendorId(readStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);'));
+  var consentByVendorId = consentFromLocalStorage || consentFromCookie;
 
-    var consentByVendorId = consentFromCookie;
-    if (consentFromLocalStorage) {
-      consentByVendorId = parseSerializedConsentByVendorId(consentFromLocalStorage);
+  function mergeConsentsByVendorId(toAdd) {
+    var base = {};
+    if (consentByVendorId) {
+      for (var existingConsentVendorId in consentByVendorId) {
+        if (Object.prototype.hasOwnProperty.call(consentByVendorId, existingConsentVendorId)) {
+          base[existingConsentVendorId] = consentByVendorId[existingConsentVendorId];
+        }
+      }
     }
+    for (var newVendorId in toAdd) {
+      if (Object.prototype.hasOwnProperty.call(toAdd, newVendorId)) {
+        base[newVendorId] = toAdd[newVendorId];
+      }
+    }
+    return base;
+  }
 
+  window.__cmpapi = function (command, _version, callback, parameter) {
     var cmpStatus = 'disabled';
 
     if (cmpEnabled && (technicalCookiePassed || consentByVendorId !== undefined)) {
@@ -208,24 +194,25 @@
         break;
       case 'setConsent':
         var consent = parameter + '' === 'true';
-        var consentDecisionByVendorId = {
+        var updated = mergeConsentsByVendorId({
           4040: consent,
           4041: consent
-        };
+        });
 
         image = document.createElement('img');
         image.src =
           window.location.protocol +
           '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?c=' +
-          encodeURIComponent(consentCookieEncoder(consentDecisionByVendorId)) +
-          (channelId !== '' ? '&channelId=' + channelId : '') +
+          encodeURIComponent(consentCookieEncoder(updated)) +
+          (channelId ? '&channelId=' + channelId : '') +
           ('&t=' + new Date().getTime());
 
         image.onload = function () {
-          updateLocalStorageConsent(consentDecisionByVendorId);
+          writeStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serializeConsentByVendorId(updated));
+          consentByVendorId = updated;
 
           log(logEvents.SET_CONSENT, true, {
-            consentByVendorId: consentDecisionByVendorId,
+            consentByVendorId: updated,
             localStorageAvailable: lsAvailable
           });
 
@@ -243,19 +230,22 @@
         };
         break;
       case 'setConsentByVendorId':
+        var merged = mergeConsentsByVendorId(parameter);
+
         image = document.createElement('img');
         image.src =
           window.location.protocol +
           '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?q=' +
-          encodeURIComponent(consentCookieEncoder(parameter)) +
-          (channelId !== '' ? '&channelId=' + channelId : '') +
+          encodeURIComponent(consentCookieEncoder(merged)) +
+          (channelId ? '&channelId=' + channelId : '') +
           ('&t=' + new Date().getTime());
 
         image.onload = function () {
-          updateLocalStorageConsent(parameter);
+          writeStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serializeConsentByVendorId(merged));
+          consentByVendorId = merged;
 
           log(logEvents.SET_CONSENT_BY_VENDOR_ID, true, {
-            consentByVendorId: parameter,
+            consentByVendorId: consentByVendorId,
             localStorageAvailable: lsAvailable
           });
 
@@ -277,7 +267,8 @@
         image.src = window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);remove-consent?t=' + new Date().getTime();
 
         image.onload = function () {
-          removeLocalStorageConsent();
+          removeStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);');
+          consentByVendorId = undefined;
 
           log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: lsAvailable });
 
@@ -296,7 +287,7 @@
         break;
       case 'onLogEvent':
         if (callback && typeof callback === 'function') {
-          logCallbacks[logCallbacks.length] = callback;
+          logCallbacks.push(callback);
         }
         if (logCallbacks.length === 1 && logMessageQueue.length) {
           for (var i = 0; i < logMessageQueue.length; i++) {
