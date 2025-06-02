@@ -6,7 +6,6 @@ import { API_VERSION, CONSENT_COOKIE_NAME, COOKIE_DOMAIN, COOKIE_MAXAGE, HTTP_HO
 
 export const cmpController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
-  res.setHeader("Cache-Control", "no-store");
 
   let techCookieValue = req.cookies[TECH_COOKIE_NAME];
   if (!techCookieValue) {

@@ -5,6 +5,8 @@ import path from "path";
 import { API_VERSION, CONSENT_COOKIE_NAME, HTTP_HOST, TECH_COOKIE_NAME, TRACKING_HOST_CONSENT, TRACKING_HOST_NO_CONSENT, TRACKING_VERSION } from "../config";
 
 export const cmpWithTrackingController = async (req: Request, res: Response) => {
+  res.setHeader("Content-Type", "application/javascript");
+
   if (!req.query.channelId) {
     res.status(400).send({ error: "query parameter channelId is mandatory" });
     return;
@@ -14,9 +16,6 @@ export const cmpWithTrackingController = async (req: Request, res: Response) => 
     res.status(400).send({ error: "query parameter cmpId is mandatory" });
     return;
   }
-
-  res.setHeader("Content-Type", "application/javascript");
-  res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600, stale-while-revalidate");
 
   try {
     const cmpWithTrackingJs = (
