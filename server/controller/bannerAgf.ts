@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { BANNER_TIMEOUT } from "../config.js";
+const { BANNER_TIMEOUT } = process.env;
 
 export const bannerAgfController = async (_req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
