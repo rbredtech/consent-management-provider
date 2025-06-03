@@ -13,7 +13,6 @@ import {
   TECH_COOKIE_NAME,
   VERSION_PATH,
 } from "../config.js";
-import { logger } from "../util/logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,7 +37,7 @@ export const cmpapiController = async (req: Request, res: Response) => {
       .replaceAll("{{TECH_COOKIE_VALUE}}", req.cookies[TECH_COOKIE_NAME] ?? "");
     res.send(cmpapiJs);
   } catch (e) {
-    logger.error(e);
+    console.error(e);
     res.status(500).send(e);
   }
 };

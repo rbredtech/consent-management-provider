@@ -60,11 +60,12 @@ jobs:
         name: Build
         run: yarn build --config .env.agf.dev
 
-      - name: Zip release
+      - id: zip
+        name: Zip templates
         run: zip -r -j templates-agf-prod.zip ./dist/*
 
-      - name: Create release
-        id: create-release
+      - id: release
+        name: Create release
         uses: softprops/action-gh-release@v2
         with:
           name: ${{  github.ref_name }}

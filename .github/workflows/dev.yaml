@@ -62,10 +62,11 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - id: build
-        name: Build
+        name: Build templates
         run: yarn build --config .env.agf.dev
 
-      - name: Zip release
+      - id: zip
+        name: Zip templates
         run: zip -r -j templates-agf-dev.zip ./dist/*
 
       - id: snapshot
