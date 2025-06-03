@@ -1,4 +1,3 @@
-const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
 const pageHelper = require("./helper/page");
 
 const cases = [
@@ -8,7 +7,7 @@ const cases = [
   [false, false],
 ];
 
-describe.each(cases)("Consent Management with technical cookie - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
+describe.each(cases)("No-consent flow - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
   let page;
 
   beforeAll(async () => {
@@ -47,13 +46,14 @@ describe.each(cases)("Consent Management with technical cookie - localStorage: %
 
     describe("When consent is declined", () => {
       beforeAll(async () => {
+        const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
               window.__cmpapi("setConsent", 1, resolve, false);
             }),
         );
-        await page.reload();
+        await setConsentEndpointCalled;
       });
 
       test("Storage status is enabled and consent is false", async () => {

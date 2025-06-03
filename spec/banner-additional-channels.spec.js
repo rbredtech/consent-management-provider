@@ -1,4 +1,3 @@
-const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
 const pageHelper = require("./helper/page");
 
 const cases = [
@@ -13,7 +12,7 @@ describe.each(cases)("Consent banner (additional channels) - localStorage: %s, i
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
-    await pageHelper.init(page, 0, true);
+    await pageHelper.init(page);
   }, 20000);
 
   afterAll(async () => {
@@ -55,17 +54,22 @@ describe.each(cases)("Consent banner (additional channels) - localStorage: %s, i
     });
 
     describe("When OK button is hit", () => {
-      let consentSent;
-
       beforeAll(async () => {
-        consentSent = page.waitForRequest((request) => request.url().includes("set-consent"));
+        const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
         await page.evaluate(() => {
           window.__cbapi("handleKey", 2, undefined, 13);
         });
+        await setConsentEndpointCalled;
       });
 
-      test("Consent is sent", async () => {
-        expect((await consentSent).url()).toContain("set-consent?consentByVendorId=4040~true,4041~true");
+      test("Consent is saved (true)", async () => {
+        const tcData = await page.evaluate(
+          () =>
+            new Promise((resolve) => {
+              window.__cmpapi("getTCData", 2, resolve);
+            }),
+        );
+        expect(tcData.vendor.consents).toEqual({ 4040: true, 4041: true });
       });
 
       describe("When banner is requested again", () => {

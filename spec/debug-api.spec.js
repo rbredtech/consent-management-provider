@@ -1,4 +1,3 @@
-const { describe, beforeAll, expect, afterAll, it } = require("@jest/globals");
 const pageHelper = require("./helper/page");
 
 const cases = [
@@ -71,16 +70,12 @@ describe.each(cases)("Debug API - localStorage: %s, iFrame: %s", (localStorage, 
       });
 
       describe("and setConsent API method is called again", () => {
-        let consentCookieLoaded;
-
         beforeAll(async () => {
-          consentCookieLoaded = page.waitForResponse((response) => response.url().includes("set-consent"));
           await page.evaluate(() => {
             return new Promise((resolve) => {
               window.__cmpapi("setConsent", 2, resolve, false);
             });
           });
-          await consentCookieLoaded;
         });
 
         it("should log activity for setConsent", async () => {

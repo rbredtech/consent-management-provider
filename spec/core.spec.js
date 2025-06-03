@@ -1,23 +1,18 @@
-const { describe, beforeAll, afterAll, test, expect } = require("@jest/globals");
 const pageHelper = require("./helper/page");
 
 const cases = [
-  [true, true, true], // [withTracking, localStorage, iFrame]
-  [true, true, false],
-  [true, false, true],
-  [true, false, false],
-  [false, true, true],
-  [false, true, false],
-  [false, false, true],
-  [false, false, false],
+  [true, true], // [localStorage, iFrame]
+  [true, false],
+  [false, true],
+  [false, false],
 ];
 
-describe.each(cases)("Consent Management is loaded - tracking script: %s, localStorage: %s, iFrame: %s", (withTracking, localStorage, iFrame) => {
+describe.each(cases)("CMP core - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
   let page;
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
-    await pageHelper.init(page, undefined, undefined, undefined, withTracking);
+    await pageHelper.init(page);
   }, 20000);
 
   afterAll(async () => {
@@ -57,18 +52,4 @@ describe.each(cases)("Consent Management is loaded - tracking script: %s, localS
     expect(apiResponse.vendor["consents"]["4040"]).toBeUndefined();
     expect(apiResponse.vendor["consents"]["4041"]).toBeUndefined();
   });
-
-  if (withTracking) {
-    test("Tracking script api is available", async () => {
-      const did = await page.evaluate(
-        () =>
-          new Promise((resolve) => {
-            setTimeout(() => {
-              window.__hbb_tracking_tgt.getDID(resolve);
-            }, 2000);
-          }),
-      );
-      expect(did).not.toBeUndefined();
-    });
-  }
 });

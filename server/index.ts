@@ -5,7 +5,6 @@ import yargs from "yargs";
 
 import { fileURLToPath } from "url";
 import router from "./router.js";
-import { logger } from "./util/logger.js";
 
 ejs.delimiter = "*";
 ejs.openDelimiter = "__ejs(/";
@@ -24,16 +23,14 @@ app.set("view engine", "ejs");
 app.use(`/`, router);
 
 app.get("/health", async (_req, res) => {
-  const healthcheck = {
+  res.status(200).send({
     uptime: process.uptime(),
     message: "OK",
     timestamp: Date.now(),
-  };
-
-  res.status(200).send(healthcheck);
+  });
 });
 
 const port = yargs(process.argv.slice(2)).parseSync().port || 3000;
 
 app.listen(port);
-logger.info(`serving CMP scripts at http://localhost:${port}`);
+console.info(`serving CMP scripts at http://localhost:${port}`);

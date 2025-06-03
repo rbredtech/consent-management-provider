@@ -16,7 +16,7 @@
     "esModuleInterop": true,
     "lib": [
       "ESNext"
-    ],
+    ]
   },
   "include": ["server/**/*.ts"],
   "exclude": ["node_modules"],

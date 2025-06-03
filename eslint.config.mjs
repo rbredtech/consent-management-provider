@@ -54,7 +54,7 @@ export default [
     },
   },
   {
-    files: ["src/**/*"],
+    files: ["src/**/*.js", "src/**/*.html"],
     languageOptions: {
       ecmaVersion: 3,
       sourceType: "script",
@@ -141,7 +141,7 @@ export default [
     },
   },
   {
-    files: ["express.js", "spec/**/*.js"],
+    files: ["spec/**/*.js"],
     languageOptions: {
       globals: {
         ...globals.jest,

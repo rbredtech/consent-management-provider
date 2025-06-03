@@ -233,7 +233,7 @@
         image = document.createElement('img');
         image.src =
           window.location.protocol +
-          '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?q=' +
+          '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?c=' +
           encodeURIComponent(consentCookieEncoder(merged)) +
           ('&t=' + new Date().getTime());
 
