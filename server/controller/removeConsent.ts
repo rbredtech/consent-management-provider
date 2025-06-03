@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { CONSENT_COOKIE_NAME, COOKIE_DOMAIN } from "../config";
+import { CONSENT_COOKIE_NAME, COOKIE_DOMAIN } from "../config.js";
 
 const img = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNiYAAAAAkAAxkR2eQAAAAASUVORK5CYII=", "base64");
 

@@ -1,41 +1,37 @@
 import { renderFile } from "ejs";
 import { Request, Response } from "express";
 import path from "path";
-
-import { logger } from "../util/logger";
+import { fileURLToPath } from "url";
 
 import {
-  API_VERSION,
-  CMP_DISABLED_CHANNEL_IDS,
   CMP_ENABLED,
   CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
   CONSENT_COOKIE_NAME,
+  CONSENT_HOST,
   COOKIE_DOMAIN,
-  HTTP_HOST,
   TECH_COOKIE_MIN,
   TECH_COOKIE_NAME,
-} from "../config";
+  VERSION_PATH,
+} from "../config.js";
+import { logger } from "../util/logger.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const cmpapiController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
 
-  const channelId = req.query.channelId?.toString();
-  const disabledChannelIds = CMP_DISABLED_CHANNEL_IDS?.split(",").map((channelId) => channelId.trim());
-  const cmpDisabledByChannelId = channelId && disabledChannelIds ? disabledChannelIds?.includes(channelId) : false;
-  const cmpEnabled = CMP_ENABLED && !cmpDisabledByChannelId;
-
   try {
     const cmpapiJs = (
-      await renderFile(path.join(__dirname, "../templates/cmp.js"), {
-        VERSION_PATH: API_VERSION ? `/${API_VERSION}/` : "/",
+      await renderFile(path.join(__dirname, "../../src/cmpapi.js"), {
+        VERSION_PATH,
         CONSENT_COOKIE_NAME,
         COOKIE_DOMAIN,
-        CMP_ENABLED: cmpEnabled,
+        CMP_ENABLED,
         TECH_COOKIE_MIN,
         TECH_COOKIE_NAME,
         CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
-        CONSENT_SERVER_HOST: HTTP_HOST,
-        CHANNEL_ID: channelId ?? "",
+        CONSENT_HOST,
       })
     )
       .replaceAll("{{CONSENT_COOKIE_CONTENT}}", req.cookies[CONSENT_COOKIE_NAME] ?? "")

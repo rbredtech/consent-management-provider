@@ -42,11 +42,11 @@ __ejs(/*- include("partials/ponyfills.js") */);
   function message(type, command, version, callback, parameter) {
     callbackMap[++callbackCount] = callback;
     var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: parameter });
-    iframe.contentWindow.postMessage(msg, window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);');
+    iframe.contentWindow.postMessage(msg, window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);');
   }
 
   function onIframeMessage(event) {
-    if (window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);'.indexOf(event.origin) === -1 || !event.data || typeof event.data !== 'string') {
+    if (window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);'.indexOf(event.origin) === -1 || !event.data || typeof event.data !== 'string') {
       return;
     }
 
@@ -66,9 +66,6 @@ __ejs(/*- include("partials/ponyfills.js") */);
 
   function getQueryParams() {
     var queryParams = [];
-    if ('__ejs(/*-CHANNEL_ID*/);') {
-      queryParams.push('channelId=__ejs(/*-CHANNEL_ID*/);');
-    }
     if ('{{CONSENT_COOKIE_CONTENT}}') {
       queryParams.push('c=' + encodeURIComponent('{{CONSENT_COOKIE_CONTENT}}'));
     }
@@ -77,7 +74,7 @@ __ejs(/*- include("partials/ponyfills.js") */);
 
   function loadIframe() {
     iframe = document.createElement('iframe');
-    iframe.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);iframe.html' + getQueryParams());
+    iframe.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);iframe.html' + getQueryParams());
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
 
@@ -108,7 +105,7 @@ __ejs(/*- include("partials/ponyfills.js") */);
   function loadCmpApi() {
     var cmpapiScriptTag = document.createElement('script');
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
-    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);cmpapi.js' + getQueryParams());
+    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);cmpapi.js' + getQueryParams());
 
     cmpapiScriptTag.onload = function () {
       onAPILoaded('3rdparty');

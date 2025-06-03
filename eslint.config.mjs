@@ -9,11 +9,11 @@ import eslintTs from "typescript-eslint";
 const recommendedTypeScriptConfigs = [
   ...eslintTs.configs.recommended.map((config) => ({
     ...config,
-    files: ["src/**/*.ts"],
+    files: ["server/**/*.ts"],
   })),
   ...eslintTs.configs.stylistic.map((config) => ({
     ...config,
-    files: ["src/**/*.ts"],
+    files: ["server/**/*.ts"],
   })),
 ];
 
@@ -23,7 +23,7 @@ export default [
   eslintPluginPrettierRecommended,
   ...recommendedTypeScriptConfigs,
   {
-    files: ["src/**/*.ts"],
+    files: ["server/**/*.ts"],
     plugins: {
       import: importPlugin,
       "import/parsers": tsParser,
@@ -54,7 +54,7 @@ export default [
     },
   },
   {
-    files: ["src/templates/**/*"],
+    files: ["src/**/*"],
     languageOptions: {
       ecmaVersion: 3,
       sourceType: "script",
@@ -141,7 +141,7 @@ export default [
     },
   },
   {
-    files: ["express.js", "spec/**/*.js", "load_test/**/*.js"],
+    files: ["express.js", "spec/**/*.js"],
     languageOptions: {
       globals: {
         ...globals.jest,

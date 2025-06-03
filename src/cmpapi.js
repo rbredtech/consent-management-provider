@@ -93,7 +93,6 @@
     }
   }
 
-  var channelId = '__ejs(/*-CHANNEL_ID*/);';
   var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('__ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);');
   var now = new Date().getTime();
 
@@ -202,9 +201,8 @@
         image = document.createElement('img');
         image.src =
           window.location.protocol +
-          '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?c=' +
+          '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?c=' +
           encodeURIComponent(consentCookieEncoder(updated)) +
-          (channelId ? '&channelId=' + channelId : '') +
           ('&t=' + new Date().getTime());
 
         image.onload = function () {
@@ -235,9 +233,8 @@
         image = document.createElement('img');
         image.src =
           window.location.protocol +
-          '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?q=' +
+          '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?q=' +
           encodeURIComponent(consentCookieEncoder(merged)) +
-          (channelId ? '&channelId=' + channelId : '') +
           ('&t=' + new Date().getTime());
 
         image.onload = function () {
@@ -264,7 +261,7 @@
         break;
       case 'removeConsentDecision':
         image = document.createElement('img');
-        image.src = window.location.protocol + '//__ejs(/*-CONSENT_SERVER_HOST*/);__ejs(/*-VERSION_PATH*/);remove-consent?t=' + new Date().getTime();
+        image.src = window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);remove-consent?t=' + new Date().getTime();
 
         image.onload = function () {
           removeStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);');

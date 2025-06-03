@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { CONSENT_COOKIE_NAME, COOKIE_DOMAIN, COOKIE_MAXAGE } from "../config";
+import { CONSENT_COOKIE_NAME, COOKIE_DOMAIN, COOKIE_MAXAGE } from "../config.js";
 
 const img = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNiYAAAAAkAAxkR2eQAAAAASUVORK5CYII=", "base64");
 
@@ -18,7 +18,7 @@ export const setConsentController = (req: Request, res: Response) => {
   }
 
   res.cookie(CONSENT_COOKIE_NAME, req.query.q, {
-    maxAge: COOKIE_MAXAGE,
+    maxAge: Number(COOKIE_MAXAGE),
     domain: COOKIE_DOMAIN,
   });
 

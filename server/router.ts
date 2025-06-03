@@ -2,16 +2,13 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { Router } from "express";
 
-import {
-  bannerAgfController,
-  bannerController,
-  cmpapiController,
-  cmpController,
-  cmpWithTrackingController,
-  iframeController,
-  removeConsentController,
-  setConsentController,
-} from "./controller";
+import { bannerController } from "./controller/banner.js";
+import { bannerAgfController } from "./controller/bannerAgf.js";
+import { cmpController } from "./controller/cmp.js";
+import { cmpapiController } from "./controller/cmpapi.js";
+import { iframeController } from "./controller/iframe.js";
+import { removeConsentController } from "./controller/removeConsent.js";
+import { setConsentController } from "./controller/setConsent.js";
 
 const router = Router();
 
@@ -21,7 +18,6 @@ router.use(cookieParser());
 router.get("/banner.js", bannerController);
 router.get("/banner-agf.js", bannerAgfController);
 router.get("/cmp.js", cmpController);
-router.get("/cmp-with-tracking.js", cmpWithTrackingController);
 router.get("/cmpapi.js", cmpapiController);
 router.get("/iframe.html", iframeController);
 router.get("/remove-consent", removeConsentController);
