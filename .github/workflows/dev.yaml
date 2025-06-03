@@ -36,6 +36,16 @@ jobs:
       - id: test
         name: Test
         run: yarn ci
+        env:
+          CMP_ENABLED: true
+          CONSENT_HOST: localhost:3000
+          VERSION_PATH: /
+          COOKIE_DOMAIN: localhost
+          CONSENT_COOKIE_NAME: consent-localhost
+          TECH_COOKIE_NAME: xt-localhost
+          TECH_COOKIE_MIN: 0
+          CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT: 100
+          BANNER_TIMEOUT: 120000
 
   create-prerelease:
     name: Create Pre-Release
