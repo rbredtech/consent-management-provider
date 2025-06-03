@@ -1,12 +1,10 @@
-name: Develop
-
+name: Release
 on:
   push:
     branches:
-      - "develop"
-      - "feature/*"
-      - "release/*"
-      - "hotfix/*"
+      - "!develop"
+    tags:
+      - "v*.*.*"
 
 jobs:
   test:
@@ -37,14 +35,11 @@ jobs:
         name: Test
         run: yarn ci
 
-  create-prerelease:
-    name: Create Pre-Release
+  release:
+    name: Create release
     needs: test
-    # if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      contents: write
 
     steps:
       - id: node
@@ -66,21 +61,14 @@ jobs:
         run: yarn build --config .env.agf.dev
 
       - name: Zip release
-        run: zip -r -j templates-agf-dev.zip ./dist/*
+        run: zip -r -j templates-agf-prod.zip ./dist/*
 
-      - id: snapshot
-        name: Create snapshot tag
-        run: |
-          echo 'version=snapshot_${{ github.run_number }}' >> $GITHUB_OUTPUT
-
-      - id: release
-        name: Create release
+      - name: Create release
+        id: create-release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ steps.snapshot.outputs.version }}
-          tag_name: ${{ steps.snapshot.outputs.version }}
+          name: ${{  github.ref_name }}
           files: |
-            templates-agf-dev.zip.zip
-          prerelease: true
+            templates-agf-prod.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
