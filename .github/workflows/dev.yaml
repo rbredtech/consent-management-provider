@@ -91,7 +91,7 @@ jobs:
           name: ${{ steps.snapshot.outputs.version }}
           tag_name: ${{ steps.snapshot.outputs.version }}
           files: |
-            templates-agf-dev.zip.zip
+            templates-agf-dev.zip
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
