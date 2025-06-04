@@ -98,11 +98,9 @@
 
   var technicalCookieFromCookie = parseInt('{{TECH_COOKIE_VALUE}}');
   var technicalCookieFromLocalStorage = parseInt(readStorage('__ejs(/*-TECH_COOKIE_NAME*/);'));
-
   if (!technicalCookieFromLocalStorage && technicalCookieFromCookie) {
     writeStorage('__ejs(/*-TECH_COOKIE_NAME*/);', technicalCookieFromCookie);
   }
-
   var technicalCookie = technicalCookieFromLocalStorage || technicalCookieFromCookie || now;
   var technicalCookiePassed = now - technicalCookie >= parseInt('__ejs(/*-TECH_COOKIE_MIN*/);');
 

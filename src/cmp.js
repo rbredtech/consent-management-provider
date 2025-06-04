@@ -64,17 +64,9 @@ __ejs(/*- include("partials/ponyfills.js") */);
     } catch (e) {}
   }
 
-  function getQueryParams() {
-    var queryParams = [];
-    if ('{{CONSENT_COOKIE_CONTENT}}') {
-      queryParams.push('c=' + encodeURIComponent('{{CONSENT_COOKIE_CONTENT}}'));
-    }
-    return queryParams.length ? '?' + queryParams.join('&') : '';
-  }
-
   function loadIframe() {
     iframe = document.createElement('iframe');
-    iframe.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);iframe.html' + getQueryParams());
+    iframe.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);iframe.html?x={{TECH_COOKIE_VALUE}}');
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
 
@@ -105,7 +97,7 @@ __ejs(/*- include("partials/ponyfills.js") */);
   function loadCmpApi() {
     var cmpapiScriptTag = document.createElement('script');
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
-    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);cmpapi.js' + getQueryParams());
+    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);cmpapi.js?x={{TECH_COOKIE_VALUE}}');
 
     cmpapiScriptTag.onload = function () {
       onAPILoaded('3rdparty');

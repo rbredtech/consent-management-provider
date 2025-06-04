@@ -15,7 +15,7 @@ export const cmpController = async (req: Request, res: Response) => {
   if (!techCookieValue) {
     techCookieValue = Date.now();
     res.cookie(String(TECH_COOKIE_NAME), Date.now(), {
-      maxAge: 63072000,
+      maxAge: 63072000000,
       domain: COOKIE_DOMAIN,
     });
   }
@@ -28,7 +28,7 @@ export const cmpController = async (req: Request, res: Response) => {
       })
     )
       .replaceAll("{{CONSENT_COOKIE_CONTENT}}", req.cookies[String(CONSENT_COOKIE_NAME)] ?? "")
-      .replaceAll("{{TECH_COOKIE_VALUE}}", techCookieValue ?? "");
+      .replaceAll("{{TECH_COOKIE_VALUE}}", techCookieValue);
 
     res.send(cmpJs);
   } catch (e) {

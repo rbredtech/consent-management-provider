@@ -11,6 +11,15 @@ const __dirname = path.dirname(__filename);
 export const iframeController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
 
+  let techCookieValue = req.query.x || req.cookies[String(TECH_COOKIE_NAME)];
+  if (!techCookieValue) {
+    techCookieValue = Date.now();
+    res.cookie(String(TECH_COOKIE_NAME), Date.now(), {
+      maxAge: 63072000000,
+      domain: COOKIE_DOMAIN,
+    });
+  }
+
   try {
     const iframeHtml = (
       await renderFile(path.join(__dirname, "../../src/iframe.html"), {
@@ -25,7 +34,8 @@ export const iframeController = async (req: Request, res: Response) => {
       })
     )
       .replaceAll("{{CONSENT_COOKIE_CONTENT}}", req.cookies[String(CONSENT_COOKIE_NAME)] ?? "")
-      .replaceAll("{{TECH_COOKIE_VALUE}}", req.cookies[String(TECH_COOKIE_NAME)] ?? "");
+      .replaceAll("{{TECH_COOKIE_VALUE}}", techCookieValue);
+
     res.send(iframeHtml);
   } catch (e) {
     console.error(e);

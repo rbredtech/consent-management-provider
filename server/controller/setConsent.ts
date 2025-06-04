@@ -17,8 +17,8 @@ export const setConsentController = (req: Request, res: Response) => {
     return;
   }
 
-  res.cookie(String(CONSENT_COOKIE_NAME), req.query.q, {
-    maxAge: 63072000,
+  res.cookie(String(CONSENT_COOKIE_NAME), req.query.c, {
+    maxAge: 63072000000,
     domain: COOKIE_DOMAIN,
   });
 
