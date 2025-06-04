@@ -16,7 +16,7 @@
     "serve-dist": "serve dist/ -p 9999 -c ../serve.dist.json",
     "serve-scripts": "dotenv-load node --import=./register.js server/index.ts",
     "test": "jest --verbose",
-    "ci": "start-server-and-test \"concurrently 'yarn serve-scripts --port 3000' 'serve spec/ -p 5555' --hide 0,1\" \"localhost:3000/health|localhost:5555\" 'yarn test'",
+    "ci": "start-server-and-test \"concurrently 'yarn serve-scripts --port 3000' 'serve -p 5555' --hide 0,1\" \"http://local.consent.com:3000/health|http://local.client.com:5555\" 'yarn test'",
     "lint": "eslint src/** server/**"
   },
   "devDependencies": {

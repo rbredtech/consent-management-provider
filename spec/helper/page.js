@@ -14,14 +14,14 @@ async function get(disableLocalStorage, disableIframe) {
 }
 
 async function init(page, agfBanner = false) {
-  await page.goto("http://localhost:5555");
+  await page.goto("http://local.client.com:5555");
   await page.setContent(
     `<!DOCTYPE html PUBLIC '-//HbbTV//1.1.1//EN' 'http://www.hbbtv.org/dtd/HbbTV-1.1.1.dtd'>
     <html xmlns='http://www.w3.org/1999/xhtml'>
     <head>
       <meta http-equiv='content-type' content='application/vnd.hbbtv.xhtml+xml; charset=utf-8' />
-      <script type='text/javascript' src='http://localhost:3000/cmp.js'></script>
-      <script type='text/javascript' src='http://localhost:3000/${agfBanner ? "banner-agf.js" : "banner.js"}'></script>
+      <script type='text/javascript' src='http://local.consent.com:3000/cmp.js'></script>
+      <script type='text/javascript' src='http://local.consent.com:3000/${agfBanner ? "banner-agf.js" : "banner.js"}'></script>
     </head>
     <body></body>
     </html>`,

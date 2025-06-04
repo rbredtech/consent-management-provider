@@ -15,6 +15,12 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      - id: hosts
+        name: Add hosts to /etc/hosts
+        run: |
+            sudo echo "127.0.0.1 local.client.com" | sudo tee -a /etc/hosts
+            sudo echo "127.0.0.1 local.consent.com" | sudo tee -a /etc/hosts
+
       - id: node
         name: Set up node
         uses: actions/setup-node@v4
@@ -38,9 +44,9 @@ jobs:
         run: yarn ci
         env:
           CMP_ENABLED: true
-          CONSENT_HOST: localhost:3000
+          CONSENT_HOST: local.consent.com:3000
           VERSION_PATH: /
-          COOKIE_DOMAIN: localhost
+          COOKIE_DOMAIN: local.consent.com
           CONSENT_COOKIE_NAME: consent-localhost
           TECH_COOKIE_NAME: xt-localhost
           TECH_COOKIE_MIN: 0
