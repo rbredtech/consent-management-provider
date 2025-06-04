@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - id: node
-        name: Setup node
+        name: Set up node
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -58,7 +58,7 @@ jobs:
 
     steps:
       - id: node
-        name: Setup node
+        name: Set up node
         uses: actions/setup-node@v4
         with:
           node-version: 20
