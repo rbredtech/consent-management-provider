@@ -43,7 +43,7 @@ jobs:
         env:
           CMP_ENABLED: true
           CONSENT_HOST: local.consent.com:3000
-          VERSION_PATH: /
+          CONSENT_PATH: /
           COOKIE_DOMAIN: local.consent.com
           CONSENT_COOKIE_NAME: consent-localhost
           TECH_COOKIE_NAME: xt-localhost

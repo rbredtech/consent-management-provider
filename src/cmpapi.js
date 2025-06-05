@@ -1,5 +1,5 @@
 (function () {
-  var cmpEnabled = '__ejs(/*-CMP_ENABLED*/);' === 'true';
+  var cmpEnabled = '{{CMP_ENABLED}}' === 'true';
 
   var lsAvailable = (function () {
     try {
@@ -93,19 +93,19 @@
     }
   }
 
-  var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('__ejs(/*-CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT*/);');
+  var outOfSample = Math.floor(Math.random() * 100) + 1 > parseInt('{{CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT}}');
   var now = new Date().getTime();
 
   var technicalCookieFromCookie = parseInt('{{TECH_COOKIE_VALUE}}');
-  var technicalCookieFromLocalStorage = parseInt(readStorage('__ejs(/*-TECH_COOKIE_NAME*/);'));
+  var technicalCookieFromLocalStorage = parseInt(readStorage('{{TECH_COOKIE_NAME}}'));
   if (!technicalCookieFromLocalStorage && technicalCookieFromCookie) {
-    writeStorage('__ejs(/*-TECH_COOKIE_NAME*/);', technicalCookieFromCookie);
+    writeStorage('{{TECH_COOKIE_NAME}}', technicalCookieFromCookie);
   }
   var technicalCookie = technicalCookieFromLocalStorage || technicalCookieFromCookie || now;
-  var technicalCookiePassed = now - technicalCookie >= parseInt('__ejs(/*-TECH_COOKIE_MIN*/);');
+  var technicalCookiePassed = now - technicalCookie >= parseInt('{{TECH_COOKIE_MIN}}');
 
-  var consentFromCookie = consentCookieDecoder('{{CONSENT_COOKIE_CONTENT}}');
-  var consentFromLocalStorage = parseSerializedConsentByVendorId(readStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);'));
+  var consentFromCookie = consentCookieDecoder('{{CONSENT_COOKIE_VALUE}}');
+  var consentFromLocalStorage = parseSerializedConsentByVendorId(readStorage('{{CONSENT_COOKIE_NAME}}'));
   var consentByVendorId = consentFromLocalStorage || consentFromCookie;
 
   function mergeConsentsByVendorId(toAdd) {
@@ -198,13 +198,10 @@
 
         image = document.createElement('img');
         image.src =
-          window.location.protocol +
-          '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?c=' +
-          encodeURIComponent(consentCookieEncoder(updated)) +
-          ('&t=' + new Date().getTime());
+          window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}set-consent?c=' + encodeURIComponent(consentCookieEncoder(updated)) + ('&t=' + new Date().getTime());
 
         image.onload = function () {
-          writeStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serializeConsentByVendorId(updated));
+          writeStorage('{{CONSENT_COOKIE_NAME}}', serializeConsentByVendorId(updated));
           consentByVendorId = updated;
 
           log(logEvents.SET_CONSENT, true, {
@@ -230,13 +227,10 @@
 
         image = document.createElement('img');
         image.src =
-          window.location.protocol +
-          '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);set-consent?c=' +
-          encodeURIComponent(consentCookieEncoder(merged)) +
-          ('&t=' + new Date().getTime());
+          window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}set-consent?c=' + encodeURIComponent(consentCookieEncoder(merged)) + ('&t=' + new Date().getTime());
 
         image.onload = function () {
-          writeStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);', serializeConsentByVendorId(merged));
+          writeStorage('{{CONSENT_COOKIE_NAME}}', serializeConsentByVendorId(merged));
           consentByVendorId = merged;
 
           log(logEvents.SET_CONSENT_BY_VENDOR_ID, true, {
@@ -259,10 +253,10 @@
         break;
       case 'removeConsentDecision':
         image = document.createElement('img');
-        image.src = window.location.protocol + '//__ejs(/*-CONSENT_HOST*/);__ejs(/*-VERSION_PATH*/);remove-consent?t=' + new Date().getTime();
+        image.src = window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}remove-consent?t=' + new Date().getTime();
 
         image.onload = function () {
-          removeStorage('__ejs(/*-CONSENT_COOKIE_NAME*/);');
+          removeStorage('{{CONSENT_COOKIE_NAME}}');
           consentByVendorId = undefined;
 
           log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: lsAvailable });

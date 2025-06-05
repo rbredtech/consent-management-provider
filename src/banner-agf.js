@@ -206,7 +206,7 @@
         if (callback && typeof callback === 'function') {
           callback(undefined, 'timeout');
         }
-      }, parseInt('__ejs(/*-BANNER_TIMEOUT*/);'));
+      }, parseInt('{{BANNER_TIMEOUT}}'));
     }
 
     function hideConsentBanner() {

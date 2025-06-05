@@ -19,8 +19,14 @@ const terserOptions = {
   compress: {
     arrows: false,
     booleans: false,
+    comparisons: false,
+    conditionals: false,
     drop_console: true,
+    evaluate: false,
+    if_return: false,
     keep_fargs: true,
+    negate_iife: false,
+    properties: false,
     typeofs: false,
   },
   mangle: {

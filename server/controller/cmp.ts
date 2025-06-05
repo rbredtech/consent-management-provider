@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const { CONSENT_COOKIE_NAME, CONSENT_HOST, COOKIE_DOMAIN, TECH_COOKIE_NAME, VERSION_PATH } = process.env;
+const { CONSENT_HOST, COOKIE_DOMAIN, TECH_COOKIE_NAME, CONSENT_PATH } = process.env;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,13 +21,9 @@ export const cmpController = async (req: Request, res: Response) => {
   }
 
   try {
-    const cmpJs = (
-      await renderFile(path.join(__dirname, "../../src/cmp.js"), {
-        VERSION_PATH,
-        CONSENT_HOST,
-      })
-    )
-      .replaceAll("{{CONSENT_COOKIE_CONTENT}}", req.cookies[String(CONSENT_COOKIE_NAME)] ?? "")
+    const cmpJs = (await renderFile(path.join(__dirname, "../../src/cmp.js")))
+      .replaceAll("{{CONSENT_HOST}}", CONSENT_HOST ?? "")
+      .replaceAll("{{CONSENT_PATH}}", CONSENT_PATH ?? "")
       .replaceAll("{{TECH_COOKIE_VALUE}}", techCookieValue);
 
     res.send(cmpJs);

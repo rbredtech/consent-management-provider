@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const { CMP_ENABLED, CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT, CONSENT_COOKIE_NAME, CONSENT_HOST, COOKIE_DOMAIN, TECH_COOKIE_MIN, TECH_COOKIE_NAME, VERSION_PATH } = process.env;
+const { CMP_ENABLED, CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT, CONSENT_COOKIE_NAME, CONSENT_HOST, COOKIE_DOMAIN, TECH_COOKIE_MIN, TECH_COOKIE_NAME, CONSENT_PATH } = process.env;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,30 +11,25 @@ const __dirname = path.dirname(__filename);
 export const iframeController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "text/html");
 
-  let techCookieValue = req.query.x || req.cookies[String(TECH_COOKIE_NAME)];
-  if (!techCookieValue) {
-    techCookieValue = Date.now();
-    res.cookie(String(TECH_COOKIE_NAME), Date.now(), {
+  const techCookieValue = req.query.x || req.cookies[String(TECH_COOKIE_NAME)] || Date.now();
+  if (!req.cookies[String(TECH_COOKIE_NAME)]) {
+    res.cookie(String(TECH_COOKIE_NAME), techCookieValue, {
       maxAge: 63072000000,
       domain: COOKIE_DOMAIN,
     });
   }
 
   try {
-    const iframeHtml = (
-      await renderFile(path.join(__dirname, "../../src/iframe.html"), {
-        CONSENT_HOST,
-        VERSION_PATH,
-        CONSENT_COOKIE_NAME,
-        COOKIE_DOMAIN,
-        CMP_ENABLED,
-        TECH_COOKIE_MIN,
-        TECH_COOKIE_NAME,
-        CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
-      })
-    )
-      .replaceAll("{{CONSENT_COOKIE_CONTENT}}", req.cookies[String(CONSENT_COOKIE_NAME)] ?? "")
-      .replaceAll("{{TECH_COOKIE_VALUE}}", techCookieValue);
+    const iframeHtml = (await renderFile(path.join(__dirname, "../../src/iframe.html")))
+      .replaceAll("{{CMP_ENABLED}}", CMP_ENABLED ?? "")
+      .replaceAll("{{CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT}}", CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT ?? "")
+      .replaceAll("{{CONSENT_HOST}}", CONSENT_HOST ?? "")
+      .replaceAll("{{CONSENT_PATH}}", CONSENT_PATH ?? "")
+      .replaceAll("{{CONSENT_COOKIE_NAME}}", CONSENT_COOKIE_NAME ?? "")
+      .replaceAll("{{CONSENT_COOKIE_VALUE}}", req.cookies[String(CONSENT_COOKIE_NAME)] ?? "")
+      .replaceAll("{{TECH_COOKIE_NAME}}", TECH_COOKIE_NAME ?? "")
+      .replaceAll("{{TECH_COOKIE_VALUE}}", techCookieValue)
+      .replaceAll("{{TECH_COOKIE_MIN}}", TECH_COOKIE_MIN ?? "");
 
     res.send(iframeHtml);
   } catch (e) {
