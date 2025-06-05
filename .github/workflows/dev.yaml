@@ -83,7 +83,7 @@ jobs:
 
       - id: zip
         name: Zip templates
-        run: zip -r -j templates-agf-dev.zip ./dist/*
+        run: zip -r -j templates.zip ./dist/*
 
       - id: snapshot
         name: Create snapshot tag
@@ -97,7 +97,7 @@ jobs:
           name: ${{ steps.snapshot.outputs.version }}
           tag_name: ${{ steps.snapshot.outputs.version }}
           files: |
-            templates-agf-dev.zip
+            templates.zip
           prerelease: true
           generate_release_notes: true
         env:

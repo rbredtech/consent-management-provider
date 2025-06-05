@@ -78,7 +78,7 @@ jobs:
 
       - id: zip
         name: Zip templates
-        run: zip -r -j templates-agf-prod.zip ./dist/*
+        run: zip -r -j templates.zip ./dist/*
 
       - id: release
         name: Create release
@@ -86,6 +86,6 @@ jobs:
         with:
           name: ${{  github.ref_name }}
           files: |
-            templates-agf-prod.zip
+            templates.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
