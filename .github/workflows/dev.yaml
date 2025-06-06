@@ -79,7 +79,7 @@ jobs:
 
       - id: build
         name: Build templates
-        run: yarn build --config .env.agf.dev
+        run: yarn build
 
       - id: zip
         name: Zip templates

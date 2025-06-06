@@ -1,6 +1,5 @@
 import gulp from "gulp";
 import ejs from "gulp-ejs";
-import envLoader from "gulp-env-loader";
 import htmlmin from "gulp-htmlmin";
 import minifyInline from "gulp-minify-inline";
 import size from "gulp-size";
@@ -8,7 +7,6 @@ import terser from "gulp-terser";
 import yargs from "yargs";
 
 const args = yargs(process.argv).argv;
-const config = envLoader(args.config || ".env").env;
 const dest = args.dist || "dist";
 
 ejs.__EJS__.delimiter = "*";
@@ -35,10 +33,7 @@ const terserOptions = {
 };
 
 function compile() {
-  return gulp
-    .src(["src/*.js", "src/*.html"])
-    .pipe(ejs({ ...config }))
-    .pipe(gulp.dest(dest));
+  return gulp.src(["src/*.js", "src/*.html"]).pipe(ejs()).pipe(gulp.dest(dest));
 }
 
 function minifyJS() {
