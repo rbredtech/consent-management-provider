@@ -69,6 +69,7 @@ __ejs(/*- include("partials/ponyfills.js") */);
     iframe.setAttribute('src', window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}iframe.html?x={{TECH_COOKIE_VALUE}}');
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('tabindex', '-1');
 
     iframe.onload = function () {
       if (!iframe.contentWindow || !iframe.contentWindow.postMessage) {
