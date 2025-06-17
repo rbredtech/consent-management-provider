@@ -11,8 +11,8 @@ const __dirname = path.dirname(__filename);
 export const cmpapiController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
 
-  const techCookieValue = req.query.x || req.cookies[String(TECH_COOKIE_NAME)] || Date.now();
-  if (!req.cookies[String(TECH_COOKIE_NAME)]) {
+  const techCookieValue = req.query.x || req.cookies?.[String(TECH_COOKIE_NAME)] || Date.now();
+  if (!req.cookies?.[String(TECH_COOKIE_NAME)]) {
     res.cookie(String(TECH_COOKIE_NAME), techCookieValue, {
       maxAge: 63072000000,
       domain: COOKIE_DOMAIN,
@@ -26,7 +26,7 @@ export const cmpapiController = async (req: Request, res: Response) => {
       .replaceAll("{{CONSENT_HOST}}", CONSENT_HOST ?? "")
       .replaceAll("{{CONSENT_PATH}}", CONSENT_PATH ?? "")
       .replaceAll("{{CONSENT_COOKIE_NAME}}", CONSENT_COOKIE_NAME ?? "")
-      .replaceAll("{{CONSENT_COOKIE_VALUE}}", req.cookies[String(CONSENT_COOKIE_NAME)] ?? "")
+      .replaceAll("{{CONSENT_COOKIE_VALUE}}", req.cookies?.[String(CONSENT_COOKIE_NAME)] ?? "")
       .replaceAll("{{TECH_COOKIE_NAME}}", TECH_COOKIE_NAME ?? "")
       .replaceAll("{{TECH_COOKIE_VALUE}}", techCookieValue)
       .replaceAll("{{TECH_COOKIE_MIN}}", TECH_COOKIE_MIN ?? "");

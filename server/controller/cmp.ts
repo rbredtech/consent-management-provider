@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 export const cmpController = async (req: Request, res: Response) => {
   res.setHeader("Content-Type", "application/javascript");
 
-  let techCookieValue = req.cookies[String(TECH_COOKIE_NAME)];
+  let techCookieValue = req.cookies?.[String(TECH_COOKIE_NAME)];
   if (!techCookieValue) {
     techCookieValue = Date.now();
     res.cookie(String(TECH_COOKIE_NAME), Date.now(), {
