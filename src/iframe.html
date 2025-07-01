@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC '-//HbbTV//1.1.1//EN' 'http://www.hbbtv.org/dtd/HbbTV-1.1.1.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+  <meta http-equiv="content-type" content="application/vnd.hbbtv.xhtml+xml; charset=utf-8" />
+  <script type='text/javascript'>
+    //<![CDATA[
+    __ejs(/*- include("partials/ponyfills.js") */);
+
+    (function () {
+      function _message(msg) {
+        if (window.parent && window.parent.postMessage) {
+          window.parent.postMessage(msg, '*');
+        }
+      }
+
+      function messageEventHandler(event) {
+        if (!event.data || typeof event.data !== 'string') {
+          return;
+        }
+
+        try {
+          var message = event.data.split(';');
+          if (message[1] === 'cmd') {
+            var id = message[0];
+            var cmd = message[2];
+            var version = message[3];
+            var param = window.jsonParse(message[4]);
+            __cmpapi(
+              cmd,
+              version,
+              function (cbParam) {
+                _message('tvicmp;' + id + ';' + window.jsonStringify({ param: cbParam }));
+              },
+              param.param
+            );
+          }
+        } catch (e) {}
+      }
+
+      window.addEventListener('message', messageEventHandler, false);
+    })();
+
+    __ejs(/*- include("cmpapi.js") */);
+    //]]>
+  </script>
+</head>
+
+<body></body>
+
+</html>

@@ -1,5 +1,5 @@
 # specific
-dist/**
+dist
 
 # general
 node_modules/**
