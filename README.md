@@ -27,33 +27,48 @@ Usage/Integration examples can be found in the `/examples` folder of this reposi
 To configure the service for local execution, create a `.env` (`.env.example` can be used as a template) and set the
 values in that file accordingly.
 
-Install dependencies with `yarn install`.
+Install dependencies with
+
+- `yarn install`
 
 To run during development use
 
-- `yarn watch` (loads with wrapper to display UI and auto-refresh on template changes) or
-- `yarn dev` (loads with wrapper, no auto-refresh for templates).
+- `yarn dev`
 
-To run in production use `yarn start` or `yarn prod` after running the `yarn build` command.
+To create a build you can use
 
-This project uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
-for adding new features and creating new releases. It is advised to install the
-[Gitflow extension](https://skoch.github.io/Git-Workflow/) on your system.
+- `yarn build`
 
-### Propose a change/feature
+to create a build in the `/dist` folder and
+
+- `yarn serve-dist`
+
+to serve ist from `localhost:9999`
+
+### local hosts setup
+
+In order to be able to test the cookie/localStorage behavior as close as possible to real life (cross-domain restrictions), specifically
+the `yarn ci` command uses a setup where the scripts are requested from `http://local.consent.com` and the host-app is loaded from
+`http://local.client.com`. In order to use the `yarn ci` command locally, you need to set up these two domains in your `hosts` file.
+
+## Feature-proposals and releases
+
+> [!TIP]
+> This project uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
+> for adding new features and creating new releases. It is advised to install the
+> [Gitflow extension](https://skoch.github.io/Git-Workflow/) on your system.
 
 In order to propose a new feature/a change or bugfix, a feature branch named `feature/[descriptive-name]`
 needs to be created from the `develop` branch. After adding the desired changes to this branch, a pull request
 needs to be opened and reviewed before the changes can be merged into the `develop` branch.
 
-Every push/merge to the `develop` branch creates a snapshot tag (e.g. `v0.1.2_snapshot_26`) which makes it easier
-to inspect all changes since the currently released version (which would be `v0.1.2` for the given example).
+Every push/merge to the `develop` branch creates a snapshot tag and release (e.g. `snapshot_26`).
 
-## Releases
+### Releases
 
 Creating a new release follows the gitflow pattern of creating a release branch named `release/vx.x.x`
 (the pattern `"v" + version number` is mandatory), which upon wrapping up creates a tag with the release name (e.g. `v1.0.1`),
 and the branch gets merged back into `master`.
 
-When a new release is tagged, a docker image containing this version of the app is created. This image is
-then pushed to <https://github.com/rbredtech/consent-management-provider/pkgs/container/consent-management-provider>.
+When a new release is tagged, the script-templates are created and added to the github release, which can be found here:
+https://github.com/rbredtech/consent-management-provider/releases.

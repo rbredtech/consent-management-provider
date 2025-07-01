@@ -7,12 +7,12 @@ const cases = [
   [false, false],
 ];
 
-describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
+describe.each(cases)("Consent banner (AGF) - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
   let page;
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
-    await pageHelper.init(page);
+    await pageHelper.init(page, true);
   }, 20000);
 
   afterAll(async () => {
@@ -21,7 +21,7 @@ describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStor
 
   test("Banner pop-up is NOT displayed", async () => {
     await expect(
-      page.waitForSelector("div#agttcnstbnnr", {
+      page.waitForSelector("div#agfcnsntbnnr", {
         visible: true,
         timeout: 1000,
       }),
@@ -33,7 +33,7 @@ describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStor
       await page.evaluate(() => {
         window.__cbapi("showBanner", 2, function (consentDecision) {
           if (typeof consentDecision === "boolean") {
-            window.__cmpapi("setConsent", 2, undefined, consentDecision);
+            window.__cmpapi("setConsentByVendorId", 2, undefined, { 5050: consentDecision });
           }
         });
       });
@@ -41,7 +41,7 @@ describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStor
 
     test("Banner pop-up is displayed", async () => {
       await expect(
-        page.waitForSelector("div#agttcnstbnnr", {
+        page.waitForSelector("div#agfcnsntbnnr", {
           visible: true,
           timeout: 1000,
         }),
@@ -64,7 +64,7 @@ describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStor
               window.__cmpapi("getTCData", 2, resolve);
             }),
         );
-        expect(tcData.vendor.consents).toEqual({ 4040: true, 4041: true });
+        expect(tcData.vendor.consents).toEqual({ 5050: true });
       });
 
       describe("When banner is requested again", () => {
@@ -72,7 +72,7 @@ describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStor
           await page.evaluate(() => {
             window.__cbapi("showBanner", 2, function (consentDecision) {
               if (typeof consentDecision === "boolean") {
-                window.__cmpapi("setConsent", 2, undefined, consentDecision);
+                window.__cmpapi("setConsentByVendorId", 2, undefined, { 5050: consentDecision });
               }
             });
           });
@@ -95,7 +95,7 @@ describe.each(cases)("Consent banner - localStorage: %s, iFrame: %s", (localStor
                   window.__cmpapi("getTCData", 2, resolve);
                 }),
             );
-            expect(tcData.vendor.consents).toEqual({ 4040: false, 4041: false });
+            expect(tcData.vendor.consents).toEqual({ 5050: false });
           });
         });
       });

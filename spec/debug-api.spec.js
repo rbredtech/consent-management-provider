@@ -1,18 +1,23 @@
-const { describe, beforeAll, expect, afterAll, it } = require("@jest/globals");
 const pageHelper = require("./helper/page");
 
-describe.each([true, false])("Debug API - iFrame: %s", (iFrame) => {
+const cases = [
+  [true, true], // [localStorage, iFrame]
+  [true, false],
+  [false, true],
+  [false, false],
+];
+
+describe.each(cases)("Debug API - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
   let page;
 
   beforeAll(async () => {
-    page = await pageHelper.get(false, !iFrame);
-    await page.goto(`${pageHelper.HTTP_PROTOCOL}://${pageHelper.HTTP_HOST}/health`);
-    await pageHelper.initLoader(page);
-  }, 5000);
+    page = await pageHelper.get(!localStorage, !iFrame);
+    await pageHelper.init(page);
+  }, 20000);
 
   afterAll(async () => {
     await page.browser().close();
-  }, 5000);
+  }, 20000);
 
   describe("when debug listener is subscribed", () => {
     beforeAll(async () => {
@@ -65,16 +70,12 @@ describe.each([true, false])("Debug API - iFrame: %s", (iFrame) => {
       });
 
       describe("and setConsent API method is called again", () => {
-        let consentCookieLoaded;
-
         beforeAll(async () => {
-          consentCookieLoaded = page.waitForResponse((response) => response.url().includes("set-consent"));
           await page.evaluate(() => {
             return new Promise((resolve) => {
               window.__cmpapi("setConsent", 2, resolve, false);
             });
           });
-          await consentCookieLoaded;
         });
 
         it("should log activity for setConsent", async () => {
@@ -86,7 +87,7 @@ describe.each([true, false])("Debug API - iFrame: %s", (iFrame) => {
             event: "setConsent",
             parameters: {
               consentByVendorId: { 4040: false, 4041: false },
-              localStorageAvailable: true,
+              localStorageAvailable: localStorage,
             },
             success: true,
             ts: expect.any(Number),

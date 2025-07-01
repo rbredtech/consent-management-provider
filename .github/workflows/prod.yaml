@@ -1,12 +1,10 @@
-name: Develop
-
+name: Release
 on:
   push:
     branches:
-      - "develop"
-      - "feature/*"
-      - "release/*"
-      - "hotfix/*"
+      - "!develop"
+    tags:
+      - "v*.*.*"
 
 jobs:
   test:
@@ -53,14 +51,11 @@ jobs:
           CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT: 100
           BANNER_TIMEOUT: 120000
 
-  create-prerelease:
-    name: Create Pre-Release
+  release:
+    name: Create release
     needs: test
-    # if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    permissions:
-      contents: write
 
     steps:
       - id: node
@@ -78,26 +73,19 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - id: build
-        name: Build templates
+        name: Build
         run: yarn build
 
       - id: zip
         name: Zip templates
         run: zip -r -j templates.zip ./dist/*
 
-      - id: snapshot
-        name: Create snapshot tag
-        run: |
-          echo 'version=snapshot_${{ github.run_number }}' >> $GITHUB_OUTPUT
-
       - id: release
         name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ steps.snapshot.outputs.version }}
-          tag_name: ${{ steps.snapshot.outputs.version }}
+          name: ${{  github.ref_name }}
           files: |
             templates.zip
-          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

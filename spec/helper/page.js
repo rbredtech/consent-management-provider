@@ -1,15 +1,11 @@
 const puppeteer = require("puppeteer");
 
-const HTTP_HOST = process.env.HTTP_HOST || "localhost:8080";
-const HTTP_PROTOCOL = process.env.HTTP_PROTOCOL || "http";
-const API_VERSION = process.env.API_VERSION;
-
 async function get(disableLocalStorage, disableIframe) {
-  const args = ["--disable-gpu", "--no-sandbox"];
+  const args = ["--no-sandbox", "--disable-setuid-sandbox"];
   if (disableLocalStorage) {
     args.push("--disable-local-storage");
   }
-  const browser = await puppeteer.launch({ dumpio: false, args });
+  const browser = await puppeteer.launch({ args });
   const page = await browser.newPage();
   if (disableIframe) {
     await page.setUserAgent("HbbTV/1.1.1 (+PVR;Humax;HD FOX+;1.00.20;1.0;)CE-HTML/1.0 ANTGalio/3.3.0.26.03");
@@ -17,22 +13,19 @@ async function get(disableLocalStorage, disableIframe) {
   return page;
 }
 
-async function initLoader(page, channelId = 9999, withBanner = false) {
-  let pageContent = `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}${API_VERSION ? `/${API_VERSION}/` : "/"}cmp.js?channelId=${channelId}"></script>`;
-  if (withBanner) {
-    pageContent += `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}${API_VERSION ? `/${API_VERSION}/` : "/"}banner.js?channelId=${channelId}"></script>`;
-  }
-  await page.setContent(pageContent);
-  await page.waitForFunction(() => document.readyState === "complete");
+async function init(page, agfBanner = false) {
+  await page.goto("http://local.client.com:5555");
+  await page.setContent(
+    `<!DOCTYPE html PUBLIC '-//HbbTV//1.1.1//EN' 'http://www.hbbtv.org/dtd/HbbTV-1.1.1.dtd'>
+    <html xmlns='http://www.w3.org/1999/xhtml'>
+    <head>
+      <meta http-equiv='content-type' content='application/vnd.hbbtv.xhtml+xml; charset=utf-8' />
+      <script type='text/javascript' src='http://local.consent.com:3000/cmp.js'></script>
+      <script type='text/javascript' src='http://local.consent.com:3000/${agfBanner ? "banner-agf.js" : "banner.js"}'></script>
+    </head>
+    <body></body>
+    </html>`,
+  );
 }
 
-async function initLoaderWithTracking(page, channelId = 9999, withBanner = false) {
-  let pageContent = `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}${API_VERSION ? `/${API_VERSION}/` : "/"}cmp-with-tracking.js?channelId=${channelId}&cmpId=4040"></script>`;
-  if (withBanner) {
-    pageContent += `<script type='text/javascript' src="${HTTP_PROTOCOL}://${HTTP_HOST}${API_VERSION ? `/${API_VERSION}/` : "/"}banner.js?channelId=${channelId}"></script>`;
-  }
-  await page.setContent(pageContent);
-  await page.waitForFunction(() => document.readyState === "complete");
-}
-
-module.exports = { get, initLoader, initLoaderWithTracking, HTTP_HOST, HTTP_PROTOCOL };
+module.exports = { get, init };
