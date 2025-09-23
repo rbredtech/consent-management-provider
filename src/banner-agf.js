@@ -59,7 +59,7 @@
     bannerOuter.style.borderRadius = '8px';
 
     var bannerContentWrapper = document.createElement('div');
-    bannerContentWrapper.style.margin = '30px 70px 0 70px';
+    bannerContentWrapper.style.margin = '30px 40px 0 40px';
 
     var bannerHeader = document.createElement('span');
     bannerHeader.style.display = 'block';
@@ -75,15 +75,13 @@
     bodyBuilder(bannerLegalText);
 
     var bannerActionsWrapper = document.createElement('div');
-    bannerActionsWrapper.style.color = '#ea515a';
-    bannerActionsWrapper.style.margin = '30px 70px 40px 70px';
+    bannerActionsWrapper.style.margin = '30px 40px 30px 40px';
 
     var bannerActionAccept = document.createElement('span');
     bannerActionAccept.id = 'consBtnAgree';
     bannerActionAccept.className = 'selected';
     bannerActionAccept.style.marginRight = '10px';
     bannerActionAccept.style.padding = secondaryButtonType === 'go-to-settings' ? '10px 30px' : '10px';
-    bannerActionAccept.style.border = '2px solid #ea515a';
     bannerActionAccept.style.borderRadius = '8px';
     bannerActionAccept.style.backgroundColor = '#ea515a';
     bannerActionAccept.style.color = '#ffffff';
@@ -100,10 +98,9 @@
     bannerActionDecline.id = 'consBtnDecline';
     bannerActionDecline.style.marginRight = '10px';
     bannerActionDecline.style.padding = '10px';
-    bannerActionDecline.style.border = '2px solid #ea515a';
     bannerActionDecline.style.borderRadius = '8px';
-    bannerActionDecline.style.backgroundColor = '#ffffff';
-    bannerActionDecline.style.color = '#ea515a';
+    bannerActionDecline.style.backgroundColor = '#9ebcc7';
+    bannerActionDecline.style.color = '#0C5873';
     bannerActionDecline.setAttribute('data-reason', secondaryButtonType);
     switch (secondaryButtonType) {
       case 'go-to-settings':
@@ -238,8 +235,8 @@
         return;
       }
       element.className = element.className.replace(/selected/g, '');
-      element.style.color = '#ea515a';
-      element.style.backgroundColor = '#ffffff';
+      element.style.color = '#0C5873';
+      element.style.backgroundColor = '#9ebcc7';
     }
 
     function handleSelectionToggle() {
