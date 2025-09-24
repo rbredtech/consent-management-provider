@@ -98,7 +98,7 @@ __ejs(/*- include("partials/ponyfills.js") */);
   function loadCmpApi() {
     var cmpapiScriptTag = document.createElement('script');
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
-    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}cmpapi.js?');
+    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}cmpapi.js');
 
     cmpapiScriptTag.onload = function () {
       onAPILoaded('3rdparty');
