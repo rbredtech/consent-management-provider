@@ -7,7 +7,7 @@ const cases = [
   [false, false],
 ];
 
-describe.each(cases)("Additional channels banner - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
+describe.each(cases)("Additional channels banner (AGF) - localStorage: %s, iFrame: %s", (localStorage, iFrame) => {
   let page;
 
   beforeAll(async () => {
