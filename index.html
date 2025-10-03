@@ -53,7 +53,7 @@
         //]]>
     </script>
     <script type='text/javascript' src='http://localhost:3000/cmp.js'></script>
-    <script type='text/javascript' src='http://localhost:3000/banner.js'></script>
+    <script type='text/javascript' src='http://localhost:3000/banner-agf.js'></script>
     <script>
         //<![CDATA[
         var isShowingBanner = false;
@@ -89,10 +89,10 @@
             isShowingBanner = false;
         }
 
-        function showAgttConsentBanner() {
+        function showConsentBanner() {
             isShowingBanner = true;
             var showBannerMethod = previousConsentAvailable ? 'showAdditionalChannelsBanner' : 'showBanner';
-            window.__cbapi('showBanner', 2, bannerClosedCallback, 'cmp'); // mount banner to dom-node with id 'cmp'
+            window.__cbapi(showBannerMethod, 2, bannerClosedCallback, 'cmp'); // mount banner to dom-node with id 'cmp'
         }
 
         function initKeyCodes() {
@@ -110,7 +110,7 @@
             } else {
                 switch (event.keyCode) {
                     case KeyEvent.VK_RED:
-                        showAgttConsentBanner();
+                        showConsentBanner();
                         break;
                     case KeyEvent.VK_GREEN:
                         window.__cmpapi('removeConsentDecision', 2, undefined);
@@ -144,7 +144,7 @@
                         previousConsentAvailable = true;
                     }
                     if (previousConsent === undefined || (previousConsent === true && consent === undefined)) {
-                        showAgttConsentBanner();
+                        showConsentBanner();
                     }
                     if (consent === true) {
                         console.log('Consent already given');
