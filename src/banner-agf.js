@@ -46,11 +46,11 @@
     return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'go-to-settings', function (bannerLegalText) {
       bannerLegalText.appendChild(
         document.createTextNode(
-          'Der Verein Arbeitsgemeinschaft Teletest (kurz AGTT, Details siehe www.agtt.at/hbb-messung) führt Messungen des ' +
-            'Nutzungsverhaltens durch. Zu dieser Messung haben Sie bereits Ihre Einwilligung erteilt. Nunmehr möchte die AGTT die ' +
-            'Messung auch auf andere Sender ausdehnen. Dies möchten wir Ihnen hiermit zur Kenntnis bringen. Die aktuelle Liste aller ' +
-            'Sender, bei denen das Nutzungsverhalten durch die AGTT gemessen wird, finden Sie unter www.agtt.at/hbb-messung. Falls ' +
-            'Sie Ihre Einstellungen ändern möchten, können Sie dies in den „Einstellungen“ tun. Vielen Dank für Ihre Unterstützung.'
+          'Die AGF Videoforschung GmbH (kurz AGF) führt Messungen des Nutzungsverhaltens durch, zu welcher Sie bereits Ihre Einwilligung erteilt haben. ' +
+            'Nunmehr möchte die AGF die Messung auch auf andere Sender ausdehnen. Dies möchten wir Ihnen hiermit zur Kenntnis bringen. ' +
+            'Die aktuelle Liste aller Sender, bei denen das Nutzungsverhalten durch die AGF gemessen wird, finden Sie unter ' +
+            'https://www.agf.de/agf-hbbtv-nutzungsmessung-beteiligteunddatenschutzrechtlichverantwortliche. Falls Sie Ihre Einstellungen ändern möchten, ' +
+            'können Sie dies in den „Einstellungen“ tun. Vielen Dank für Ihre Unterstützung.'
         )
       );
     });
