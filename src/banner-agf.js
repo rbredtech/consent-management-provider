@@ -42,6 +42,20 @@
     });
   }
 
+  function buildBannerAdditionalChannelsElement() {
+    return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'go-to-settings', function (bannerLegalText) {
+      bannerLegalText.appendChild(
+        document.createTextNode(
+          'Die AGF Videoforschung GmbH (kurz AGF) führt Messungen des Nutzungsverhaltens durch, zu welcher Sie bereits Ihre Einwilligung erteilt haben. ' +
+            'Nunmehr möchte die AGF die Messung auch auf andere Sender ausdehnen. Dies möchten wir Ihnen hiermit zur Kenntnis bringen. ' +
+            'Die aktuelle Liste aller Sender, bei denen das Nutzungsverhalten durch die AGF gemessen wird, finden Sie unter ' +
+            'https://www.agf.de/agf-hbbtv-nutzungsmessung-beteiligteunddatenschutzrechtlichverantwortliche. Falls Sie Ihre Einstellungen ändern möchten, ' +
+            'können Sie dies in den „Einstellungen“ tun. Vielen Dank für Ihre Unterstützung.'
+        )
+      );
+    });
+  }
+
   function buildBanner(header, secondaryButtonType, bodyBuilder) {
     var bannerOuter = document.createElement('div');
     bannerOuter.id = 'agfcnsntbnnr';
@@ -160,7 +174,7 @@
   }
 
   window.__cbapi = function (command, _version, callback, parameter) {
-    function mountConsentBanner(elementId) {
+    function mountConsentBanner(elementId, bannerType) {
       var bannerParentNode = getBannerParentNode(elementId);
 
       if (!bannerParentNode) {
@@ -170,7 +184,11 @@
       var banner = document.getElementById('agfcnsntbnnr');
 
       if (!banner) {
-        banner = buildBannerElement();
+        if (bannerType === 'additional-channels') {
+          banner = buildBannerAdditionalChannelsElement();
+        } else {
+          banner = buildBannerElement();
+        }
         bannerParentNode.appendChild(banner);
       }
 
@@ -181,8 +199,8 @@
       return banner;
     }
 
-    function showConsentBanner(elementId, callback) {
-      var banner = mountConsentBanner(elementId);
+    function showConsentBanner(elementId, callback, bannerType) {
+      var banner = mountConsentBanner(elementId, bannerType);
 
       if (!banner) {
         if (callback && typeof callback === 'function') {
@@ -298,7 +316,16 @@
         waitForDOMElement(
           parameter,
           function () {
-            showConsentBanner(parameter, callback);
+            showConsentBanner(parameter, callback, 'basic');
+          },
+          3
+        );
+        break;
+      case 'showAdditionalChannelsBanner':
+        waitForDOMElement(
+          parameter,
+          function () {
+            showConsentBanner(parameter, callback, 'additional-channels');
           },
           3
         );
