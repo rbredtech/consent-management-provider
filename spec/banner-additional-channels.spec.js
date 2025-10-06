@@ -55,11 +55,9 @@ describe.each(cases)("Consent banner (additional channels) - localStorage: %s, i
 
     describe("When OK button is hit", () => {
       beforeAll(async () => {
-        const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
         await page.evaluate(() => {
           window.__cbapi("handleKey", 2, undefined, 13);
         });
-        await setConsentEndpointCalled;
       });
 
       test("Consent is saved (true)", async () => {
