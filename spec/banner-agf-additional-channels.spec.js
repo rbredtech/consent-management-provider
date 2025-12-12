@@ -12,7 +12,7 @@ describe.each(cases)("Additional channels banner (AGF) - localStorage: %s, iFram
 
   beforeAll(async () => {
     page = await pageHelper.get(!localStorage, !iFrame);
-    await pageHelper.init(page);
+    await pageHelper.init(page, true);
   }, 20000);
 
   afterAll(async () => {
@@ -21,7 +21,7 @@ describe.each(cases)("Additional channels banner (AGF) - localStorage: %s, iFram
 
   test("Banner pop-up is NOT displayed", async () => {
     await expect(
-      page.waitForSelector("div#agttcnstbnnr", {
+      page.waitForSelector("div#agfcnsntbnnr", {
         visible: true,
         timeout: 1000,
       }),
@@ -41,7 +41,7 @@ describe.each(cases)("Additional channels banner (AGF) - localStorage: %s, iFram
 
     test("Banner pop-up is displayed", async () => {
       await expect(
-        page.waitForSelector("div#agttcnstbnnr", {
+        page.waitForSelector("div#agfcnsntbnnr", {
           visible: true,
           timeout: 1000,
         }),
@@ -49,15 +49,17 @@ describe.each(cases)("Additional channels banner (AGF) - localStorage: %s, iFram
     });
 
     test("Previously given consent should be mentioned", async () => {
-      const bannerText = await page.$eval("div#agttcnstbnnr", (node) => node.innerText);
+      const bannerText = await page.$eval("div#agfcnsntbnnr", (node) => node.innerText);
       expect(bannerText).toContain("Sie bereits Ihre Einwilligung");
     });
 
     describe("When OK button is hit", () => {
       beforeAll(async () => {
+        const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
         await page.evaluate(() => {
           window.__cbapi("handleKey", 2, undefined, 13);
         });
+        await setConsentEndpointCalled;
       });
 
       test("Consent is saved (true)", async () => {
