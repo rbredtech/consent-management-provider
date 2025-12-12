@@ -46,12 +46,14 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
 
     describe("When consent is given", () => {
       beforeAll(async () => {
+        const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
               window.__cmpapi("setConsent", 2, resolve, true);
             }),
         );
+        await setConsentEndpointCalled;
       });
 
       test("Storage status is enabled and consent is true", async () => {
@@ -71,12 +73,14 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
 
     describe("When consent is deleted", () => {
       beforeAll(async () => {
+        const removeConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/remove-consent"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
               window.__cmpapi("removeConsentDecision", 2, resolve, true);
             }),
         );
+        await removeConsentEndpointCalled;
       });
 
       test("Storage status is enabled and consent is not defined", async () => {
@@ -96,21 +100,25 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
 
     describe("When consent is given for specific vendorId", () => {
       beforeAll(async () => {
+        const removeConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/remove-consent"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
               window.__cmpapi("removeConsentDecision", 2, resolve, true);
             }),
         );
+        await removeConsentEndpointCalled;
       });
 
       test("Storage status is enabled and vendor specific consents are set", async () => {
+        const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
               window.__cmpapi("setConsentByVendorId", 2, resolve, { 4041: true, 1234: false });
             }),
         );
+        await setConsentEndpointCalled;
 
         const apiResponse = await page.evaluate(
           () =>
@@ -127,12 +135,14 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
       });
 
       test("Storage status is enabled and vendor specific consents are updated", async () => {
+        const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
               window.__cmpapi("setConsentByVendorId", 2, resolve, { 4041: false });
             }),
         );
+        await setConsentEndpointCalled;
 
         const apiResponse = await page.evaluate(
           () =>

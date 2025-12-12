@@ -66,7 +66,7 @@ __ejs(/*- include("partials/ponyfills.js") */);
 
   function loadIframe() {
     iframe = document.createElement('iframe');
-    iframe.setAttribute('src', window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}iframe.html');
+    iframe.setAttribute('src', window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}iframe.html?x={{TECH_COOKIE_VALUE}}');
     iframe.setAttribute('style', 'position:fixed;border:0;outline:0;top:-999px;left:-999px;width:0;height:0;');
     iframe.setAttribute('frameborder', '0');
     iframe.setAttribute('tabindex', '-1');
@@ -98,7 +98,7 @@ __ejs(/*- include("partials/ponyfills.js") */);
   function loadCmpApi() {
     var cmpapiScriptTag = document.createElement('script');
     cmpapiScriptTag.setAttribute('type', 'text/javascript');
-    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}cmpapi.js');
+    cmpapiScriptTag.setAttribute('src', window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}cmpapi.js?x={{TECH_COOKIE_VALUE}}');
 
     cmpapiScriptTag.onload = function () {
       onAPILoaded('3rdparty');
