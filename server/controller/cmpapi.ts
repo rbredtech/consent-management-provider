@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const { CMP_ENABLED, CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT, CONSENT_COOKIE_NAME, CONSENT_HOST, TECH_COOKIE_MIN, TECH_COOKIE_NAME, CONSENT_PATH } = process.env;
+const { CMP_ENABLED, CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT, CONSENT_COOKIE_NAME, CONSENT_HOST, COOKIE_DOMAIN, TECH_COOKIE_MIN, TECH_COOKIE_NAME, CONSENT_PATH } = process.env;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,6 +17,7 @@ export const cmpapiController = async (req: Request, res: Response) => {
       .replaceAll("{{CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT}}", CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT ?? "")
       .replaceAll("{{CONSENT_HOST}}", CONSENT_HOST ?? "")
       .replaceAll("{{CONSENT_PATH}}", CONSENT_PATH ?? "")
+      .replaceAll("{{COOKIE_DOMAIN}}", COOKIE_DOMAIN ?? "")
       .replaceAll("{{CONSENT_COOKIE_NAME}}", CONSENT_COOKIE_NAME ?? "")
       .replaceAll("{{TECH_COOKIE_NAME}}", TECH_COOKIE_NAME ?? "")
       .replaceAll("{{TECH_COOKIE_MIN}}", TECH_COOKIE_MIN ?? "");

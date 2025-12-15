@@ -70,12 +70,13 @@
   function setCookie(name, value) {
     var date = new Date();
     date.setTime(date.getTime() + 2 * 365 * 24 * 60 * 60 * 1000); // 2 years
-    var cookie = name + '=' + value + ';expires=' + date.toUTCString() + ';path=/';
+    var cookie = name + '=' + value + ';expires=' + date.toUTCString() + ';domain={{COOKIE_DOMAIN}};path=/';
+    console.log('Setting cookie:', cookie);
     document.cookie = cookie;
   }
 
   function deleteCookie(name) {
-    var cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+    var cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;domain={{COOKIE_DOMAIN}};path=/';
     document.cookie = cookie;
   }
 
