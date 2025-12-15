@@ -68,13 +68,14 @@
   }
 
   function setCookie(name, value) {
-    var maxAge = 60 * 60 * 24 * 365 * 2; // 2 years
-    var cookie = name + '=' + value + ';max-age=' + maxAge + ';path=/';
+    var date = new Date();
+    date.setTime(date.getTime() + 2 * 365 * 24 * 60 * 60 * 1000); // 2 years
+    var cookie = name + '=' + value + ';expires=' + date.toUTCString() + ';path=/';
     document.cookie = cookie;
   }
 
   function deleteCookie(name) {
-    var cookie = name + '=;max-age=-1;path=/';
+    var cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
     document.cookie = cookie;
   }
 
