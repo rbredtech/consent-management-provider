@@ -39,9 +39,12 @@
       }
 
       window.addEventListener('message', messageEventHandler, false);
-    })();
 
-    __ejs(/*- include("cmpapi.js") */);
+      var cmpApiScriptTag = document.createElement('script');
+      cmpApiScriptTag.setAttribute('src', window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}cmpapi.js');
+      cmpApiScriptTag.setAttribute('type', 'text/javascript');
+      document.getElementsByTagName('head')[0].appendChild(cmpApiScriptTag);
+    })();
     //]]>
   </script>
 </head>
