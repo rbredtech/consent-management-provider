@@ -33,7 +33,7 @@ describe.each(cases)("Additional channels banner (AGF) - localStorage: %s, iFram
       await page.evaluate(() => {
         window.__cbapi("showAdditionalChannelsBanner", 2, function (consentDecision) {
           if (typeof consentDecision === "boolean") {
-            window.__cmpapi("setConsent", 2, undefined, consentDecision);
+            window.__cmpapi("setConsentByVendorId", 2, undefined, { 5050: consentDecision, 5051: consentDecision });
           }
         });
       });
@@ -50,10 +50,10 @@ describe.each(cases)("Additional channels banner (AGF) - localStorage: %s, iFram
 
     test("Previously given consent should be mentioned", async () => {
       const bannerText = await page.$eval("div#agfcnsntbnnr", (node) => node.innerText);
-      expect(bannerText).toContain("Sie bereits Ihre Einwilligung");
+      expect(bannerText).toContain("zu einem früheren Zeitpunkt zugestimmt");
     });
 
-    describe("When OK button is hit", () => {
+    describe("When Zustimmen button is hit", () => {
       beforeAll(async () => {
         const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
         await page.evaluate(() => {
@@ -69,7 +69,7 @@ describe.each(cases)("Additional channels banner (AGF) - localStorage: %s, iFram
               window.__cmpapi("getTCData", 2, resolve);
             }),
         );
-        expect(tcData.vendor.consents).toEqual({ 4040: true, 4041: true });
+        expect(tcData.vendor.consents).toEqual({ 5050: true, 5051: true });
       });
 
       describe("When banner is requested again", () => {
@@ -79,17 +79,39 @@ describe.each(cases)("Additional channels banner (AGF) - localStorage: %s, iFram
             window.__cbapi("showAdditionalChannelsBanner", 2, function (consentDecision, reason) {
               window.bannerCloseReason = reason;
               if (typeof consentDecision === "boolean") {
-                window.__cmpapi("setConsent", 2, undefined, consentDecision);
+                window.__cmpapi("setConsentByVendorId", 2, undefined, { 5050: consentDecision, 5051: consentDecision });
               }
             });
           });
         });
 
-        describe("And 'go to settings' is selected", () => {
+        describe("And 'Ablehnen' is selected", () => {
           beforeAll(async () => {
             await page.evaluate(() => {
               window.__cbapi("handleKey", 2, console.log, 39);
               window.__cbapi("handleKey", 2, console.log, 13);
+            });
+          });
+
+          test("banner close reason should be 'noconsent'", async () => {
+            const reason = await page.evaluate(() => {
+              return Promise.resolve(window.bannerCloseReason);
+            });
+            expect(reason).toBe("noconsent");
+          });
+        });
+
+        describe("And red button is pressed", () => {
+          beforeAll(async () => {
+            await page.evaluate(() => {
+              window.bannerCloseReason = "no-reason";
+              window.__cbapi("showAdditionalChannelsBanner", 2, function (consentDecision, reason) {
+                window.bannerCloseReason = reason;
+                if (typeof consentDecision === "boolean") {
+                  window.__cmpapi("setConsentByVendorId", 2, undefined, { 5050: consentDecision, 5051: consentDecision });
+                }
+              });
+              window.__cbapi("handleKey", 2, console.log, 403);
             });
           });
 
