@@ -3,6 +3,7 @@
   KeyEvent.VK_LEFT = KeyEvent.VK_LEFT || window['VK_LEFT'] || 37;
   KeyEvent.VK_RIGHT = KeyEvent.VK_RIGHT || window['VK_RIGHT'] || 39;
   KeyEvent.VK_ENTER = KeyEvent.VK_ENTER || window['VK_ENTER'] || 13;
+  KeyEvent.VK_RED = KeyEvent.VK_RED || window['VK_RED'] || 403;
 
   var consBtnAgree;
   var consBtnDecline;
@@ -10,7 +11,7 @@
   var hideBannerTimeout;
 
   function buildBannerElement() {
-    return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'noconsent', function (bannerLegalText) {
+    return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', function (bannerLegalText) {
       bannerLegalText.appendChild(
         document.createTextNode(
           'Wir möchten in einem gemeinsamen Projekt mit der AGF Videoforschung GmbH und weiteren TV-Sendern ' +
@@ -25,8 +26,8 @@
       bannerLegalText.appendChild(document.createElement('br'));
       bannerLegalText.appendChild(
         document.createTextNode(
-          'Geräte ID; IP-Adresse; System- bzw. Browserinformationen; Geräteinformationen (verwendet HbbTV-Version, ' +
-            'TV-Hersteller, Übertragungsweg via Satellit oder Kabel, Geräteauflösung); Datum, Uhrzeit, Dauer und Sender, ' +
+          'Geräte ID, IP-Adresse, System- bzw. Browserinformationen, Geräteinformationen (verwendet HbbTV-Version, ' +
+            'TV-Hersteller, Übertragungsweg via Satellit oder Kabel, Geräteauflösung), Datum, Uhrzeit, Dauer und Sender, ' +
             'der gesehen wurde.'
         )
       );
@@ -43,20 +44,41 @@
   }
 
   function buildBannerAdditionalChannelsElement() {
-    return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', 'go-to-settings', function (bannerLegalText) {
+    return buildBanner('Datenschutzeinwilligung zur Reichweitenmessung', function (bannerLegalText) {
       bannerLegalText.appendChild(
         document.createTextNode(
-          'Die AGF Videoforschung GmbH (kurz AGF) führt Messungen des Nutzungsverhaltens durch, zu welcher Sie bereits Ihre Einwilligung erteilt haben. ' +
-            'Nunmehr möchte die AGF die Messung auch auf andere Sender ausdehnen. Dies möchten wir Ihnen hiermit zur Kenntnis bringen. ' +
-            'Die aktuelle Liste aller Sender, bei denen das Nutzungsverhalten durch die AGF gemessen wird, finden Sie unter ' +
-            'https://www.agf.de/agf-hbbtv-nutzungsmessung-beteiligteunddatenschutzrechtlichverantwortliche. Falls Sie Ihre Einstellungen ändern möchten, ' +
-            'können Sie dies in den „Einstellungen“ tun. Vielen Dank für Ihre Unterstützung.'
+          'Wir möchten an einem gemeinsamen Projekt der AGF Videoforschung GmbH und weiterer TV-Sendern ' +
+            'https://www.agf.de/agf-hbbtv-nutzungsmessung-beteiligteunddatenschutzrechtlichverantwortliche ' +
+            'zur Erfassung und Analyse von Informationen über die Nutzung der TV-Geräte unserer Zuschauer ' +
+            'teilnehmen, um unser Programmangebot zu verbessern. Sie haben der Nutzung Ihrer Daten für dieses ' +
+            'Projekt bereits zu einem früheren Zeitpunkt zugestimmt; für unsere Teilnahme und die einiger ' +
+            'weiterer neuer Sender benötigen wir und die anderen Projektbeteiligten erneut Ihre Einwilligung. ' +
+            'Erteilen Sie eine Einwilligung, wird ein Cookie auf Ihrem Gerät platziert, durch das folgende ' +
+            'Informationen ausgelesen werden können:'
+        )
+      );
+      bannerLegalText.appendChild(document.createElement('br'));
+      bannerLegalText.appendChild(document.createElement('br'));
+      bannerLegalText.appendChild(
+        document.createTextNode(
+          'Geräte ID, IP-Adresse, System- bzw. Browserinformationen, Geräteinformationen (verwendet HbbTV-Version, ' +
+            'TV-Hersteller, Übertragungsweg via Satellit oder Kabel, Geräteauflösung), Datum, Uhrzeit, Dauer und Sender, ' +
+            'der gesehen wurde.'
+        )
+      );
+      bannerLegalText.appendChild(document.createElement('br'));
+      bannerLegalText.appendChild(document.createElement('br'));
+      bannerLegalText.appendChild(
+        document.createTextNode(
+          'Die Einwilligungserklärungen beziehen sich auf die Nutzungsmessung des Angebots aller teilnehmenden Sender und können in der ' +
+            'HbbTV-Applikation jedes Senders jederzeit mit Wirkung für die Zukunft widerrufen werden. Nähere Informationen zum Datenschutz ' +
+            'finden Sie in unserer HbbTV-Applikation. Drücken Sie hierfür die rote Taste auf Ihrer Fernbedienung.'
         )
       );
     });
   }
 
-  function buildBanner(header, secondaryButtonType, bodyBuilder) {
+  function buildBanner(header, bodyBuilder) {
     var bannerOuter = document.createElement('div');
     bannerOuter.id = 'agfcnsntbnnr';
     bannerOuter.style.position = 'absolute';
@@ -95,18 +117,12 @@
     bannerActionAccept.id = 'consBtnAgree';
     bannerActionAccept.className = 'selected';
     bannerActionAccept.style.marginRight = '10px';
-    bannerActionAccept.style.padding = secondaryButtonType === 'go-to-settings' ? '10px 30px' : '10px';
+    bannerActionAccept.style.padding = '10px';
     bannerActionAccept.style.borderRadius = '8px';
     bannerActionAccept.style.backgroundColor = '#ea515a';
     bannerActionAccept.style.color = '#ffffff';
     bannerActionAccept.setAttribute('data-reason', 'consent');
-    switch (secondaryButtonType) {
-      case 'go-to-settings':
-        bannerActionAccept.appendChild(document.createTextNode('OK'));
-        break;
-      default:
-        bannerActionAccept.appendChild(document.createTextNode('Zustimmen'));
-    }
+    bannerActionAccept.appendChild(document.createTextNode('Zustimmen'));
 
     var bannerActionDecline = document.createElement('span');
     bannerActionDecline.id = 'consBtnDecline';
@@ -115,14 +131,8 @@
     bannerActionDecline.style.borderRadius = '8px';
     bannerActionDecline.style.backgroundColor = '#9ebcc7';
     bannerActionDecline.style.color = '#0C5873';
-    bannerActionDecline.setAttribute('data-reason', secondaryButtonType);
-    switch (secondaryButtonType) {
-      case 'go-to-settings':
-        bannerActionDecline.appendChild(document.createTextNode('Einstellungen ändern'));
-        break;
-      default:
-        bannerActionDecline.appendChild(document.createTextNode('Ablehnen'));
-    }
+    bannerActionDecline.setAttribute('data-reason', 'noconsent');
+    bannerActionDecline.appendChild(document.createTextNode('Ablehnen'));
 
     bannerActionsWrapper.appendChild(bannerActionAccept);
     bannerActionsWrapper.appendChild(bannerActionDecline);
@@ -282,6 +292,17 @@
       setNotSelected(consBtnDecline);
     }
 
+    function handleRed() {
+      if (bannerCloseCallback && typeof bannerCloseCallback === 'function') {
+        bannerCloseCallback(undefined, 'go-to-settings');
+      }
+      hideConsentBanner();
+
+      // reset consent banner to have ACCEPT button selected
+      setSelected(consBtnAgree);
+      setNotSelected(consBtnDecline);
+    }
+
     function handleVK(parameter, callback) {
       if (!isConsentBannerVisible()) {
         return;
@@ -302,6 +323,12 @@
         case KeyEvent.VK_LEFT:
         case KeyEvent.VK_RIGHT:
           handleSelectionToggle();
+          if (callback && typeof callback === 'function') {
+            callback(keyCode);
+          }
+          break;
+        case KeyEvent.VK_RED:
+          handleRed();
           if (callback && typeof callback === 'function') {
             callback(keyCode);
           }
