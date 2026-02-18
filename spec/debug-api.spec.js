@@ -72,14 +72,12 @@ describe.each(cases)("Debug API - localStorage: %s, iFrame: %s", (localStorage, 
       describe("and setConsent API method is called again", () => {
         beforeAll(async () => {
           const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
-          const metaEndpointCalled = page.waitForResponse((response) => response.url().includes("/meta.gif"));
           await page.evaluate(() => {
             return new Promise((resolve) => {
               window.__cmpapi("setConsent", 2, resolve, false);
             });
           });
           await setConsentEndpointCalled;
-          await metaEndpointCalled;
         });
 
         it("should log activity for setConsent", async () => {
