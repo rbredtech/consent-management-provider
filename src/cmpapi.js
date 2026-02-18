@@ -34,6 +34,10 @@
     localStorage.removeItem(key);
   }
 
+  function didParam(did) {
+    return did ? '&did=' + encodeURIComponent(did) : '';
+  }
+
   function serializeConsentByVendorId(consentByVendorId) {
     var serialized = '';
     for (var vendorId in consentByVendorId) {
@@ -190,7 +194,9 @@
         });
         break;
       case 'setConsent':
-        var consent = parameter + '' === 'true';
+        var setConsentDid = parameter && parameter._injected ? parameter._did : undefined;
+        var setConsentParam = parameter && parameter._injected ? parameter._param : parameter;
+        var consent = setConsentParam + '' === 'true';
         var updated = mergeConsentsByVendorId({
           4040: consent,
           4041: consent
@@ -209,6 +215,9 @@
             localStorageAvailable: lsAvailable
           });
 
+          var metaSetConsent = document.createElement('img');
+          metaSetConsent.src = '{{META_ENDPOINT}}?action=setConsent' + didParam(setConsentDid) + '&consent=' + encodeURIComponent(serializeConsentByVendorId(updated));
+
           if (callback && typeof callback === 'function') {
             callback(consent);
           }
@@ -223,7 +232,9 @@
         };
         break;
       case 'setConsentByVendorId':
-        var merged = mergeConsentsByVendorId(parameter);
+        var setByVendorDid = parameter && parameter._injected ? parameter._did : undefined;
+        var setByVendorParam = parameter && parameter._injected ? parameter._param : parameter;
+        var merged = mergeConsentsByVendorId(setByVendorParam);
 
         image = document.createElement('img');
         image.src =
@@ -238,8 +249,11 @@
             localStorageAvailable: lsAvailable
           });
 
+          var metaSetByVendor = document.createElement('img');
+          metaSetByVendor.src = '{{META_ENDPOINT}}?action=setConsentByVendorId' + didParam(setByVendorDid) + '&consent=' + encodeURIComponent(serializeConsentByVendorId(merged));
+
           if (callback && typeof callback === 'function') {
-            callback(parameter);
+            callback(setByVendorParam);
           }
         };
 
@@ -252,6 +266,7 @@
         };
         break;
       case 'removeConsentDecision':
+        var removeConsentDid = parameter && parameter._injected ? parameter._did : undefined;
         image = document.createElement('img');
         image.src = window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}remove-consent?t=' + new Date().getTime();
 
@@ -260,6 +275,9 @@
           consentByVendorId = undefined;
 
           log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: lsAvailable });
+
+          var metaRemove = document.createElement('img');
+          metaRemove.src = '{{META_ENDPOINT}}?action=removeConsentDecision' + didParam(removeConsentDid);
 
           if (callback && typeof callback === 'function') {
             callback();

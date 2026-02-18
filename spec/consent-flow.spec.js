@@ -47,6 +47,7 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
     describe("When consent is given", () => {
       beforeAll(async () => {
         const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
+        const metaEndpointCalled = page.waitForResponse((response) => response.url().includes("/meta.gif"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
@@ -54,6 +55,7 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
             }),
         );
         await setConsentEndpointCalled;
+        await metaEndpointCalled;
       });
 
       test("Storage status is enabled and consent is true", async () => {
@@ -74,6 +76,7 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
     describe("When consent is deleted", () => {
       beforeAll(async () => {
         const removeConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/remove-consent"));
+        const metaEndpointCalled = page.waitForResponse((response) => response.url().includes("/meta.gif"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
@@ -81,6 +84,7 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
             }),
         );
         await removeConsentEndpointCalled;
+        await metaEndpointCalled;
       });
 
       test("Storage status is enabled and consent is not defined", async () => {
@@ -101,6 +105,7 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
     describe("When consent is given for specific vendorId", () => {
       beforeAll(async () => {
         const removeConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/remove-consent"));
+        const metaEndpointCalled = page.waitForResponse((response) => response.url().includes("/meta.gif"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
@@ -108,10 +113,12 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
             }),
         );
         await removeConsentEndpointCalled;
+        await metaEndpointCalled;
       });
 
       test("Storage status is enabled and vendor specific consents are set", async () => {
         const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
+        const metaEndpointCalled1 = page.waitForResponse((response) => response.url().includes("/meta.gif"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
@@ -119,6 +126,7 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
             }),
         );
         await setConsentEndpointCalled;
+        await metaEndpointCalled1;
 
         const apiResponse = await page.evaluate(
           () =>
@@ -136,6 +144,7 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
 
       test("Storage status is enabled and vendor specific consents are updated", async () => {
         const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
+        const metaEndpointCalled2 = page.waitForResponse((response) => response.url().includes("/meta.gif"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
@@ -143,6 +152,7 @@ describe.each(cases)("Consent flow - localStorage: %s, iFrame: %s", (localStorag
             }),
         );
         await setConsentEndpointCalled;
+        await metaEndpointCalled2;
 
         const apiResponse = await page.evaluate(
           () =>

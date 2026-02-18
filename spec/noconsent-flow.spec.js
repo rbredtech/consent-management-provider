@@ -47,6 +47,7 @@ describe.each(cases)("No-consent flow - localStorage: %s, iFrame: %s", (localSto
     describe("When consent is declined", () => {
       beforeAll(async () => {
         const setConsentEndpointCalled = page.waitForResponse((response) => response.url().includes("/set-consent"));
+        const metaEndpointCalled = page.waitForResponse((response) => response.url().includes("/meta.gif"));
         await page.evaluate(
           () =>
             new Promise((resolve) => {
@@ -54,6 +55,7 @@ describe.each(cases)("No-consent flow - localStorage: %s, iFrame: %s", (localSto
             }),
         );
         await setConsentEndpointCalled;
+        await metaEndpointCalled;
       });
 
       test("Storage status is enabled and consent is false", async () => {
