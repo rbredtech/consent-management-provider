@@ -16,15 +16,6 @@ async function get(disableLocalStorage, disableIframe) {
 const TEST_DID = "00000000-0000-0000-0000-000000000001";
 
 async function init(page, agfBanner = false) {
-  await page.setRequestInterception(true);
-  page.on("request", (request) => {
-    if (request.url().includes("/meta.gif")) {
-      request.respond({ status: 200, contentType: "image/gif", body: Buffer.alloc(0) });
-    } else {
-      request.continue();
-    }
-  });
-
   await page.goto("http://local.client.com:5555");
   await page.setContent(
     `<!DOCTYPE html PUBLIC '-//HbbTV//1.1.1//EN' 'http://www.hbbtv.org/dtd/HbbTV-1.1.1.dtd'>

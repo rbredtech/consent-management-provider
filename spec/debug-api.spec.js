@@ -1,5 +1,15 @@
 const pageHelper = require("./helper/page");
 
+async function waitForQueueLength(page, length, timeout = 5000) {
+  const deadline = Date.now() + timeout;
+  while (Date.now() < deadline) {
+    const len = await page.evaluate(() => window.callbackQueue.length);
+    if (len >= length) return;
+    await new Promise((r) => setTimeout(r, 50));
+  }
+  throw new Error(`Timed out waiting for callbackQueue.length >= ${length}`);
+}
+
 const cases = [
   [true, true], // [localStorage, iFrame]
   [true, false],
@@ -44,6 +54,7 @@ describe.each(cases)("Debug API - localStorage: %s, iFrame: %s", (localStorage, 
       });
 
       it("should log load event", async () => {
+        await waitForQueueLength(page, 2);
         const queue = await page.evaluate(() => {
           return window.callbackQueue;
         });
@@ -57,6 +68,7 @@ describe.each(cases)("Debug API - localStorage: %s, iFrame: %s", (localStorage, 
       });
 
       it("should log activity for getTCData", async () => {
+        await waitForQueueLength(page, 2);
         const queue = await page.evaluate(() => {
           return window.callbackQueue;
         });
@@ -114,6 +126,7 @@ describe.each(cases)("Debug API - localStorage: %s, iFrame: %s", (localStorage, 
         });
 
         it("should log activity for getTCData twice", async () => {
+          await waitForQueueLength(page, 5);
           const queue = await page.evaluate(() => {
             return window.callbackQueue;
           });
