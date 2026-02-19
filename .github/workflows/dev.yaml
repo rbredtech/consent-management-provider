@@ -52,6 +52,7 @@ jobs:
           TECH_COOKIE_MIN: 0
           CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT: 100
           BANNER_TIMEOUT: 120000
+          META_ENDPOINT: http://local.consent.com:3000/meta.gif
 
   create-prerelease:
     name: Create Pre-Release
