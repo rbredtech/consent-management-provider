@@ -5,7 +5,7 @@ const HTTP_PROTOCOL = process.env.HTTP_PROTOCOL || "http";
 const API_VERSION = process.env.API_VERSION || "v2";
 
 async function get() {
-  const browser = await puppeteer.launch({ dumpio: false, args: ["--disable-gpu"] });
+  const browser = await puppeteer.launch({ dumpio: false, args: ["--disable-gpu", "--no-sandbox"] });
   const page = await browser.newPage();
   return page;
 }
