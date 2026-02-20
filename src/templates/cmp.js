@@ -37,10 +37,31 @@
   var callbackMap = {};
   var iframe;
 
+  var writeCommands = { setConsent: true, setConsentByVendorId: true, removeConsentDecision: true };
+
+  function withDid(callback) {
+    if (window.__hbb_tracking_tgt && typeof window.__hbb_tracking_tgt.getDID === 'function') {
+      window.__hbb_tracking_tgt.getDID(function (deviceId) {
+        callback(deviceId || null);
+      });
+    } else {
+      callback(null);
+    }
+  }
+
   function message(type, command, version, callback, parameter) {
-    callbackMap[++callbackCount] = callback;
-    var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
-    iframe.contentWindow.postMessage(msg, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
+    if (writeCommands[command]) {
+      withDid(function (did) {
+        callbackMap[++callbackCount] = callback;
+        var injected = { _injected: true, _did: did, _param: parameter };
+        var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: injected });
+        iframe.contentWindow.postMessage(msg, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
+      });
+    } else {
+      callbackMap[++callbackCount] = callback;
+      var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: parameter });
+      iframe.contentWindow.postMessage(msg, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
+    }
   }
 
   var channelId = '<%-CHANNEL_ID%>';
@@ -171,6 +192,16 @@
     );
 
     cmpapiScriptTag.onload = function () {
+      var originalCmpApi = window.__cmpapi;
+      window.__cmpapi = function (command, version, callback, parameter) {
+        if (writeCommands[command]) {
+          withDid(function (did) {
+            originalCmpApi(command, version, callback, { _injected: true, _did: did, _param: parameter });
+          });
+        } else {
+          originalCmpApi(command, version, callback, parameter);
+        }
+      };
       onAPILoaded('3rdparty');
     };
 

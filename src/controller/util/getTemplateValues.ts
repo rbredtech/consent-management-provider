@@ -6,9 +6,10 @@ import {
   CMP_ENABLED,
   CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT,
   CONSENT_COOKIE_NAME,
-  LEGACY_COOKIE_NAME,
-  TECH_COOKIE_MIN,
   HTTP_HOST,
+  LEGACY_COOKIE_NAME,
+  META_ENDPOINT,
+  TECH_COOKIE_MIN,
 } from "../../config";
 
 import { logger } from "../../util/logger";
@@ -107,5 +108,6 @@ export const getTemplateValues = (req: Request, type: string = "3rd-party") => {
     CONSENT_SERVER_PROTOCOL: req.protocol,
     CHANNEL_ID: req.query.channelId ? req.query.channelId.toString() : "",
     BANNER_TIMEOUT,
+    META_ENDPOINT,
   };
 };
