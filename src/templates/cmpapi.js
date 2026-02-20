@@ -183,7 +183,11 @@
           });
 
           var metaSetConsent = document.createElement('img');
-          metaSetConsent.src = '<%-META_ENDPOINT%>?action=setConsent' + didParam(setConsentDid) + '&consent=' + encodeURIComponent(serializeConsentByVendorId(consentDecisionByVendorId));
+          metaSetConsent.src =
+            '<%-META_ENDPOINT%>?action=setConsent' +
+            didParam(setConsentDid) +
+            '&consent=' +
+            encodeURIComponent(serializeConsentByVendorId(consentDecisionByVendorId));
 
           if (callback && typeof callback === 'function') {
             callback(consent);
@@ -212,7 +216,11 @@
           });
 
           var metaSetByVendor = document.createElement('img');
-          metaSetByVendor.src = '<%-META_ENDPOINT%>?action=setConsentByVendorId' + didParam(setByVendorDid) + '&consent=' + encodeURIComponent(serializeConsentByVendorId(consentByVendorIdParam));
+          metaSetByVendor.src =
+            '<%-META_ENDPOINT%>?action=setConsentByVendorId' +
+            didParam(setByVendorDid) +
+            '&consent=' +
+            encodeURIComponent(serializeConsentByVendorId(consentByVendorIdParam));
 
           if (callback && typeof callback === 'function') {
             callback(consentByVendorIdParam);

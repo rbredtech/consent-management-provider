@@ -54,7 +54,8 @@
       withDid(function (did) {
         callbackMap[++callbackCount] = callback;
         var injected = { _injected: true, _did: did, _param: parameter };
-        var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: injected });
+        var msg =
+          callbackCount + ';' + type + ';' + command + ';' + version + ';' + JSON.stringify({ param: injected });
         iframe.contentWindow.postMessage(msg, '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>');
       });
     } else {
