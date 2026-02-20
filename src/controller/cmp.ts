@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 
 import {
   API_VERSION,
-  HTTP_HOST,
-  TECH_COOKIE_NAME,
-  LEGACY_COOKIE_NAME,
   CONSENT_COOKIE_NAME,
+  HTTP_HOST,
+  LEGACY_COOKIE_NAME,
   SUBMIT_CONSENT_FOR_TRACKING_DEVICE_ID_URL,
+  TECH_COOKIE_NAME,
 } from "../config";
 import { loadedCounterMetric } from "../util/metrics";
 

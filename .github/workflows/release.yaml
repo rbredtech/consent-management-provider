@@ -46,6 +46,7 @@ jobs:
           COOKIE_DOMAIN: localhost
           CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT: 100
           API_VERSION: v2
+          META_ENDPOINT: http://session-consent.dev.tv-insight.com/meta.gif
 
       - name: Install k6
         run: |
@@ -58,6 +59,7 @@ jobs:
           COOKIE_DOMAIN: localhost
           CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT: 100
           API_VERSION: v2
+          META_ENDPOINT: http://session-consent.dev.tv-insight.com/meta.gif
         run: |
           npm start & npx wait-on http://localhost:3000/health
           ./k6 run ./load_test/core.js --vus 50 --iterations 1000
