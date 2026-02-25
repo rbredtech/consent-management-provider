@@ -54,6 +54,10 @@
     return false;
   }
 
+  function didParam(did) {
+    return did ? '&did=' + encodeURIComponent(did) : '';
+  }
+
   var logEvents = {
     GET_TC_DATA: 'getTCData',
     SET_CONSENT: 'setConsent',
@@ -156,7 +160,9 @@
         break;
       case 'setConsent':
         localStorageAvailable = false;
-        var consent = parameter + '' === 'true';
+        var setConsentDid = parameter && parameter._injected ? parameter._did : undefined;
+        var setConsentParam = parameter && parameter._injected ? parameter._param : parameter;
+        var consent = setConsentParam + '' === 'true';
         var consentDecisionByVendorId = {
           4040: consent,
           4041: consent,
@@ -175,18 +181,26 @@
             consentByVendorId: consentDecisionByVendorId,
             localStorageAvailable: localStorageAvailable,
           });
+
+          var metaSetConsent = document.createElement('img');
+          metaSetConsent.src =
+            '<%-META_ENDPOINT%>?action=setConsent' +
+            didParam(setConsentDid) +
+            '&consent=' +
+            encodeURIComponent(serializeConsentByVendorId(consentDecisionByVendorId));
+
+          if (callback && typeof callback === 'function') {
+            callback(consent);
+          }
         };
         image.onerror = function () {
           log(logEvents.SET_CONSENT, false, {});
         };
-
-        if (callback && typeof callback === 'function') {
-          callback(consent);
-        }
         break;
       case 'setConsentByVendorId':
         localStorageAvailable = false;
-        var consentByVendorIdParam = parameter;
+        var setByVendorDid = parameter && parameter._injected ? parameter._did : undefined;
+        var consentByVendorIdParam = parameter && parameter._injected ? parameter._param : parameter;
         image = document.createElement('img');
         image.src =
           '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/set-consent?consentByVendorId=' +
@@ -200,17 +214,25 @@
             consentByVendorId: consentByVendorIdParam,
             localStorageAvailable: localStorageAvailable,
           });
+
+          var metaSetByVendor = document.createElement('img');
+          metaSetByVendor.src =
+            '<%-META_ENDPOINT%>?action=setConsentByVendorId' +
+            didParam(setByVendorDid) +
+            '&consent=' +
+            encodeURIComponent(serializeConsentByVendorId(consentByVendorIdParam));
+
+          if (callback && typeof callback === 'function') {
+            callback(consentByVendorIdParam);
+          }
         };
         image.onerror = function () {
           log(logEvents.SET_CONSENT_BY_VENDOR_ID, false, {});
         };
-
-        if (callback && typeof callback === 'function') {
-          callback(consentByVendorIdParam);
-        }
         break;
       case 'removeConsentDecision':
         localStorageAvailable = false;
+        var removeConsentDid = parameter && parameter._injected ? parameter._did : undefined;
 
         image = document.createElement('img');
         image.src = '<%-CONSENT_SERVER_PROTOCOL%>://<%-CONSENT_SERVER_HOST%>/<%-API_VERSION%>/remove-consent';
@@ -219,14 +241,17 @@
 
         image.onload = function () {
           log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: localStorageAvailable });
+
+          var metaRemove = document.createElement('img');
+          metaRemove.src = '<%-META_ENDPOINT%>?action=removeConsentDecision' + didParam(removeConsentDid);
+
+          if (callback && typeof callback === 'function') {
+            callback();
+          }
         };
         image.onerror = function () {
           log(logEvents.REMOVE_CONSENT_DECISION, false, {});
         };
-
-        if (callback && typeof callback === 'function') {
-          callback();
-        }
         break;
       case 'onLogEvent':
         if (callback && typeof callback === 'function') {
