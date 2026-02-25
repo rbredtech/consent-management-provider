@@ -13,6 +13,8 @@ async function get(disableLocalStorage, disableIframe) {
   return page;
 }
 
+const TEST_DID = "00000000-0000-0000-0000-000000000001";
+
 async function init(page, agfBanner = false) {
   await page.goto("http://local.client.com:5555");
   await page.setContent(
@@ -20,6 +22,7 @@ async function init(page, agfBanner = false) {
     <html xmlns='http://www.w3.org/1999/xhtml'>
     <head>
       <meta http-equiv='content-type' content='application/vnd.hbbtv.xhtml+xml; charset=utf-8' />
+      <script>window.__hbb_tracking_tgt = { getDID: function(cb) { cb('${TEST_DID}'); } };</script>
       <script type='text/javascript' src='http://local.consent.com:3000/cmp.js'></script>
       <script type='text/javascript' src='http://local.consent.com:3000/${agfBanner ? "banner-agf.js" : "banner.js"}'></script>
     </head>

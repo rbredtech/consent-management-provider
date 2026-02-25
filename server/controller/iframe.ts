@@ -3,7 +3,8 @@ import { Request, Response } from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const { CMP_ENABLED, CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT, CONSENT_COOKIE_NAME, CONSENT_HOST, COOKIE_DOMAIN, TECH_COOKIE_MIN, TECH_COOKIE_NAME, CONSENT_PATH } = process.env;
+const { CMP_ENABLED, CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT, CONSENT_COOKIE_NAME, CONSENT_HOST, COOKIE_DOMAIN, TECH_COOKIE_MIN, TECH_COOKIE_NAME, CONSENT_PATH, META_ENDPOINT } =
+  process.env;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,7 +30,8 @@ export const iframeController = async (req: Request, res: Response) => {
       .replaceAll("{{CONSENT_COOKIE_VALUE}}", req.cookies?.[String(CONSENT_COOKIE_NAME)] ?? "")
       .replaceAll("{{TECH_COOKIE_NAME}}", TECH_COOKIE_NAME ?? "")
       .replaceAll("{{TECH_COOKIE_VALUE}}", techCookieValue)
-      .replaceAll("{{TECH_COOKIE_MIN}}", TECH_COOKIE_MIN ?? "");
+      .replaceAll("{{TECH_COOKIE_MIN}}", TECH_COOKIE_MIN ?? "")
+      .replaceAll("{{META_ENDPOINT}}", META_ENDPOINT ?? "");
 
     res.send(iframeHtml);
   } catch (e) {
