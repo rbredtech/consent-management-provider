@@ -39,10 +39,31 @@ __ejs(/*- include("partials/ponyfills.js") */);
   var callbackMap = {};
   var iframe;
 
+  var writeCommands = { setConsent: true, setConsentByVendorId: true, removeConsentDecision: true };
+
+  function withDid(callback) {
+    if (window.__hbb_tracking_tgt && typeof window.__hbb_tracking_tgt.getDID === 'function') {
+      window.__hbb_tracking_tgt.getDID(function (deviceId) {
+        callback(deviceId || null);
+      });
+    } else {
+      callback(null);
+    }
+  }
+
   function message(type, command, version, callback, parameter) {
-    callbackMap[++callbackCount] = callback;
-    var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: parameter });
-    iframe.contentWindow.postMessage(msg, window.location.protocol + '//{{CONSENT_HOST}}');
+    if (writeCommands[command]) {
+      withDid(function (did) {
+        callbackMap[++callbackCount] = callback;
+        var injected = { _injected: true, _did: did, _param: parameter };
+        var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: injected });
+        iframe.contentWindow.postMessage(msg, window.location.protocol + '//{{CONSENT_HOST}}');
+      });
+    } else {
+      callbackMap[++callbackCount] = callback;
+      var msg = callbackCount + ';' + type + ';' + command + ';' + version + ';' + window.jsonStringify({ param: parameter });
+      iframe.contentWindow.postMessage(msg, window.location.protocol + '//{{CONSENT_HOST}}');
+    }
   }
 
   function onIframeMessage(event) {
@@ -101,6 +122,16 @@ __ejs(/*- include("partials/ponyfills.js") */);
     cmpapiScriptTag.setAttribute('src', window.location.protocol + '//{{CONSENT_HOST}}{{CONSENT_PATH}}cmpapi.js?x={{TECH_COOKIE_VALUE}}');
 
     cmpapiScriptTag.onload = function () {
+      var originalCmpApi = window.__cmpapi;
+      window.__cmpapi = function (command, version, callback, parameter) {
+        if (writeCommands[command]) {
+          withDid(function (did) {
+            originalCmpApi(command, version, callback, { _injected: true, _did: did, _param: parameter });
+          });
+        } else {
+          originalCmpApi(command, version, callback, parameter);
+        }
+      };
       onAPILoaded('3rdparty');
     };
 
