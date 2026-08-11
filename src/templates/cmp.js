@@ -117,6 +117,7 @@
           return;
         }
         callbackMap[id](callbackParameter.param);
+        delete callbackMap[id];
       }
 
       window.addEventListener('message', onMessage);
