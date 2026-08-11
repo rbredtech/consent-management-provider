@@ -216,7 +216,8 @@
           });
 
           var metaSetConsent = document.createElement('img');
-          metaSetConsent.src = '{{META_ENDPOINT}}?action=setConsent' + didParam(setConsentDid) + '&consent=' + encodeURIComponent(serializeConsentByVendorId(updated));
+          metaSetConsent.src =
+            window.location.protocol + '//{{META_ENDPOINT}}?action=setConsent' + didParam(setConsentDid) + '&consent=' + encodeURIComponent(serializeConsentByVendorId(updated));
 
           if (callback && typeof callback === 'function') {
             callback(consent);
@@ -250,7 +251,12 @@
           });
 
           var metaSetByVendor = document.createElement('img');
-          metaSetByVendor.src = '{{META_ENDPOINT}}?action=setConsentByVendorId' + didParam(setByVendorDid) + '&consent=' + encodeURIComponent(serializeConsentByVendorId(merged));
+          metaSetByVendor.src =
+            window.location.protocol +
+            '//{{META_ENDPOINT}}?action=setConsentByVendorId' +
+            didParam(setByVendorDid) +
+            '&consent=' +
+            encodeURIComponent(serializeConsentByVendorId(merged));
 
           if (callback && typeof callback === 'function') {
             callback(setByVendorParam);
@@ -277,7 +283,7 @@
           log(logEvents.REMOVE_CONSENT_DECISION, true, { localStorageAvailable: lsAvailable });
 
           var metaRemove = document.createElement('img');
-          metaRemove.src = '{{META_ENDPOINT}}?action=removeConsentDecision' + didParam(removeConsentDid);
+          metaRemove.src = window.location.protocol + '//{{META_ENDPOINT}}?action=removeConsentDecision' + didParam(removeConsentDid);
 
           if (callback && typeof callback === 'function') {
             callback();

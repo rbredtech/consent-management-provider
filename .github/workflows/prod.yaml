@@ -21,13 +21,13 @@ jobs:
 
       - id: node
         name: Set up node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20
 
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - id: dependencies
         name: Install dependencies
@@ -50,7 +50,7 @@ jobs:
           TECH_COOKIE_MIN: 0
           CMP_ENABLED_SAMPLING_THRESHOLD_PERCENT: 100
           BANNER_TIMEOUT: 120000
-          META_ENDPOINT: http://local.consent.com:3000/meta.gif
+          META_ENDPOINT: local.consent.com:3000/meta.gif
 
   release:
     name: Create release
@@ -61,13 +61,13 @@ jobs:
     steps:
       - id: node
         name: Set up node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 20
 
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - id: dependencies
         name: Install dependencies
@@ -83,7 +83,7 @@ jobs:
 
       - id: release
         name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: ${{  github.ref_name }}
           files: |
