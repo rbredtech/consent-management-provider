@@ -173,7 +173,9 @@
     if (window.localStorage && localStorage.getItem && localStorage.setItem) {
       if (!localStorage.getItem('<%-TECH_COOKIE_NAME%>')) {
         // no tech info yet, need to store
-        localStorage.setItem('<%-TECH_COOKIE_NAME%>', techCookieTimestamp);
+        try {
+          localStorage.setItem('<%-TECH_COOKIE_NAME%>', techCookieTimestamp);
+        } catch (e) {}
       } else {
         techCookieTimestamp = localStorage.getItem('<%-TECH_COOKIE_NAME%>'); // prefer tech info from localStorage
         hasConsent = localStorage.getItem('<%-LEGACY_COOKIE_NAME%>');

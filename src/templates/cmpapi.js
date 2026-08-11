@@ -39,7 +39,11 @@
       for (var vendorId in consentByVendorId) {
         lsConsentByVendorId[vendorId] = consentByVendorId[vendorId];
       }
-      localStorage.setItem('<%-CONSENT_COOKIE_NAME%>', serializeConsentByVendorId(lsConsentByVendorId));
+      try {
+        localStorage.setItem('<%-CONSENT_COOKIE_NAME%>', serializeConsentByVendorId(lsConsentByVendorId));
+      } catch (e) {
+        return false;
+      }
       return true;
     }
     return false;
@@ -299,9 +303,11 @@
           (channelId !== '' ? '&channelId=' + channelId : '');
 
         if (window.localStorage && localStorage.setItem && localStorage.removeItem) {
-          localStorage.setItem('<%-LEGACY_COOKIE_NAME%>', parameter);
-          localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
-          localStorageAvailable = true;
+          try {
+            localStorage.setItem('<%-LEGACY_COOKIE_NAME%>', parameter);
+            localStorage.removeItem('<%-CONSENT_COOKIE_NAME%>');
+            localStorageAvailable = true;
+          } catch (e) {}
         }
 
         image.onload = function () {
